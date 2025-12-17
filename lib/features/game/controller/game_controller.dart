@@ -116,7 +116,7 @@ class GameController extends GetxController {
           hasMore(true);
         }
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -140,7 +140,7 @@ class GameController extends GetxController {
         final tempGameDetail = GameModel.fromJson(response.data);
         gameDetail(tempGameDetail);
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -161,7 +161,7 @@ class GameController extends GetxController {
         return true;
       }
       return false;
-    } on DioException catch (e) {
+    } on DioException {
       return false;
       // Error already shown by interceptor
     } catch (e) {
@@ -185,7 +185,7 @@ class GameController extends GetxController {
           arguments: {'sessionCode': session.sessionCode},
         );
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -215,7 +215,7 @@ class GameController extends GetxController {
           Get.toNamed(AppRoutes.createTeamScreen);
         }
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -252,7 +252,7 @@ class GameController extends GetxController {
         await Future.delayed(const Duration(milliseconds: 500));
         Get.toNamed(AppRoutes.playerSelectionScreen);
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -278,7 +278,7 @@ class GameController extends GetxController {
           list.map((e) => UserModel.fromJson(e)).toList(),
         );
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -313,7 +313,7 @@ class GameController extends GetxController {
           );
         }
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
@@ -339,7 +339,7 @@ class GameController extends GetxController {
         await Future.delayed(const Duration(milliseconds: 500));
         Get.toNamed(AppRoutes.caseVideoScreen);
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
     } catch (e) {
       CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");

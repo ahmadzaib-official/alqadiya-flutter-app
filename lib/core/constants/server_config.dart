@@ -10,6 +10,7 @@ class ServerConfig {
   static const currentUser = "${baseUrl}users/currentUser";
   static const deleteUser = "${baseUrl}users";
   static const updateProfile = "${baseUrl}users/updateProfile";
+  static const uploadPhotoLink = "${baseUrl}users/profile/upload-link";
   static const resetPassword = "${baseUrl}auth/resetPassword";
   static const resetUserPassword = "${baseUrl}users/resetUserPassword";
   static const games = "${baseUrl}games/";

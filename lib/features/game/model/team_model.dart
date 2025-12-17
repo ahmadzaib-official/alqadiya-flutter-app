@@ -22,7 +22,7 @@ class TeamModel {
         String? sessionId,
         String? teamName,
         int? teamNumber,
-        dynamic? leaderUserId,
+        dynamic leaderUserId,
         DateTime? createdAt,
         DateTime? updatedAt,
     }) {

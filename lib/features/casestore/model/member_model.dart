@@ -26,7 +26,7 @@ class MemberModel {
         String? sessionId,
         String? userId,
         String? userName,
-        dynamic? userEmail,
+        dynamic userEmail,
         String? role,
         String? status,
         int? individualScore,

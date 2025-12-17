@@ -38,10 +38,11 @@ class CustomTextfield extends StatefulWidget {
   final String? errorText;
   final bool showErrorText;
   final AutovalidateMode? autovalidateMode;
-
+  final double? labelFontSize;
   const CustomTextfield({
     super.key,
     this.label,
+    this.labelFontSize,
     this.borderColor = MyColors.redButtonColor,
     this.controller,
     this.keyboardType = TextInputType.text,
@@ -131,12 +132,13 @@ class _CustomTextfieldState extends State<CustomTextfield> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.labelVisible ?? true) ...[
-          Text(widget.label!, style: AppTextStyles.labelRegular14()),
+          Text(widget.label!, style: AppTextStyles.labelRegular14().copyWith(fontSize: widget.labelFontSize ?? 14.sp)),
           AppSizedBoxes.smallSizedBox,
         ],
         Container(
           height: widget.height,
           width: widget.width,
+
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             border: GradientBoxBorder(
@@ -160,6 +162,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
             ],
           ),
           child: TextFormField(
+          
             obscuringCharacter: '*',
             inputFormatters: widget.inputFormatters,
             focusNode: widget.focusNode,
@@ -180,7 +183,8 @@ class _CustomTextfieldState extends State<CustomTextfield> {
             ),
             minLines: widget.obscureText ? 1 : widget.minLines,
             maxLines: widget.obscureText ? 1 : widget.maxLines,
-            decoration: InputDecoration(
+              decoration: InputDecoration(
+              isDense: true,
               filled: true,
               hintText: widget.hintText ?? '',
               hintStyle: AppTextStyles.labelRegular14().copyWith(
@@ -195,11 +199,12 @@ class _CustomTextfieldState extends State<CustomTextfield> {
               fillColor:
                   widget.color ??
                   MyColors.redButtonColor.withValues(alpha: 0.1),
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 14.h,
+              contentPadding: widget.contentPadding ?? EdgeInsets.symmetric(
+                vertical: 10.h,
                 horizontal: widget.horizentalContentPadding?.w ?? 12.w,
               ),
               border: OutlineInputBorder(
+                
                 borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide.none,
               ),

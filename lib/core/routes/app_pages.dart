@@ -53,6 +53,7 @@ import 'package:alqadiya_game/features/game/controller/scoreboard_provider.dart'
 import 'package:alqadiya_game/features/game/controller/suspect_detail_provider.dart';
 import 'package:alqadiya_game/features/game/controller/clue_detail_provider.dart';
 import 'package:alqadiya_game/features/payment/controller/payment_done_provider.dart';
+import 'package:alqadiya_game/features/change_language/controller/language_controller.dart';
 import 'package:get/get.dart';
 
 class AppPages {
@@ -310,6 +311,8 @@ class AppPages {
       bindings: [
         BindingsBuilder(() {
           Get.lazyPut(() => SettingsController());
+          Get.lazyPut(() => UserController());
+          Get.lazyPut(() => ChangeLanguageController());
         }),
       ],
       transition: Transition.circularReveal,

@@ -20,7 +20,7 @@ Dio getData() {
     InterceptorsWrapper(
       onRequest: (options, handler) {
         try {
-          DebugPoint.log('➡️ API URL: ${options.uri}');
+          DebugPoint.log('➡️ [${options.method}] API URL: ${options.uri}');
           DebugPoint.log('📦 HEADER: ${options.headers}');
           DebugPoint.log('📝 REQUEST BODY: ${jsonEncode(options.data)}');
           return handler.next(options);
@@ -38,7 +38,7 @@ Dio getData() {
       },
       onResponse: (response, handler) {
         try {
-          DebugPoint.log('✅ API RESPONSE: ${response.data}');
+          DebugPoint.log('✅ [${response.requestOptions.method}] API RESPONSE: ${response.data}');
           return handler.next(response);
         } catch (e) {
           log('Response error $e');
@@ -55,7 +55,7 @@ Dio getData() {
           final statusCode = err.response?.statusCode ?? 0;
           final errorMessage = _extractErrorMessage(err);
 
-          DebugPoint.log('❌ STATUS CODE: $statusCode');
+          DebugPoint.log('❌ [${err.requestOptions.method}] STATUS CODE: $statusCode');
           DebugPoint.log('🧨 ERROR TYPE: ${err.type}');
           DebugPoint.log('📢 ERROR MESSAGE: $errorMessage');
           DebugPoint.log('🔍 ERROR DATA: ${err.response?.data ?? ''}');
