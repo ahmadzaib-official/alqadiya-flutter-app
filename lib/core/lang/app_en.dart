@@ -1,0 +1,738 @@
+const Map<String, String> enUS = {
+  'Language': 'Language',
+  'start_now': 'Start Now',
+  'back': 'Back',
+  'next': 'Next',
+  'onboardingHeader1': 'Story-driven criminal\ninvestigation game',
+  'onboardingDescription1':
+      'The case combines immersive storytelling with\ninvestigative gameplay.',
+  'onboardingHeader2': 'Story-driven criminal\ninvestigation game',
+  'Welcome to\nBAZAR': 'Welcome to\nBAZAR',
+  'Discover\nChalets': "Discover\nChalets",
+  'Earn & Redeem\nRewards': 'Earn & Redeem\nRewards',
+  'Book dreamy chalets, earn rewards, and unlock exclusive add-ons — all in one app.':
+      'Book dreamy chalets, earn rewards, and unlock exclusive add-ons — all in one app.',
+  'Find the perfect stay for every occasion — from family getaways to special celebrations.':
+      'Find the perfect stay for every occasion — from family getaways to special celebrations.',
+  'Collect points with every booking and redeem them for discounts, gifts, or free nights.':
+      'Collect points with every booking and redeem them for discounts, gifts, or free nights.',
+  'Sign Up': 'Sign Up',
+  'No current bookings': 'No current bookings',
+  'No completed bookings': 'No completed bookings',
+  'Your completed bookings will appear here':
+      'Your completed bookings will appear here',
+  'You don\'t have any billing history yet.':
+      'You don\'t have any billing history yet.',
+  'No Billing Records': 'No Billing Records',
+  'Sign In': 'Sign In',
+  'Create an Account': 'Create an Account',
+  'Join us and enjoy seamless chalet bookings and exclusive rewards.':
+      'Join us and enjoy seamless chalet bookings and exclusive rewards.',
+  'Full Name': 'Full Name',
+  'Phone': 'Phone',
+  'No notification settings found': 'No notification settings found',
+  'You can manage your notification preferences here.':
+      'You can manage your notification preferences here.',
+  'Password': 'Password',
+  'Pay Remaining Amount': 'Pay Remaining Amount',
+  'OR': 'OR',
+  'No benefits found': 'No benefits found',
+  'Currently there are no benefits available for this tier.':
+      'Currently there are no benefits available for this tier.',
+  'guests': 'guests',
+  'No Favourite Chalets': 'No Favourite Chalets',
+  'You haven\'t added any chalets to your favourites yet.':
+      'You haven\'t added any chalets to your favourites yet.',
+  'password_required': 'Password is required',
+  'password_invalid': 'Password: 8+ chars, upper, lower, number, special char.',
+  'confirm_password_required': 'Confirm password is required',
+  'confirm_password_not_match': 'Password does not match',
+  'email_required': 'Email address cannot be empty',
+  'email_invalid': 'Please enter a valid email address',
+  'name_required': 'Name cannot be empty',
+  'name_short': 'Name must be at least 3 characters',
+  'amount_required': 'Amount is required',
+  'amount_short': 'Amount must be at least 3 characters',
+  'address_required': 'Address is required',
+  'address_short': 'Address must be at least 10 characters',
+  'phone_required': 'Phone Number cannot be empty',
+  'phone_invalid': 'Phone Number must be between 7-10 digits',
+  "Refundable Security Deposit": "Refundable Security Deposit",
+  "Refund Method: Same payment method": "Refund Method: Same payment method",
+  "Refund Period: 72 hours after checkout":
+      "Refund Period: 72 hours after checkout",
+  "You earned points. Track and redeem them in your profile anytime!":
+      "You earned points. Track and redeem them in your profile anytime!",
+  'No profile data available': 'No profile data available',
+  'Romantic Weekend': 'Romantic Weekend',
+  'hour package': 'hour package',
+  'Invalid coupon code or network error':
+      'Invalid coupon code or network error',
+  'guest': 'guests',
+  'Coupon applied successfully!': 'Coupon applied successfully!',
+  'points_remaining_message':
+      'Earn @points more points to unlock a free booking and enjoy exclusive discounts on your next stay.',
+  'unlocked_message':
+      'Congratulations! You have unlocked a free booking and exclusive discounts on your next stay.',
+  'Confirm': 'Confirm',
+  'Select Guests': 'Select Guests',
+  'Beach': 'Beach',
+  'points': 'points',
+  "Everything you need for a comfortable stay.":
+      'Everything you need for a comfortable stay.',
+  'Back to Chalet Details': 'Back to Chalet Details',
+  'nights': 'nights',
+  'Collect points for every booking completed at our participating chalets.':
+      'Collect points for every booking completed at our participating chalets.',
+  'Already have an account?': 'Already have an account?',
+  'Log In': 'Log In',
+  'Notice': 'Notice',
+  'Verify Your Account': 'Verify Your Account',
+  'Enter the 5-digit code sent to your phone to complete verification.':
+      'Enter the 5-digit code sent to your phone to complete verification.',
+  'Didn’t Receive a Code ?': 'Didn’t Receive a Code ?',
+  'Resend': 'Resend',
+  'Verify': 'Verify',
+  'Points': 'Points',
+  'Verified Successfully': 'Verified Successfully',
+  'Your phone number has been verified. You’re all set to continue!':
+      'Your phone number has been verified. You’re all set to continue!',
+  'Continue': 'Continue',
+  'Welcome back! Log in to manage your bookings and profile.':
+      'Welcome back! Log in to manage your bookings and profile.',
+  'Remember Me': 'Remember Me',
+  'Forget Password ?': 'Forget Password ?',
+  'Don’t have an account?': 'Don’t have an account?',
+  'Forget Password': 'Forget Password',
+  'Enter your phone number to reset your password.':
+      'Enter your phone number to reset your password.',
+  'Send OTP': 'Send OTP',
+  'Set A New Password': 'Set A New Password',
+  'Create a strong password to secure your account.':
+      'Create a strong password to secure your account.',
+  'New Password': 'New Password',
+  'Confirm New Password': 'Confirm New Password',
+  'Create New Password': 'Create New Password',
+  'Password Created Successfully': 'Password Created Successfully',
+  'Your new password is set. You can now log in to your account.':
+      'Your new password is set. You can now log in to your account.',
+  'Go to Login': 'Go to Login',
+  'Hello Fahd !': 'Hello Fahd !',
+  'Where Do You Want to Go?': 'Where Do You Want to Go?',
+  'Platinum': 'Platinum',
+  '255 Points': '255 Points',
+  'Location': 'Location',
+  'Check in': 'Check in',
+  'Check out': 'Check out',
+  'Guests': 'Guests',
+  'Where are you going?': 'Where are you going?',
+  'Add dates': 'Add dates',
+  'Add guests': 'Add guests',
+  'Category': 'Category',
+  'See All': 'See All',
+  'Popular': 'Popular',
+  'Family': 'Family',
+  'Modern': 'Modern',
+  'Luxury Lakeside': 'Luxury Lakeside',
+  'Al Khiran': 'Al Khiran',
+  '100 KD': '100 KD',
+  '/night': ' /night',
+  'Top Nearby': 'Top Nearby',
+  'Past Bookings': 'Past Bookings',
+  'Home': 'Home',
+  'Bookings': 'Bookings',
+  'Loyalty Points': 'Loyalty Points',
+  'Profile': 'Profile',
+  'Traditional': 'Traditional',
+  'Most Booked this Week': 'Most Booked this Week',
+  'Top Rates': 'Top Rates',
+  'Recommendations': 'Recommendations',
+  '( 200 reviews )': '( 200 reviews )',
+  'Hosted By': 'Hosted By',
+  'Omar Fayed': 'Omar Fayed',
+  'This Chalet is trusted by our platform':
+      'This Chalet is trusted by our platform',
+  'Top Host': 'Top Host',
+  'Consistently rated 5 stars by guests for hospitality and responsiveness.':
+      'Consistently rated 5 stars by guests for hospitality and responsiveness.',
+  'City View': 'City View',
+  '12 Beds Max': '12 Beds Max',
+  '500 sqm': '500 sqm',
+  '4 Bedrooms': '4 Bedrooms',
+  'Family Friendly only ( No Men Groups )':
+      'Family Friendly only ( No Men Groups )',
+  'Self Check-in': 'Self Check-in',
+  '3 Bathrooms': '3 Bathrooms',
+  'Description': 'Description',
+  'Enjoy a relaxing stay at this spacious chalet, perfect for families and groups. It accommodates up to 5 guests, offering 3 cozy bedrooms, 5 comfortable beds, and 3 modern bathrooms. Whether you\'re looking to unwind or have fun, this chalet provides the perfect getaway.':
+      'Enjoy a relaxing stay at this spacious chalet, perfect for families and groups. It accommodates up to 5 guests, offering 3 cozy bedrooms, 5 comfortable beds, and 3 modern bathrooms. Whether you\'re looking to unwind or have fun, this chalet provides the perfect getaway.',
+  'Guests trusted this chalet': 'Guests trusted this chalet',
+  '200': '200',
+  "Check-in": "Check-in",
+  "Checkout": "Checkout",
+  'Less Popular': 'Less Popular',
+  '6 Hours': '6 Hours',
+  'Payment': 'Payment',
+  "Check-in starts soon — get ready!": "Check-in starts soon — get ready!",
+  'Booking Summary': 'Booking Summary',
+  "Deposit will be returned after your stay, subject to property condition.":
+      "Deposit will be returned after your stay, subject to property condition.",
+  'Total Payments': 'Total Payments',
+  'Pay Remaining': 'Pay Remaining',
+  'Paid Amount': 'Paid Amount',
+  'Remaining Balance': 'Remaining Balance',
+  'Details': 'Details',
+  'A refundable security deposit of 100  KWD is required. This amount will be held and returned within 72 hours after checkout if no damage is reported.':
+      'A refundable security deposit of 100  KWD is required. This amount will be held and returned within 72 hours after checkout if no damage is reported.',
+  "Pay Remaining Amount 220 KD Now": "Pay Remaining Amount 220 KD Now",
+  'Weekdays': 'Weekdays',
+  'View Chalet Page': 'View Chalet Page',
+  '60 KWD': '60 KWD',
+  '400 KWD': '400 KWD',
+  "You’ve paid 50% of the total amount (220 KWD). The remaining 220 KWD is due at least 72 hours before check-in by [ 17/3/2025 ].":
+      "You’ve paid 50% of the total amount (220 KWD). The remaining 220 KWD is due at least 72 hours before check-in by [ 17/3/2025 ].",
+  '6-hour minimum': '6-hour minimum',
+  'Members Only': 'Members Only',
+  'Most Popular': 'Most Popular',
+  '3 Days': '3 Days',
+  '/ night': '/ night',
+  "Booking a chalet": "Booking a chalet",
+  "Changing or canceling a reservation": "Changing or canceling a reservation",
+  "Payment and refunds": "Payment and refunds",
+  "Loyalty points and rewards": "Loyalty points and rewards",
+  "General questions or support": "General questions or support",
+  "Hi Fahd!": "Hi Fahd!",
+  "You can ask about:": "You can ask about:",
+  '4 Days': '4 Days',
+  'Weekend': 'Weekend',
+  'Split payment available': 'Split payment available',
+  'Amenities': 'Amenities',
+  'Kitchen': 'Kitchen',
+  'Private Pool': 'Private Pool',
+  'Dryer': 'Dryer',
+  'Clean Towels': 'Clean Towels',
+  'TV services': 'TV services',
+  'Refrigerator': 'Refrigerator',
+  'Air conditioning': 'Air conditioning',
+  'Wifi': 'Wifi',
+  'Show all Amenities': 'Show all Amenities',
+  'Where you’ll sleep': 'Where you’ll sleep',
+  'Bedroom 1': 'Bedroom 1',
+  'Bedroom 2': 'Bedroom 2',
+  'Bedroom 3': 'Bedroom 3',
+  "Enjoy faster assistance \nand priority handling of \nyour requests through our \ndedicated member \nsupport line.":
+      "Enjoy faster assistance \nand priority handling of \nyour requests through our \ndedicated member \nsupport line.",
+
+  "Request early check-in or \nlate check-out, based on \navailability and \nconfirmation.":
+      "Request early check-in or \nlate check-out, based on \navailability and \nconfirmation.",
+
+  "Activate discount \nboosters to unlock up to \n20% off your future chalet \nbookings.":
+      "Activate discount \nboosters to unlock up to \n20% off your future chalet \nbookings.",
+
+  "Get priority access for \nbookings when your \npreferred chalet becomes \navailable.":
+      "Get priority access for \nbookings when your \npreferred chalet becomes \navailable.",
+
+  "Receive 24-hour \ndedicated support for all \nbooking and loyalty \nprogram inquiries.":
+      "Receive 24-hour \ndedicated support for all \nbooking and loyalty \nprogram inquiries.",
+  'Diamond (+1,000 points)': 'Diamond (+1,000 points)',
+  'No': 'No',
+  'Hi': 'Hi',
+  'No Internet Connection': 'No Internet Connection',
+  'Please check your internet connection and try again.':
+      'Please check your internet connection and try again.',
+  'No chalet available': 'No chalet available',
+  'Please check back later or adjust your filters.':
+      'Please check back later or adjust your filters.',
+  '1 King Bed': '1 King Bed',
+  '1 Double Bed': '1 Double Bed',
+
+  'Friday to Saturday': 'Friday to Saturday',
+  'Sunday to Thursday': 'Sunday to Thursday',
+
+  'minimum': 'minimum',
+  'No reviews found': 'No reviews found',
+  'Chalet Rules for a Great Stay': 'Chalet Rules for a Great Stay',
+  'Chalet Check-in and out': 'Chalet Check-in and out',
+  'Check-in: 02:00 PM': 'Check-in: 02:00 PM',
+  'Checkout:  12:00 PM': 'Checkout:  12:00 PM',
+  'points_label': 'Points',
+  'save_label': 'Save',
+  'Health Standards': 'Health Standards',
+  'notifications found.': 'notifications found.',
+  'Smoke alarm': 'Smoke alarm',
+  'Security Deposit: You may be charged up to 200 KD if any damage occurs during your stay.':
+      'Security Deposit: You may be charged up to 200 KD if any damage occurs during your stay.',
+  'Chalet Standards': 'Chalet Standards',
+  'Maintain the cleanliness of the chalet and return it in the same condition it was received.':
+      'Maintain the cleanliness of the chalet and return it in the same condition it was received.',
+  'Keep the swimming pool clean and avoid using the swimming pool without showering first.':
+      'Keep the swimming pool clean and avoid using the swimming pool without showering first.',
+  'Cancellation and Refund Policy': 'Cancellation and Refund Policy',
+  'Refunds are available if you choose the refundable option':
+      'Refunds are available if you choose the refundable option',
+  'Refund Time Estimate Within 72 Hours':
+      'Refund Time Estimate Within 72 Hours',
+  'Refundable Security Deposit:': 'Refundable Security Deposit:',
+  'Show more': 'Show more',
+  "You earned": "You earned",
+  "points. Track and redeem them in your profile anytime!":
+      "points. Track and redeem them in your profile anytime!",
+  'Now': 'Now',
+  'Book Now': 'Book Now',
+  'Exclusive': 'Exclusive',
+  'Reviews': 'Reviews',
+  'Fahd Al-Mutiri': 'Fahd Al-Mutiri',
+  'March 2025': 'March 2025',
+  'Perfect getaway! The chalet was super clean and spacious, exactly like the photos. We loved the private pool and outdoor BBQ area. The kids had a blast, and we’ll definitely be coming back!':
+      'Perfect getaway! The chalet was super clean and spacious, exactly like the photos. We loved the private pool and outdoor BBQ area. The kids had a blast, and we’ll definitely be coming back!',
+  'Submit Review': 'Submit Review',
+  'Luxury Lakeside Retreat': 'Luxury Lakeside Retreat',
+  'Sea Villa Retreat, Block 5, Street 12, Villa 27, Al Khiran, Ahmadi, Kuwait':
+      'Sea Villa Retreat, Block 5, Street 12, Villa 27, Al Khiran, Ahmadi, Kuwait',
+  'Write about your stay—what you liked, how the chalet was, or anything you\'d like future guests to know...':
+      'Write about your stay—what you liked, how the chalet was, or anything you\'d like future guests to know...',
+  'Cancel': 'Cancel',
+  'Thanks for Your Review!': 'Thanks for Your Review!',
+  'Your feedback has been submitted successfully. We appreciate you taking the time to share your experience — you’ve just':
+      'Your feedback has been submitted successfully. We appreciate you taking the time to share your experience — you’ve just',
+  'Booking Dates': 'Booking Dates',
+  'Done': 'Done',
+  'Browse Chalets': 'Browse Chalets',
+  'earned 200 points!': 'earned 200 points!',
+  'Timings': 'Timings',
+  'Check-in Time': 'Check-in Time',
+  'Checkout Time': 'Checkout Time',
+  'A refundable security deposit of 200 KWD is required. This amount will be held and returned within 72 hours after checkout if no damage is reported.':
+      'A refundable security deposit of 200 KWD is required. This amount will be held and returned within 72 hours after checkout if no damage is reported.',
+  'Add Guests': 'Add Guests',
+  'Choose Your Package': 'Choose Your Package',
+  'Thursday to Saturday': 'Thursday to Saturday',
+  'Friday to Wednesday': 'Friday to Wednesday',
+  'Full Week': 'Full Week',
+  '7 consecutive nights': '7 consecutive nights',
+  'Full Month': 'Full Month',
+  '30 consecutive nights': '30 consecutive nights',
+  'Check -in and Check out': 'Check -in and Check out',
+  'Customize Your Stay': 'Customize Your Stay',
+  'Your Details': 'Your Details',
+  'Explore Chalets !': 'Explore Chalets !',
+  'Browse by location, vibe, or occasion — find your perfect stay.':
+      'Browse by location, vibe, or occasion — find your perfect stay.',
+  'Share Your Experience': 'Share Your Experience',
+  'Date': 'Date',
+  'Price': 'Price',
+  'Weekday': 'Weekday',
+  'Secure Your Booking': 'Secure Your Booking',
+  'Add optional services or extras to make your experience more special.':
+      'Add optional services or extras to make your experience more special.',
+  'Luxury': 'Luxury',
+  'BBQ setup with private chef': 'BBQ setup with private chef',
+  'Swimming pool presentation': 'Swimming pool presentation',
+  'Flower Arrangement': 'Flower Arrangement',
+  'Birthday Setup': 'Birthday Setup',
+  'Anniversary Setup.': 'Anniversary Setup.',
+  'Essentials': 'Essentials',
+  'Towels': 'Towels',
+  'Cleaning Services': 'Cleaning Services',
+  'WiFi': 'WiFi',
+  'Extra Water': 'Extra Water',
+  'Others': 'Others',
+  'Kids': 'Kids',
+  'Pool Floaties/Toys': 'Pool Floaties/Toys',
+  'Personal Swimming Trainer': 'Personal Swimming Trainer',
+  'Baby Bed': 'Baby Bed',
+  'Add-ons Price': 'Add-ons Price',
+  'Add For Booking': 'Add For Booking',
+  'Please provide your name and contact info to complete the booking.':
+      'Please provide your name and contact info to complete the booking.',
+  'E-mail': 'E-mail',
+  'Home or ID Address': 'Home or ID Address',
+  'Confirm Contact Info': 'Confirm Contact Info',
+  'Total Price': 'Total Price',
+  'Saving your details': 'Saving your details',
+  'Would you like to save these details for faster booking next time?':
+      'Would you like to save these details for faster booking next time?',
+  'No, Just Continue': 'No, Just Continue',
+  'Save & Continue': 'Save & Continue',
+  'Complete your reservation safely.': 'Complete your reservation safely.',
+  'Total Payment': 'Total Payment',
+  'You can choose to pay 50% now and the remaining 72 hours before check-in, or pay the full amount upfront.':
+      'You can choose to pay 50% now and the remaining 72 hours before check-in, or pay the full amount upfront.',
+  'A refundable security deposit of 200 KD is required. This amount will be held and returned within 72 hours after checkout if no damage is reported.':
+      'A refundable security deposit of 200 KD is required. This amount will be held and returned within 72 hours after checkout if no damage is reported.',
+
+  'Add': 'Add',
+  'Skip': 'Skip',
+  'Pay Now': 'Pay Now',
+  'Refundable Deposit': 'Refundable Deposit',
+  'Total': 'Total',
+  'Make your weekend unforgettable Just 25 KWD':
+      'Make your weekend unforgettable Just 25 KWD',
+
+  'Add the Romantic Weekend upgrade for only 25 KWD and enjoy late check-out, welcome gift, and a private Romantic Setup.':
+      'Add the Romantic Weekend upgrade for only 25 KWD and enjoy late check-out, welcome gift, and a private Romantic Setup.',
+  'Pay Full Amount Now': 'Pay Full Amount Now',
+  'Pay in Two Parts': 'Pay in Two Parts',
+  'You can split your payment if your total is 400 KWD or higher.':
+      'You can split your payment if your total is 400 KWD or higher.',
+  'Apply redeemed code here': 'Apply redeemed code here',
+  'Apply': 'Apply',
+  'Redeem Gifts & Discounts': 'Redeem Gifts & Discounts',
+  'Card number': 'Card number',
+  'CVV': 'CVV',
+  'Expiry': 'Expiry',
+  'Add Now To Your Booking': 'Add Now To Your Booking',
+  'Payment Confirmed': 'Payment Confirmed',
+  'Your booking is complete. Thank you for choosing us!':
+      'Your booking is complete. Thank you for choosing us!',
+  'You earned 200 points. Track and redeem them in your profile anytime!':
+      'You earned 200 points. Track and redeem them in your profile anytime!',
+  '5-7 guests · Entire Home · 5 beds · 4 bath ':
+      '5-7 guests · Entire Home · 5 beds · 4 bath ',
+  'Refund Instructions': 'Refund Instructions',
+  'Refundable Security Deposit: 100  KWD':
+      'Refundable Security Deposit: 100  KWD',
+  'Refund Method: Same payment method ': 'Refund Method: Same payment method ',
+
+  'View Exact Location': 'View Exact Location',
+  'Refer A Friend': 'Refer A Friend',
+  'Download Invoice': 'Download Invoice',
+  'Back To Home': 'Back To Home',
+  'Invalid code. Please check and try again.':
+      'Invalid code. Please check and try again.',
+  'Code applied successfully! Your discount has been added.':
+      'Code applied successfully! Your discount has been added.',
+  'Discounts You Can Redeem': 'Discounts You Can Redeem',
+  ' Turn your points into savings for this stay.':
+      ' Turn your points into savings for this stay.',
+  '10% Discount': '10% Discount',
+  '20% Discount': '20% Discount',
+  '30% Discount': '30% Discount',
+  'Complete Payment': 'Complete Payment',
+  'earn_points': 'Earn @pts pts/ 1 KWD Points on Stays',
+  '50% Discount': '50% Discount',
+  '600 points': '600 points',
+  '800 points': '800 points',
+  'Purchase': 'Purchase',
+  '1000 points': '1000 points',
+  '1500 points': '1500 points',
+  'Back To Booking': 'Back To Booking',
+  'Clear': 'Clear',
+  '/hour': '/hour',
+  'Redeem Now': 'Redeem Now',
+  'Free Night': 'Free Night',
+  'Turn your points into savings for this stay.':
+      'Turn your points into savings for this stay.',
+  'MM/YY': 'MM/YY',
+  '123': '123',
+
+  "No Billing Records Found": "No Billing Records Found",
+  "You don't have any billing records. Start exploring!":
+      "You don't have any billing records. Start exploring!",
+  "No Services Found": "No Services Found",
+  "You don't have any upcoming stays. Start exploring!":
+      "You don't have any upcoming stays. Start exploring!",
+  "Paid on": "Paid on",
+  "Checkout:": "Checkout:",
+  "hours": "hours",
+  "No saved chalets found": "No saved chalets found",
+  "Unable to connect to server": "Unable to connect to server",
+  "Entire Home": "Entire Home",
+  "beds": "beds",
+  "bath": "bath",
+  "Discount Amount": "Discount Amount",
+  "reviews": "reviews",
+  "Beds Max": "Beds Max",
+  "Bedrooms": "Bedrooms",
+  "Double Bed": "Double Bed",
+  "Single Bed": "Single Bed",
+  "King Bed": "King Bed",
+  "Make your weekend unforgettable Just":
+      "Make your weekend unforgettable Just",
+  "Add the Romantic Weekend upgrade for only":
+      "Add the Romantic Weekend upgrade for only",
+  "and enjoy late check-out, welcome gift, and a private Romantic Setup.":
+      "and enjoy late check-out, welcome gift, and a private Romantic Setup.",
+
+  "Sub Total": "Sub Total",
+  "Discount": "Discount",
+
+  "Location provided upon booking confirmation":
+      "Location provided upon booking confirmation",
+
+  'Cancelled by Admin': 'Cancelled by Admin',
+  'Rejected': 'Rejected',
+  'Completed': 'Completed',
+  'Cancelled': 'Cancelled',
+  'Confirmed': 'Confirmed',
+  'Active': 'Active',
+  'Pending': 'Pending',
+  'Expired': 'Expired',
+  'Fully Paid': 'Fully Paid',
+  'Paid': 'Paid',
+
+  "earned_points": "earned @points points!",
+  'Your points are less than 500.\nPlease buy points to unlock discounts.\nEnjoy exclusive rewards and offers!':
+      'Your points are less than 500.\nPlease buy points to unlock discounts.\nEnjoy exclusive rewards and offers!',
+  'Enter points amount...': 'Enter points amount...',
+  '1234 5678 9012 3456': '1234 5678 9012 3456',
+  'All payments processed securely via KNET':
+      'All payments processed securely via KNET',
+  'Copy': 'Copy',
+  'Copied !': 'Copied !',
+  'Earn points every time you book or review — redeem them for exclusive rewards, discounts, and more.':
+      'Earn points every time you book or review — redeem them for exclusive rewards, discounts, and more.',
+  'Earned Points': 'Earned Points',
+  'Earn 244 more points to unlock a free booking and enjoy exclusive discounts on your next stay.':
+      'Earn 244 more points to unlock a free booking and enjoy exclusive discounts on your next stay.',
+
+  'Learn About Tiers': 'Learn About Tiers',
+  'Discover how each tier unlocks greater rewards, benefits, and exclusive chalet experiences.':
+      'Discover how each tier unlocks greater rewards, benefits, and exclusive chalet experiences.',
+  'Boost Your Points': 'Boost Your Points',
+  'Top up your loyalty points instantly and use them for discounts, perks, and upgrades your next booking.':
+      'Top up your loyalty points instantly and use them for discounts, perks, and upgrades your next booking.',
+  'Learn More': 'Learn More',
+  'Buy Points': 'Buy Points',
+  'About Tiers': 'About Tiers',
+  'About Loyalty Points': 'About Loyalty Points',
+  'Join our loyalty program and make every booking more rewarding! Earn points every time you book a chalet or purchase add-ons. The more you book, the more points you collect, unlocking bigger savings and exclusive perks.':
+      'Join our loyalty program and make every booking more rewarding! Earn points every time you book a chalet or purchase add-ons. The more you book, the more points you collect, unlocking bigger savings and exclusive perks.',
+  'Platinum (0 – 499 points)': 'Platinum (0 – 499 points)',
+  'Gold  (500-999 points)': 'Gold  (500-999 points)',
+  'Diamond (+1000 points)': 'Diamond (+1000 points)',
+  'Compare Between Tiers': 'Compare Between Tiers',
+  'How It Works': 'How It Works',
+  'Earn points with every booking, track your balance, redeem for discounts, and unlock exclusive perks!':
+      'Earn points with every booking, track your balance, redeem for discounts, and unlock exclusive perks!',
+  'Benefits': 'Benefits',
+  'Earn points every time you book — redeem them for discounts, upgrades, and exclusive perks.':
+      'Earn points every time you book — redeem them for discounts, upgrades, and exclusive perks.',
+  'Earn 8 pts/ 1 KWD Points on Stays': 'Earn 8 pts/ 1 KWD Points on Stays',
+  'Priority Support': 'Priority Support',
+  'Enjoy faster assistance and priority handling of your requests through our dedicated member support line.':
+      'Enjoy faster assistance and priority handling of your requests through our dedicated member support line.',
+  'Discount Booster': 'Discount Booster',
+  'Activate discount boosters to unlock up to 20% off your future chalet bookings.':
+      'Activate discount boosters to unlock up to 20% off your future chalet bookings.',
+  '24/7 Premium Contact \nSupport': '24/7 Premium Contact Support',
+  'Receive 24-hour dedicated support for all booking and loyalty program inquiries.':
+      'Receive 24-hour dedicated support for all booking and loyalty program inquiries.',
+  'Flexible Check-In and \nCheck-Out': 'Flexible Check-In and \nCheck-Out',
+  'Request early check-in or late check-out, based on availability and confirmation.':
+      'Request early check-in or late check-out, based on availability and confirmation.',
+  'Favorite Chalet Priority \nBooking': 'Favorite Chalet Priority Booking',
+  'Get priority access for bookings when your preferred chalet becomes available.':
+      'Get priority access for bookings when your preferred chalet becomes available.',
+  'Compare all tiers side by side and discover which level gives you the most rewards and perks.':
+      'Compare all tiers side by side and discover which level gives you the most rewards and perks.',
+  'Gold': 'Gold',
+  'Diamond': 'Diamond',
+  'Earn Points on Stays': 'Earn Points on Stays',
+  'Book Your Chalet': 'Book Your Chalet',
+  'Choose and reserve your perfect chalet through our website or app.':
+      'Choose and reserve your perfect chalet through our website or app.',
+  'Stay and Earn Points': 'Stay and Earn Points',
+  'Enjoy your stay — points are automatically added after checkout.':
+      'Enjoy your stay — points are automatically added after checkout.',
+  'Redeem Your Points': 'Redeem Your Points',
+  'Use your points for discounts, upgrades, or special perks on future bookings.':
+      'Use your points for discounts, upgrades, or special perks on future bookings.',
+  'Unlock Benefits': 'Unlock Benefits',
+  'The more you stay, the more VIP rewards and offers you unlock.':
+      'The more you stay, the more VIP rewards and offers you unlock.',
+  'Get more points to unlock discounts and upgrade your stay.':
+      'Get more points to unlock discounts and upgrade your stay.',
+  'Let me know if you want variations based on tone—casual, premium, or playful!':
+      'Let me know if you want variations based on tone—casual, premium, or playful!',
+  'Custom': 'Custom',
+  'Why Buy Points?': 'Why Buy Points?',
+  'Points can be redeemed for discounts on bookings and add-ons.':
+      'Points can be redeemed for discounts on bookings and add-ons.',
+  'Purchased points do not expire.': 'Purchased points do not expire.',
+  'The more you buy, the more you save!':
+      'The more you buy, the more you save!',
+  'Buy Now': 'Buy Now',
+  'Payment Summary': 'Payment Summary',
+  'Points Purchased Successfully': 'Points Purchased Successfully',
+  'Your points have been added to your account. You can now use them for discounts and rewards on your next booking. Thank you for boosting your balance — happy booking!':
+      'Your points have been added to your account. You can now use them for discounts and rewards on your next booking. Thank you for boosting your balance — happy booking!',
+  'Browse Chalet': 'Browse Chalet',
+  //notifcations
+  'Notifications': 'Notifications',
+  'Stay updated on bookings, offers, and all activities in one place.':
+      'Stay updated on bookings, offers, and all activities in one place.',
+  'All': 'All',
+  'Payments': 'Payments',
+  'No Notifications Yet': 'No Notifications Yet',
+  'Stay tuned — your updates will appear here.':
+      'Stay tuned — your updates will appear here.',
+  'Your booking is confirmed!': 'Your booking is confirmed!',
+  'Reminder: Pay the remaining balance within 72 hours.':
+      'Reminder: Pay the remaining balance within 72 hours.',
+  'Exclusive discounts available for your tier.':
+      'Exclusive discounts available for your tier.',
+  'You earned 200 points!': 'You earned 200 points!',
+  'Thanks for your review! 200 points added.':
+      'Thanks for your review! 200 points added.',
+  'Chatbot is ready to assist you anytime.':
+      'Chatbot is ready to assist you anytime.',
+  'Your deposit of 100 KD has been refunded successfully.':
+      'Your deposit of 100 KD has been refunded successfully.',
+  'Your booking for (date–year) has been updated. Tap to view details.':
+      'Your booking for (date–year) has been updated. Tap to view details.',
+  'Refund for your cancelled booking has been approved and processed.':
+      'Refund for your cancelled booking has been approved and processed.',
+  'Your contact info was updated by our support team. Please review.':
+      'Your contact info was updated by our support team. Please review.',
+  'An update has been made to your booking add-ons. Tap to view.':
+      'An update has been made to your booking add-ons. Tap to view.',
+  'Your booking cancellation policy has been adjusted. View invoice.':
+      'Your booking cancellation policy has been adjusted. View invoice.',
+  //cancelation policy
+  'Cancellation Policy': 'Cancellation Policy',
+  'Learn how cancellations work and what to expect based on your booking type.':
+      'Learn how cancellations work and what to expect based on your booking type.',
+  'Policy Details': 'Policy Details',
+  'Refundable Bookings:': 'Refundable Bookings:',
+  'Cancellations are allowed up to 72 hours before check-in for a full refund.':
+      'Cancellations are allowed up to 72 hours before check-in for a full refund.',
+  'Cancellations made within 72 hours of check-in can not be eligible for a refund.':
+      'Cancellations made within 72 hours of check-in can not be eligible for a refund.',
+  'Any applicable refund will be processed within 7 business days.':
+      'Any applicable refund will be processed within 7 business days.',
+  'Non-Refundable Bookings:': 'Non-Refundable Bookings:',
+  'These bookings are not eligible for refunds under any circumstances.':
+      'These bookings are not eligible for refunds under any circumstances.',
+  'Please review your selection before confirming your booking.':
+      'Please review your selection before confirming your booking.',
+  'Additional Notes': 'Additional Notes',
+  'No-shows or cancellations after the check-in date will not be refunded.':
+      'No-shows or cancellations after the check-in date will not be refunded.',
+  'If a deposit was paid, refund eligibility will depend on the condition of the chalet after checkout.':
+      'If a deposit was paid, refund eligibility will depend on the condition of the chalet after checkout.',
+  'For any questions, please contact our support or use the in-app chat.':
+      'For any questions, please contact our support or use the in-app chat.',
+  //My Bookings
+  'My Bookings': 'My Bookings',
+  'Track your stays, check-in details, and booking status here.':
+      'Track your stays, check-in details, and booking status here.',
+  'Current': 'Current',
+  'Complete  Payment 00:04:50': 'Complete  Payment 00:04:50',
+
+  '50% Paid': '50% Paid',
+  'See Details': 'See Details',
+  'Cancel Booking': 'Cancel Booking',
+  'Dates': 'Dates',
+  'CHECK-IN': 'CHECK-IN',
+  'CHECKOUT': 'CHECKOUT',
+  '100  KWD x 4 nights': '100  KWD x 4 nights',
+  'Add-ons': 'Add-ons',
+  'Cancel your booking': 'Cancel your booking',
+  'This action cannot be undone. Please review your cancellation policy before proceeding.':
+      'This action cannot be undone. Please review your cancellation policy before proceeding.',
+  'View Policy': 'View Policy',
+  'Booking Cancelled': 'Booking Cancelled',
+  'Your booking has been successfully cancelled. If applicable, your refund will be processed according to the cancellation policy.':
+      'Your booking has been successfully cancelled. If applicable, your refund will be processed according to the cancellation policy.',
+  'Back to My Bookings': 'Back to My Bookings',
+  'Refundable Deposit is Refunded': 'Refundable Deposit is Refunded',
+  'User Profile': 'User Profile',
+  'Change Password': 'Change Password',
+  'Help Center': 'Help Center',
+  'Save List': 'Save List',
+  'Billing': 'Billing',
+  'Virtual Assistant': 'Virtual Assistant',
+  'Delete Account': 'Delete Account',
+  'Logout': 'Logout',
+  'Save Changes': 'Save Changes',
+  'Details Updated Successfully': 'Details Updated Successfully',
+  'Your information has been saved. You can update it anytime from your profile.':
+      'Your information has been saved. You can update it anytime from your profile.',
+  'Email Update in Progress': 'Email Update in Progress',
+  'We’ve sent a confirmation link to your new email. Please check your inbox to verify the change.':
+      'We’ve sent a confirmation link to your new email. Please check your inbox to verify the change.',
+  'Resend Email': 'Resend Email',
+  'Okay, Got It': 'Okay, Got It',
+  'Verify Your New Phone Number': 'Verify Your New Phone Number',
+  'Phone Number Verified': 'Phone Number Verified',
+  'Your new phone number has been successfully verified. You\'re all set!':
+      'Your new phone number has been successfully verified. You\'re all set!',
+  'Instant Support': 'Instant Support',
+  'Here to help you anytime, anywhere.': 'Here to help you anytime, anywhere.',
+  'Ask Something...': 'Ask Something...',
+  'Old Password': 'Old Password',
+  'Save Password': 'Save Password',
+  'Password changed successfully': 'Password changed successfully',
+  'For security, make sure to keep your password safe.':
+      'For security, make sure to keep your password safe.',
+  'Pick Billing Period': 'Pick Billing Period',
+  'Paid on 4 March 2025': 'Paid on 4 March 2025',
+  'View Details': 'View Details',
+  'Filter': 'Filter',
+  'Billing Details': 'Billing Details',
+  'You’ve paid 50% of the total amount (220  KWD). The remaining 220  KWD is due at least 72 hours before check-in by [ 17/3/2025 ] .':
+      'You’ve paid 50% of the total amount (220  KWD). The remaining 220  KWD is due at least 72 hours before check-in by [ 17/3/2025 ] .',
+  'Notifications Settings': 'Notifications Settings',
+  'Choose how you want to stay updated about your bookings, offers, and account activity.':
+      'Choose how you want to stay updated about your bookings, offers, and account activity.',
+  'Booking Confirmations': 'Booking Confirmations',
+  'In-App': 'In-App',
+  'Email': 'Email',
+  'Payment Reminders': 'Payment Reminders',
+  'Check-in Reminders': 'Check-in Reminders',
+  'Loyalty Rewards (Points Earned)': 'Loyalty Rewards (Points Earned)',
+  'Reviews and Feedback Acknowledgements':
+      'Reviews and Feedback Acknowledgements',
+  'Deposit Refund Status': 'Deposit Refund Status',
+  'Booking Changes or Updates': 'Booking Changes or Updates',
+  'Refund Approvals or Declines': 'Refund Approvals or Declines',
+  'Profile and Contact Info Updates': 'Profile and Contact Info Updates',
+  'Cancellation Policy Changes': 'Cancellation Policy Changes',
+  'Promotions and Exclusive Discounts': 'Promotions and Exclusive Discounts',
+  'Everything you need to know about booking, payments, loyalty, and your chalet experience with Bazar.':
+      'Everything you need to know about booking, payments, loyalty, and your chalet experience with Bazar.',
+  ' How do I make a booking?': ' How do I make a booking?',
+  'What payment methods are supported?': 'What payment methods are supported?',
+  'What is the cancellation policy?': 'What is the cancellation policy?',
+  'How does the loyalty program work?': 'How does the loyalty program work?',
+  'Can I customize my stay?': 'Can I customize my stay?',
+  'I need help with my booking. How can I contact support?':
+      'I need help with my booking. How can I contact support?',
+  'What add-ons are available?': 'What add-ons are available?',
+  'Can I change my email or phone number later?':
+      'Can I change my email or phone number later?',
+  'Browse available chalets, choose your stay dates and extras, enter your details, and pay securely—all in a few taps.':
+      'Browse available chalets, choose your stay dates and extras, enter your details, and pay securely—all in a few taps.',
+  'We support KNET, Apple Pay, Google Pay. All payments are processed safely.':
+      'We support KNET, Apple Pay, Google Pay. All payments are processed safely.',
+  'Refundable bookings can be canceled up to 72 hours before check-in. Non-refundable bookings are final. Visit the Cancellation Policy section for full details.':
+      'Refundable bookings can be canceled up to 72 hours before check-in. Non-refundable bookings are final. Visit the Cancellation Policy section for full details.',
+  'You earn points on every booking. As you accumulate points, you unlock rewards like:\n• Discounts on future bookings\n• Free stays\n• Priority support and upgrades\n• Early access to your favorite chalets':
+      'You earn points on every booking. As you accumulate points, you unlock rewards like:\n• Discounts on future bookings\n• Free stays\n• Priority support and upgrades\n• Early access to your favorite chalets',
+  'Yes! Add extras like BBQ setups, flower arrangements, kids’ floaties, and more during the booking process.':
+      'Yes! Add extras like BBQ setups, flower arrangements, kids’ floaties, and more during the booking process.',
+  'Use our in-app chat or reach out via the Support section. We’re here for you 24/7.':
+      'Use our in-app chat or reach out via the Support section. We’re here for you 24/7.',
+  'You can request extras such as:                           \n• BBQ setup with private chef\n• Flower or birthday arrangements\n• Towels and cleaning services\n• Pool toys and baby beds':
+      'You can request extras such as:                                                              \n• BBQ setup with private chef\n• Flower or birthday arrangements\n• Towels and cleaning services\n• Pool toys and baby beds',
+  'Absolutely. Go to Profile Settings and update your contact details. You’ll be asked to verify any new info for security.':
+      'Absolutely. Go to Profile Settings and update your contact details. You’ll be asked to verify any new info for security.',
+  'Account Deletion': 'Account Deletion',
+  'This action is permanent and will remove all your bookings, saved chalets, and loyalty points. You won’t be able to recover this data.':
+      'This action is permanent and will remove all your bookings, saved chalets, and loyalty points. You won’t be able to recover this data.',
+  'Keep Account': 'Keep Account',
+  'Why are you deleting your account? (Select one)':
+      'Why are you deleting your account? (Select one)',
+  'I no longer use the app': 'I no longer use the app',
+  'I had a bad experience': 'I had a bad experience',
+  'I found another booking platform': 'I found another booking platform',
+  'I have privacy or security concerns': 'I have privacy or security concerns',
+  'I’m just taking a break': 'I’m just taking a break',
+  'Other': 'Other',
+  'Additional Comment ( Optional )': 'Additional Comment ( Optional )',
+  'Write your comment': 'Write your comment',
+  'Your Account Has Been Deleted': 'Your Account Has Been Deleted',
+  'We’re sorry to see you go. Your account and all related data have been successfully removed.':
+      'We’re sorry to see you go. Your account and all related data have been successfully removed.',
+};

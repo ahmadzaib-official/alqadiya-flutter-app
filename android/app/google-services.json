@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1017677830312",
+    "project_id": "alqadiya-bb7f8",
+    "storage_bucket": "alqadiya-bb7f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017677830312:android:f8c10bf3bae265aca34a9d",
+        "android_client_info": {
+          "package_name": "com.vga.alqadiya"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017677830312-lgtb1nf2gd3r6c22i9de30co8r374c4t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vga.alqadiya",
+            "certificate_hash": "2fb273d1ad44c8c387235ea710b28865c4824668"
+          }
+        },
+        {
+          "client_id": "1017677830312-08ku2dob05sqiecc9vt6t9vgsj416ecl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLxyFWGnLTSzXFz_NF5_qiRrzy1l01Bdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017677830312-08ku2dob05sqiecc9vt6t9vgsj416ecl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1017677830312-r371pe0d9i7rjfbk12ru7kqujrbbqe8j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vga.alqadiya"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

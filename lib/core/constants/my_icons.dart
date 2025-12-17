@@ -1,0 +1,67 @@
+class MyIcons {
+  static const apple = "assets/icons/icon_apple.svg";
+  static const gallery = "assets/icons/gallery.svg";
+  static const document = "assets/icons/file_digit.svg";
+  static const videos = "assets/icons/monitor.svg";
+  static const audios = "assets/icons/file_audio.svg";
+  static const check = "assets/icons/check.svg";
+  static const elipsisuser = "assets/icons/ellipsis_user.svg";
+  static const rectangleellipsis = "assets/icons/rectangle_ellipsis.svg";
+  static const forgot = "assets/icons/forgoton.png";
+  static const google = "assets/icons/icon_google.svg";
+  static const register = "assets/icons/user_plus.svg";
+  static const keys = "assets/icons/key.svg";
+  static const casestore = "assets/icons/case.svg";
+  static const bulb = "assets/icons/bulb.svg";
+  static const circle_check_outline = "assets/icons/circle_check_outline.svg";
+  static const joingame = "assets/icons/circle-play.svg";
+  static const chromecast = "assets/icons/chromecast.svg";
+  static const menu = "assets/icons/menu.svg";
+  static const arrow_right = "assets/icons/arrow_right.svg";
+  static const dice = "assets/icons/dice.svg";
+  static const copy = "assets/icons/copy.svg";
+  static const file = "assets/icons/file.svg";
+  static const play = "assets/icons/play.svg";
+  static const pause = "assets/icons/pause.svg";
+  static const notification = "assets/icons/notification.svg";
+  static const coins = "assets/icons/coins.svg";
+  static const shuffle = "assets/icons/shuffle.svg";
+  static const refresh = "assets/icons/refresh.svg";
+  static const settings = "assets/icons/settings.svg";
+  static const paste = "assets/icons/paste.svg";
+  static const circlequestionmark = "assets/icons/circle_question_mark.svg";
+  static const close = "assets/icons/close.svg";
+  static const arrowbackrounded = "assets/icons/arrowback_rounded.svg";
+  static const arrowbackNoBackground =
+      "assets/icons/arrow_back_no_background.svg";
+  static const filter = "assets/icons/filter.svg";
+  static const filterOutline = "assets/icons/filter_outline.svg";
+  static const fingerprint = "assets/icons/fingerprint.svg";
+  static const lockrounded = "assets/icons/lock_rounded.svg";
+  static const difficultyGuage = "assets/icons/difficulty_guage.svg";
+  static const profile = "assets/icons/profile.svg";
+  static const verified = "assets/icons/verified.svg";
+  static const home = "assets/icons/home.svg";
+  static const clock = "assets/icons/clock.svg";
+  static const arrowback = "assets/icons/undo.svg";
+  static const close_brown_rounded =
+      "assets/icons/close_icon_brown_rounded.svg";
+  static const whatsapp = "assets/icons/whatsapp.svg";
+  static const camera = "assets/icons/camera.svg";
+  static const notification_brown_rounded =
+      "assets/icons/notification_brow_rounded.svg";
+  static const ukFlag = "assets/icons/uk_flag.svg";
+  static const notificationOutline = "assets/icons/notification_outline.svg";
+  static const flag = "assets/icons/flag_kuwait.svg";
+  static const user = 'assets/icons/user.svg';
+  static const payment_success = 'assets/icons/payment_success.svg';
+  static const safegaurd = 'assets/icons/safegaurd.png';
+  static const upayments = 'assets/icons/upayments.png';
+  static const myatoorah = 'assets/icons/myatoorah.png';
+  static const deleteUser = 'assets/icons/delete_user.svg';
+  static const phone = 'assets/icons/smartphone.svg';
+  static const brown_check = 'assets/icons/brown_check.svg';
+  static const brown_close = 'assets/icons/brown_close.svg';
+  static const green_check = 'assets/icons/green_check.svg';
+  static const shopping = 'assets/icons/shopping.svg';
+}
