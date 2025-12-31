@@ -1,11 +1,8 @@
 import 'dart:math';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
-import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
-import 'package:alqadiya_game/features/auth/model/user_model.dart';
+import 'package:alqadiya_game/features/casestore/model/member_model.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Player {
@@ -124,16 +121,16 @@ class PlayerSelectionController extends GetxController {
     teams.assignAll(newTeams);
   }
 
-  void _syncPlayers(List<UserModel> users) {
-    if (users.isEmpty) return;
+  void _syncPlayers(List<MemberModel> members) {
+    if (members.isEmpty) return;
 
     List<Player> players =
-        users
+        members
             .map(
-              (u) => Player(
-                id: u.id ?? '',
-                name: u.fullName ?? 'Unknown',
-                imageUrl: u.photoUrl ?? "https://picsum.photos/200",
+              (m) => Player(
+                id: m.userId ?? m.id ?? '',
+                name: m.userName ?? 'Unknown',
+                imageUrl: "https://picsum.photos/200",
               ),
             )
             .toList();
@@ -154,27 +151,6 @@ class PlayerSelectionController extends GetxController {
     }
 
     availablePlayers.assignAll(filteredPlayers);
-  }
-
-  /// Initialize available players (Mock)
-  void _initializePlayers() {
-    availablePlayers.assignAll([
-      Player(
-        id: '1',
-        name: 'Issam',
-        imageUrl: 'https://picsum.photos/200?random=1',
-      ),
-      Player(
-        id: '2',
-        name: 'Med',
-        imageUrl: 'https://picsum.photos/200?random=2',
-      ),
-      Player(
-        id: '3',
-        name: 'Khaled',
-        imageUrl: 'https://picsum.photos/200?random=3',
-      ),
-    ]);
   }
 
   /// Initialize teams (Mock)

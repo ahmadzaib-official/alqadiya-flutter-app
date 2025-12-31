@@ -2,7 +2,7 @@ import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/features/game/model/game_model.dart';
 import 'package:alqadiya_game/features/game/model/game_session_model.dart';
-import 'package:alqadiya_game/features/auth/model/user_model.dart';
+import 'package:alqadiya_game/features/casestore/model/member_model.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:dio/dio.dart';
@@ -12,7 +12,7 @@ class GameController extends GetxController {
   RxList<GameModel> gamesList = <GameModel>[].obs;
   Rx<GameModel> gameDetail = Rx<GameModel>(GameModel());
   Rx<GameSessionModel?> gameSession = Rx<GameSessionModel?>(null);
-  RxList<UserModel> sessionPlayers = <UserModel>[].obs;
+  RxList<MemberModel> sessionPlayers = <MemberModel>[].obs;
   RxList<TeamModel> teams = <TeamModel>[].obs;
 
   var isLoading = false.obs;
@@ -275,7 +275,7 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data;
         sessionPlayers.assignAll(
-          list.map((e) => UserModel.fromJson(e)).toList(),
+          list.map((e) => MemberModel.fromJson(e)).toList(),
         );
       }
     } on DioException {
@@ -365,7 +365,7 @@ class GameController extends GetxController {
         if (response.data['players'] != null) {
           final List<dynamic> playersList = response.data['players'];
           sessionPlayers.assignAll(
-            playersList.map((e) => UserModel.fromJson(e)).toList(),
+            playersList.map((e) => MemberModel.fromJson(e)).toList(),
           );
         }
         if (response.data['teams'] != null) {

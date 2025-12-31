@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/casestore/controller/player_selection_controller.dart';
+import 'package:alqadiya_game/features/home/screen/home_screen.dart';
 import 'package:alqadiya_game/widgets/available_players_section.dart';
 import 'package:alqadiya_game/widgets/copy_code_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
@@ -24,6 +26,7 @@ class PlayerSelectionScreen extends StatefulWidget {
 class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   late PlayerSelectionController controller;
   final gameController = Get.find<GameController>();
+  Timer? _pollingTimer;
 
   @override
   void initState() {
@@ -31,7 +34,21 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
     controller = Get.find<PlayerSelectionController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       gameController.getSessionPlayers();
+      // Start polling every 2 seconds
+      _startPolling();
     });
+  }
+
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      gameController.getSessionPlayers();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -72,7 +89,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   ],
                 ),
                 actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
+                  onTap: () => Get.offAllNamed(AppRoutes.homescreen),
                   child: SvgPicture.asset(MyIcons.arrowbackrounded),
                 ),
               ),
@@ -131,9 +148,10 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                         child: StartPlayButton(
                           buttonWidth: 50.w,
                           buttonText: 'Next'.tr,
-                          onTap: controller.isLoading.value
-                              ? () {}
-                              : () => controller.proceedWithTeams(),
+                          onTap:
+                              controller.isLoading.value
+                                  ? () {}
+                                  : () => controller.proceedWithTeams(),
                         ),
                       ),
                     ),
