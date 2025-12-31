@@ -39,7 +39,7 @@ class _GameScreenState extends State<GameScreen> {
       Get.find<UserAnswerController>();
 
   int currentQuestionOrder = 1;
-  int? selectedAnswerIndex;
+  var selectedAnswerIndex = Rx<int?>(null);
   bool hintUsed = false;
   DateTime? questionStartTime;
   UserAnswerModel? lastSubmittedAnswer;
@@ -87,7 +87,7 @@ class _GameScreenState extends State<GameScreen> {
   void _loadQuestion(int order) {
     setState(() {
       currentQuestionOrder = order;
-      selectedAnswerIndex = null;
+      selectedAnswerIndex.value = null;
       hintUsed = false;
       questionStartTime = DateTime.now();
       lastSubmittedAnswer = null;
@@ -99,12 +99,14 @@ class _GameScreenState extends State<GameScreen> {
     final gameController = Get.find<GameController>();
     final sessionId = gameController.gameSession.value?.id;
 
-    if (question == null || sessionId == null || selectedAnswerIndex == null) {
+    if (question == null ||
+        sessionId == null ||
+        selectedAnswerIndex.value == null) {
       CustomSnackbar.showError('Please select an answer');
       return;
     }
 
-    final selectedAnswer = question.answers?[selectedAnswerIndex!];
+    final selectedAnswer = question.answers?[selectedAnswerIndex.value!];
     if (selectedAnswer == null || selectedAnswer.id == null) {
       CustomSnackbar.showError('Invalid answer selected');
       return;
@@ -124,9 +126,10 @@ class _GameScreenState extends State<GameScreen> {
     );
 
     if (success) {
-      setState(() {
-        lastSubmittedAnswer = answerController.lastAnswer.value;
-      });
+      // Update local state - the Obx will rebuild automatically via answerController.lastAnswer
+      lastSubmittedAnswer = answerController.lastAnswer.value;
+    } else {
+      CustomSnackbar.showError('Failed to submit answer. Please try again.');
     }
   }
 
@@ -420,9 +423,11 @@ class _GameScreenState extends State<GameScreen> {
                                 final questions = questionController.questions;
                                 final lastAnswer =
                                     answerController.lastAnswer.value;
+                                final selectedIndex = selectedAnswerIndex.value;
                                 return _buildAnswerOptions(
                                   questions,
                                   lastAnswer,
+                                  selectedIndex,
                                 );
                               }),
                               const Spacer(),
@@ -521,6 +526,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildAnswerOptions(
     RxList<QuestionModel> questions,
     UserAnswerModel? lastAnswer,
+    int? selectedIndex,
   ) {
     final question = questions.firstWhereOrNull(
       (q) => q.order == currentQuestionOrder,
@@ -549,7 +555,7 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(answers.length, (index) {
           final answer = answers[index];
-          final isSelected = selectedAnswerIndex == index;
+          final isSelected = selectedIndex == index;
           final answerIsCorrect = answer.isCorrect ?? false;
           final showAsCorrect =
               isAnswerSubmitted && isSelected && answerIsCorrect;
@@ -559,9 +565,7 @@ class _GameScreenState extends State<GameScreen> {
           return GestureDetector(
             onTap: () {
               if (!isAnswerSubmitted) {
-                setState(() {
-                  selectedAnswerIndex = index;
-                });
+                selectedAnswerIndex.value = index;
               }
             },
             child: Container(
@@ -574,6 +578,8 @@ class _GameScreenState extends State<GameScreen> {
                         ? MyColors.greenColor.withValues(alpha: 0.1)
                         : showAsWrong
                         ? MyColors.redButtonColor.withValues(alpha: 0.1)
+                        : isSelected
+                        ? MyColors.redButtonColor.withValues(alpha: 0.2)
                         : MyColors.redButtonColor.withValues(alpha: 0.1),
                 border: GradientBoxBorder(
                   gradient: LinearGradient(
@@ -586,11 +592,13 @@ class _GameScreenState extends State<GameScreen> {
                               MyColors.greenColor,
                             ]
                             : [
-                              MyColors.redButtonColor.withValues(alpha: 0.1),
+                              MyColors.redButtonColor.withValues(
+                                alpha: isSelected ? 0.3 : 0.1,
+                              ),
                               MyColors.redButtonColor,
                             ],
                   ),
-                  width: 1,
+                  width: isSelected ? 2 : 1,
                 ),
                 borderRadius: BorderRadius.circular(80.r),
               ),
@@ -601,7 +609,12 @@ class _GameScreenState extends State<GameScreen> {
                     answer.answerText ?? answer.answerTextAr ?? '',
                     style: AppTextStyles.heading4().copyWith(
                       fontSize: 6.sp,
-                      color: MyColors.white.withValues(alpha: 0.5),
+                      color:
+                          isSelected
+                              ? MyColors.white
+                              : MyColors.white.withValues(alpha: 0.5),
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
                     ),
                   ),
                   if (showAsCorrect) ...[
