@@ -137,283 +137,92 @@ class ClueDetailScreen extends StatelessWidget {
     return Row(
       children: [
         // Clue Information Tab
-        Expanded(
-          child: GestureDetector(
-            onTap: () => controller.setSelectedTab(0),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-              decoration: BoxDecoration(
-                color:
-                    controller.selectedTab.value == 0
-                        ? MyColors.redButtonColor
-                        : MyColors.black.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(100.r),
-                  bottomLeft: Radius.circular(100.r),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  'Clue Information'.tr,
-                  style: AppTextStyles.heading2().copyWith(
-                    fontSize: 7.sp,
-                    color:
-                        controller.selectedTab.value == 0
-                            ? MyColors.white
-                            : MyColors.white.withValues(alpha: 0.5),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Expanded(
+        //   child: GestureDetector(
+        //     onTap: () => controller.setSelectedTab(0),
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+        //       decoration: BoxDecoration(
+        //         color:
+        //             controller.selectedTab.value == 0
+        //                 ? MyColors.redButtonColor
+        //                 : MyColors.black.withValues(alpha: 0.2),
+        //         borderRadius: BorderRadius.only(
+        //           topLeft: Radius.circular(100.r),
+        //           bottomLeft: Radius.circular(100.r),
+        //         ),
+        //       ),
+        //       child: Center(
+        //         child: Text(
+        //           'Clue Information'.tr,
+        //           style: AppTextStyles.heading2().copyWith(
+        //             fontSize: 7.sp,
+        //             color:
+        //                 controller.selectedTab.value == 0
+        //                     ? MyColors.white
+        //                     : MyColors.white.withValues(alpha: 0.5),
+        //             fontWeight: FontWeight.w600,
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
 
         // Attachments Tab
         Expanded(
-          child: GestureDetector(
-            onTap: () => controller.setSelectedTab(1),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-              decoration: BoxDecoration(
-                color:
-                    controller.selectedTab.value == 1
-                        ? MyColors.redButtonColor
-                        : MyColors.black.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(100.r),
-                  bottomRight: Radius.circular(100.r),
-                ),
+          // child: GestureDetector(
+          // onTap: () => controller.setSelectedTab(1),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+            decoration: BoxDecoration(
+              color:
+                  controller.selectedTab.value == 1
+                      ? MyColors.redButtonColor
+                      : MyColors.black.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(100.r),
+                bottomRight: Radius.circular(100.r),
               ),
-              child: Center(
-                child: Text(
-                  'Attachments'.tr,
-                  style: AppTextStyles.heading2().copyWith(
-                    fontSize: 7.sp,
-                    color:
-                        controller.selectedTab.value == 1
-                            ? MyColors.white
-                            : MyColors.white.withValues(alpha: 0.5),
-                    fontWeight: FontWeight.w600,
-                  ),
+            ),
+            child: Center(
+              child: Text(
+                'Attachments'.tr,
+                style: AppTextStyles.heading2().copyWith(
+                  fontSize: 7.sp,
+                  color:
+                      controller.selectedTab.value == 1
+                          ? MyColors.white
+                          : MyColors.white.withValues(alpha: 0.5),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ),
+          // ),
         ),
       ],
     );
   }
 
   Widget _buildContentArea(ClueDetailController controller) {
-    if (controller.selectedTab.value == 0) {
-      return _buildClueInformation();
-    } else {
-      if (controller.selectedAttachmentType.value == null) {
-        return _buildAttachmentsGrid(controller);
-      } else if (controller.selectedAttachmentType.value == 'Videos') {
-        return _buildVideosList(controller);
-      } else if (controller.selectedAttachmentType.value == 'Images') {
-        return _buildImagesList(controller);
-      } else if (controller.selectedAttachmentType.value == 'Documents') {
-        return _buildDocumentsList(controller);
-      } else if (controller.selectedAttachmentType.value == 'Audio') {
-        return _buildAudioList(controller);
-      }
+    // if (controller.selectedTab.value == 0) {
+    //   return _buildClueInformation();
+    // } else {
+    if (controller.selectedAttachmentType.value == null) {
+      return _buildAttachmentsGrid(controller);
+    } else if (controller.selectedAttachmentType.value == 'Videos') {
+      return _buildVideosList(controller);
+    } else if (controller.selectedAttachmentType.value == 'Images') {
+      return _buildImagesList(controller);
+    } else if (controller.selectedAttachmentType.value == 'Documents') {
+      return _buildDocumentsList(controller);
+    } else if (controller.selectedAttachmentType.value == 'Audio') {
+      return _buildAudioList(controller);
     }
-    return _buildClueInformation();
-  }
-
-  Widget _buildClueInformation() {
-    final scrollController = ScrollController();
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Scrollable content
-          Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Clue Name
-                    _buildInfoField(
-                      'Clue Name:',
-                      'Private information about the victim',
-                    ),
-
-                    SizedBox(height: 6.h),
-
-                    // Discovery Date
-                    _buildInfoField('Discovery Date:', '16ᵗʰ July 2025'),
-
-                    SizedBox(height: 12.h),
-
-                    // Description Paragraph
-                    Text(
-                      'The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships.',
-                      style: TextStyle(
-                        fontSize: 6.sp,
-                        color: MyColors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Custom Scrollbar
-          _buildCustomScrollbar(scrollController),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCustomScrollbar(ScrollController controller) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ListenableBuilder(
-          listenable: controller,
-          builder: (context, child) {
-            if (!controller.hasClients ||
-                !controller.position.hasContentDimensions) {
-              return SizedBox(width: 1.w);
-            }
-
-            try {
-              final scrollPosition = controller.position;
-              final maxScrollExtent = scrollPosition.maxScrollExtent;
-              final minScrollExtent = scrollPosition.minScrollExtent;
-              final scrollOffset = scrollPosition.pixels;
-
-              if (maxScrollExtent <= 0 ||
-                  !scrollPosition.hasContentDimensions) {
-                return SizedBox(width: 1.w);
-              }
-
-              final trackHeight = constraints.maxHeight;
-              if (trackHeight <= 0) {
-                return SizedBox(width: 1.w);
-              }
-
-              final thumbHeight = (trackHeight *
-                      trackHeight /
-                      (maxScrollExtent + trackHeight))
-                  .clamp(20.0, trackHeight);
-
-              final scrollRange = maxScrollExtent - minScrollExtent;
-              if (scrollRange <= 0) {
-                return SizedBox(width: 1.w);
-              }
-
-              final thumbOffset =
-                  ((scrollOffset - minScrollExtent) / scrollRange) *
-                  (trackHeight - thumbHeight);
-
-              return GestureDetector(
-                onPanUpdate: (details) {
-                  if (!controller.hasClients ||
-                      !controller.position.hasContentDimensions)
-                    return;
-                  try {
-                    final delta = details.delta.dy;
-                    final newOffset =
-                        (thumbOffset + delta) /
-                            (trackHeight - thumbHeight) *
-                            scrollRange +
-                        minScrollExtent;
-                    controller.jumpTo(
-                      newOffset.clamp(minScrollExtent, maxScrollExtent),
-                    );
-                  } catch (e) {
-                    // Ignore errors during pan update
-                  }
-                },
-                onTapDown: (details) {
-                  if (!controller.hasClients ||
-                      !controller.position.hasContentDimensions)
-                    return;
-                  try {
-                    final localY = details.localPosition.dy;
-                    final newOffset =
-                        (localY / trackHeight) * scrollRange + minScrollExtent;
-                    controller.jumpTo(
-                      newOffset.clamp(minScrollExtent, maxScrollExtent),
-                    );
-                  } catch (e) {
-                    // Ignore errors during tap down
-                  }
-                },
-                child: Container(
-                  width: 1.w,
-                  height: trackHeight,
-                  child: Stack(
-                    children: [
-                      // Track - white line showing full scrollable area
-                      Container(
-                        width: 1.w,
-                        height: trackHeight,
-                        color: Color(0xffD9D9D9).withValues(alpha: 0.1),
-                      ),
-                      // Thumb - shows current scroll position
-                      Positioned(
-                        top: thumbOffset.clamp(0.0, trackHeight - thumbHeight),
-                        child: Container(
-                          width: 1.w,
-                          height: thumbHeight,
-                          decoration: BoxDecoration(
-                            color: MyColors.redButtonColor,
-                            borderRadius: BorderRadius.circular(0.5.r),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } catch (e) {
-              return SizedBox(width: 1.w);
-            }
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildInfoField(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 0.16.sw,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 6.sp,
-              fontWeight: FontWeight.w500,
-              color: MyColors.white,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: 6.sp,
-              fontWeight: FontWeight.w700,
-              color: MyColors.white,
-            ),
-          ),
-        ),
-      ],
-    );
+    // }
+    // return _buildClueInformation();
+    return _buildAttachmentsGrid(controller);
   }
 
   Widget _buildAttachmentsGrid(ClueDetailController controller) {
@@ -850,4 +659,196 @@ class ClueDetailScreen extends StatelessWidget {
       ),
     );
   }
+
+  // Widget _buildClueInformation() {
+  //   final scrollController = ScrollController();
+  //   return Container(
+  //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Scrollable content
+  //         Expanded(
+  //           child: SingleChildScrollView(
+  //             controller: scrollController,
+  //             child: Padding(
+  //               padding: EdgeInsets.only(right: 8.w),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   // Clue Name
+  //                   _buildInfoField(
+  //                     'Clue Name:',
+  //                     'Private information about the victim',
+  //                   ),
+
+  //                   SizedBox(height: 6.h),
+
+  //                   // Discovery Date
+  //                   _buildInfoField('Discovery Date:', '16ᵗʰ July 2025'),
+
+  //                   SizedBox(height: 12.h),
+
+  //                   // Description Paragraph
+  //                   Text(
+  //                     'The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships.',
+  //                     style: TextStyle(
+  //                       fontSize: 6.sp,
+  //                       color: MyColors.white,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                     textAlign: TextAlign.left,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+
+  //         // Custom Scrollbar
+  //         _buildCustomScrollbar(scrollController),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildCustomScrollbar(ScrollController controller) {
+  //   return LayoutBuilder(
+  //     builder: (context, constraints) {
+  //       return ListenableBuilder(
+  //         listenable: controller,
+  //         builder: (context, child) {
+  //           if (!controller.hasClients ||
+  //               !controller.position.hasContentDimensions) {
+  //             return SizedBox(width: 1.w);
+  //           }
+
+  //           try {
+  //             final scrollPosition = controller.position;
+  //             final maxScrollExtent = scrollPosition.maxScrollExtent;
+  //             final minScrollExtent = scrollPosition.minScrollExtent;
+  //             final scrollOffset = scrollPosition.pixels;
+
+  //             if (maxScrollExtent <= 0 ||
+  //                 !scrollPosition.hasContentDimensions) {
+  //               return SizedBox(width: 1.w);
+  //             }
+
+  //             final trackHeight = constraints.maxHeight;
+  //             if (trackHeight <= 0) {
+  //               return SizedBox(width: 1.w);
+  //             }
+
+  //             final thumbHeight = (trackHeight *
+  //                     trackHeight /
+  //                     (maxScrollExtent + trackHeight))
+  //                 .clamp(20.0, trackHeight);
+
+  //             final scrollRange = maxScrollExtent - minScrollExtent;
+  //             if (scrollRange <= 0) {
+  //               return SizedBox(width: 1.w);
+  //             }
+
+  //             final thumbOffset =
+  //                 ((scrollOffset - minScrollExtent) / scrollRange) *
+  //                 (trackHeight - thumbHeight);
+
+  //             return GestureDetector(
+  //               onPanUpdate: (details) {
+  //                 if (!controller.hasClients ||
+  //                     !controller.position.hasContentDimensions)
+  //                   return;
+  //                 try {
+  //                   final delta = details.delta.dy;
+  //                   final newOffset =
+  //                       (thumbOffset + delta) /
+  //                           (trackHeight - thumbHeight) *
+  //                           scrollRange +
+  //                       minScrollExtent;
+  //                   controller.jumpTo(
+  //                     newOffset.clamp(minScrollExtent, maxScrollExtent),
+  //                   );
+  //                 } catch (e) {
+  //                   // Ignore errors during pan update
+  //                 }
+  //               },
+  //               onTapDown: (details) {
+  //                 if (!controller.hasClients ||
+  //                     !controller.position.hasContentDimensions)
+  //                   return;
+  //                 try {
+  //                   final localY = details.localPosition.dy;
+  //                   final newOffset =
+  //                       (localY / trackHeight) * scrollRange + minScrollExtent;
+  //                   controller.jumpTo(
+  //                     newOffset.clamp(minScrollExtent, maxScrollExtent),
+  //                   );
+  //                 } catch (e) {
+  //                   // Ignore errors during tap down
+  //                 }
+  //               },
+  //               child: Container(
+  //                 width: 1.w,
+  //                 height: trackHeight,
+  //                 child: Stack(
+  //                   children: [
+  //                     // Track - white line showing full scrollable area
+  //                     Container(
+  //                       width: 1.w,
+  //                       height: trackHeight,
+  //                       color: Color(0xffD9D9D9).withValues(alpha: 0.1),
+  //                     ),
+  //                     // Thumb - shows current scroll position
+  //                     Positioned(
+  //                       top: thumbOffset.clamp(0.0, trackHeight - thumbHeight),
+  //                       child: Container(
+  //                         width: 1.w,
+  //                         height: thumbHeight,
+  //                         decoration: BoxDecoration(
+  //                           color: MyColors.redButtonColor,
+  //                           borderRadius: BorderRadius.circular(0.5.r),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             );
+  //           } catch (e) {
+  //             return SizedBox(width: 1.w);
+  //           }
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
+  // Widget _buildInfoField(String label, String value) {
+  //   return Row(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       SizedBox(
+  //         width: 0.16.sw,
+  //         child: Text(
+  //           label,
+  //           style: TextStyle(
+  //             fontSize: 6.sp,
+  //             fontWeight: FontWeight.w500,
+  //             color: MyColors.white,
+  //           ),
+  //         ),
+  //       ),
+  //       Expanded(
+  //         child: Text(
+  //           value,
+  //           style: TextStyle(
+  //             fontSize: 6.sp,
+  //             fontWeight: FontWeight.w700,
+  //             color: MyColors.white,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

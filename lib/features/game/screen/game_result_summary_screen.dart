@@ -26,194 +26,164 @@ class GameResultSummaryScreen extends StatelessWidget {
       body: GameBackground(
         imageUrl: "https://picsum.photos/200",
         body: Column(
-                children: [
-                  // Header
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 10.sp,
-                      right: 10.sp,
-                      top: 5.sp,
+          children: [
+            // Header
+            Padding(
+              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+              child: HomeHeader(
+                onChromTap: () {},
+                title: Text(
+                  'Game Result Summary'.tr,
+                  style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                ),
+                actionButtons: GestureDetector(
+                  onTap: () => Get.back(),
+                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                ),
+              ),
+            ),
+
+            // Main Content
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Left Team Result Card
+                    Expanded(
+                      child: _buildTeamResultCard(
+                        context,
+                        gameResultController.teamResults[0],
+                      ),
                     ),
-                    child: HomeHeader(
-                      onChromTap: () {},
-                      title: Text(
-                        'Game Result Summary'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 10.sp,
+                    SizedBox(width: 6.w),
+                    Expanded(
+                      child: _buildTeamResultCard(
+                        context,
+                        gameResultController.teamResults[1],
+                      ),
+                    ),
+                    SizedBox(width: 6.w),
+
+                    // Right Side - Team Card, Winner & Actions
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 6.w,
                         ),
-                      ),
-                      actionButtons: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: SvgPicture.asset(MyIcons.arrowbackrounded),
-                      ),
-                    ),
-                  ),
-
-                  // Main Content
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Team Result Card
-                          Expanded(
-                            child: _buildTeamResultCard(
-                              context,
-                              gameResultController.teamResults[0],
-                            ),
-                          ),
-                          SizedBox(width: 6.w),
-                          Expanded(
-                            child: _buildTeamResultCard(
-                              context,
-                              gameResultController.teamResults[1],
-                            ),
-                          ),
-                          SizedBox(width: 6.w),
-
-                          // Right Side - Team Card, Winner & Actions
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 8.h,
-                                horizontal: 6.w,
-                              ),
+                        decoration: BoxDecoration(
+                          color: MyColors.black.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Winner Announcement
+                            Container(
+                              // padding: EdgeInsets.only(left: 5.w),
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
                               decoration: BoxDecoration(
                                 color: MyColors.black.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(20.r),
+                                borderRadius: BorderRadius.circular(80.r),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Winner Announcement
-                                  Container(
-                                    // padding: EdgeInsets.only(left: 5.w),
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 12.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.black.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      borderRadius: BorderRadius.circular(80.r),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'The winner'.tr,
-                                          style: AppTextStyles.heading2()
-                                              .copyWith(
-                                                fontSize: 6.sp,
-                                                color: MyColors.white
-                                                    .withValues(alpha: 0.5),
-                                              ),
-                                        ),
-                                        Text(
-                                          ' ${gameResultController.winnerTeam}'.tr,
-                                          style: AppTextStyles.heading1()
-                                              .copyWith(
-                                                fontSize: 8.sp,
-                                                color: MyColors.white,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  // Share result button
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Share result action
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 12.h,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: MyColors.redButtonColor,
-                                        borderRadius: BorderRadius.circular(
-                                          100.r,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Share result'.tr,
-                                            style: AppTextStyles.heading2()
-                                                .copyWith(
-                                                  fontSize: 6.sp,
-                                                  color: MyColors.white,
-                                                ),
-                                          ),
-                                          SizedBox(width: 8.w),
-
-                                          Icon(
-                                            Icons.share,
-                                            size: 14.sp,
-                                            color: MyColors.brightRedColor,
-                                          ),
-                                        ],
+                                  Text(
+                                    'The winner'.tr,
+                                    style: AppTextStyles.heading2().copyWith(
+                                      fontSize: 6.sp,
+                                      color: MyColors.white.withValues(
+                                        alpha: 0.5,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 16.h),
-
-                                  // Back to Main Page button
-                                  GestureDetector(
-                                    onTap: () {
-                                      Get.offAllNamed(AppRoutes.homescreen);
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 12.h,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: MyColors.white.withValues(
-                                          alpha: 0.05,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          80.r,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Back to the Main Page'.tr,
-                                          style: AppTextStyles.heading1()
-                                              .copyWith(
-                                                fontSize: 6.sp,
-                                                color: MyColors.white,
-                                              ),
-                                        ),
-                                      ),
+                                  Text(
+                                    ' ${gameResultController.winnerTeam}'.tr,
+                                    style: AppTextStyles.heading1().copyWith(
+                                      fontSize: 8.sp,
+                                      color: MyColors.white,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 16.h),
+                            // Share result button
+                            GestureDetector(
+                              onTap: () {
+                                // Share result action
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 12.h),
+                                decoration: BoxDecoration(
+                                  color: MyColors.redButtonColor,
+                                  borderRadius: BorderRadius.circular(100.r),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Share result'.tr,
+                                      style: AppTextStyles.heading2().copyWith(
+                                        fontSize: 6.sp,
+                                        color: MyColors.white,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+
+                                    Icon(
+                                      Icons.share,
+                                      size: 14.sp,
+                                      color: MyColors.brightRedColor,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16.h),
+
+                            // Back to Main Page button
+                            GestureDetector(
+                              onTap: () {
+                                Get.offAllNamed(AppRoutes.homescreen);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 12.h),
+                                decoration: BoxDecoration(
+                                  color: MyColors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(80.r),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Back to the Main Page'.tr,
+                                    style: AppTextStyles.heading1().copyWith(
+                                      fontSize: 6.sp,
+                                      color: MyColors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+            ),
 
-                  // Footer
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 10.sp,
-                      right: 10.sp,
-                      bottom: 5.sp,
-                    ),
-                    child: GameFooter(onGameResultTap: () {}),
-                  ),
-                ],
-              )
-          
+            // Footer
+            Padding(
+              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
+              child: GameFooter(onGameResultTap: () {}),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -320,104 +290,104 @@ class GameResultSummaryScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.h),
-          Container(
-            padding: EdgeInsets.all(3.sp),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.r),
-              color:
-                  isCorrect
-                      ? MyColors.greenColor.withValues(alpha: 0.1)
-                      : MyColors.redButtonColor.withValues(alpha: 0.1),
-              border: GradientBoxBorder(
-                gradient: LinearGradient(
-                  begin: AlignmentGeometry.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors:
-                      isCorrect
-                          ? [
-                            MyColors.greenColor.withValues(alpha: 0.1),
-                            MyColors.greenColor,
-                          ]
-                          : [
-                            MyColors.redButtonColor.withValues(alpha: 0.1),
-                            MyColors.redButtonColor,
-                          ],
-                ),
-              ),
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: CachedNetworkImage(
-                    imageUrl: result['suspectImage'] as String,
-                    height: 85.h,
-                    width: 32.w,
-                    fit: BoxFit.cover,
-                    placeholder:
-                        (context, url) => Container(
-                          color: MyColors.darkBlueColor,
-                          height: 70.h,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                MyColors.greenColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                    errorWidget:
-                        (context, url, error) => Container(
-                          color: MyColors.darkBlueColor,
-                          height: 70.h,
-                          child: Icon(
-                            Icons.person,
-                            size: 50.sp,
-                            color: MyColors.white.withValues(alpha: 0.5),
-                          ),
-                        ),
-                  ),
-                ),
-                SizedBox(width: 3.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Suspect chosen text
-                    Text(
-                      'Suspect choosen'.tr,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.heading2().copyWith(
-                        fontSize: 7.sp,
-                        color: MyColors.white,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    // Suspect name
-                    Row(
-                      children: [
-                        Text(
-                          result['suspectName'] as String,
-                          overflow: TextOverflow.ellipsis,
+          // Container(
+          //   padding: EdgeInsets.all(3.sp),
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(20.r),
+          //     color:
+          //         isCorrect
+          //             ? MyColors.greenColor.withValues(alpha: 0.1)
+          //             : MyColors.redButtonColor.withValues(alpha: 0.1),
+          //     border: GradientBoxBorder(
+          //       gradient: LinearGradient(
+          //         begin: AlignmentGeometry.topCenter,
+          //         end: Alignment.bottomCenter,
+          //         colors:
+          //             isCorrect
+          //                 ? [
+          //                   MyColors.greenColor.withValues(alpha: 0.1),
+          //                   MyColors.greenColor,
+          //                 ]
+          //                 : [
+          //                   MyColors.redButtonColor.withValues(alpha: 0.1),
+          //                   MyColors.redButtonColor,
+          //                 ],
+          //       ),
+          //     ),
+          //   ),
+          //   child: Row(
+          //     children: [
+          //       ClipRRect(
+          //         borderRadius: BorderRadius.circular(10.r),
+          //         child: CachedNetworkImage(
+          //           imageUrl: result['suspectImage'] as String,
+          //           height: 85.h,
+          //           width: 32.w,
+          //           fit: BoxFit.cover,
+          //           placeholder:
+          //               (context, url) => Container(
+          //                 color: MyColors.darkBlueColor,
+          //                 height: 70.h,
+          //                 child: Center(
+          //                   child: CircularProgressIndicator(
+          //                     valueColor: AlwaysStoppedAnimation<Color>(
+          //                       MyColors.greenColor,
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ),
+          //           errorWidget:
+          //               (context, url, error) => Container(
+          //                 color: MyColors.darkBlueColor,
+          //                 height: 70.h,
+          //                 child: Icon(
+          //                   Icons.person,
+          //                   size: 50.sp,
+          //                   color: MyColors.white.withValues(alpha: 0.5),
+          //                 ),
+          //               ),
+          //         ),
+          //       ),
+          //       SizedBox(width: 3.w),
+          //       Column(
+          //         crossAxisAlignment: CrossAxisAlignment.center,
+          //         children: [
+          //           // Suspect chosen text
+          //           Text(
+          //             'Suspect choosen'.tr,
+          //             overflow: TextOverflow.ellipsis,
+          //             style: AppTextStyles.heading2().copyWith(
+          //               fontSize: 7.sp,
+          //               color: MyColors.white,
+          //             ),
+          //           ),
+          //           SizedBox(height: 8.h),
+          //           // Suspect name
+          //           Row(
+          //             children: [
+          //               Text(
+          //                 result['suspectName'] as String,
+          //                 overflow: TextOverflow.ellipsis,
 
-                          style: AppTextStyles.heading1().copyWith(
-                            fontSize: 7.sp,
-                            color: MyColors.white,
-                          ),
-                        ),
-                        SizedBox(width: 5.w),
-                        SvgPicture.asset(
-                          isCorrect ? MyIcons.green_check : MyIcons.brown_close,
-                          height: 25.h,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          //                 style: AppTextStyles.heading1().copyWith(
+          //                   fontSize: 7.sp,
+          //                   color: MyColors.white,
+          //                 ),
+          //               ),
+          //               SizedBox(width: 5.w),
+          //               SvgPicture.asset(
+          //                 isCorrect ? MyIcons.green_check : MyIcons.brown_close,
+          //                 height: 25.h,
+          //               ),
+          //             ],
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
-          SizedBox(height: 5.h),
+          // SizedBox(height: 5.h),
 
           // Metrics
           _buildMetricRow('Total score', '${result['totalScore']}'),

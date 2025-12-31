@@ -7,14 +7,12 @@ import 'package:get/get.dart';
 /// Controller for managing game result summary screen state
 class GameResultController extends GetxController {
   final _repository = GameRepository();
-  
+
   Rx<GameResultModel?> gameResult = Rx<GameResultModel?>(null);
   var isLoading = false.obs;
 
   // Get Game Result
-  Future<void> getGameResult({
-    required String sessionId,
-  }) async {
+  Future<void> getGameResult({required String sessionId}) async {
     try {
       isLoading(true);
       gameResult(null);
@@ -38,7 +36,8 @@ class GameResultController extends GetxController {
   String? get winnerTeamName => gameResult.value?.winnerTeamName;
 
   // Check if team mode
-  bool get isTeamMode => gameResult.value?.teams != null && gameResult.value!.teams!.isNotEmpty;
+  bool get isTeamMode =>
+      gameResult.value?.teams != null && gameResult.value!.teams!.isNotEmpty;
 
   // Helper method for backward compatibility with existing screens
   List<Map<String, dynamic>> get teamResults {
@@ -46,7 +45,8 @@ class GameResultController extends GetxController {
     return gameResult.value!.teams!.map((team) {
       return {
         'name': team.teamName ?? '',
-        'players': [], // Players not in team result, would need separate API call
+        'players':
+            [], // Players not in team result, would need separate API call
         'suspectName': team.suspectChosenName ?? '',
         'suspectImage': '', // Image not in API response
         'isCorrect': false, // Would need to check against correct suspect
