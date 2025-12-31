@@ -347,4 +347,67 @@ class GameController extends GetxController {
       isLoading(false);
     }
   }
+
+  // Get Game Session Details
+  Future<void> getGameSessionDetails({required String sessionId}) async {
+    try {
+      isLoading(true);
+      final response = await GameRepository().getGameSessionDetails(
+        sessionId: sessionId,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Response contains session, players, and teams
+        if (response.data['session'] != null) {
+          final session = GameSessionModel.fromJson(response.data['session']);
+          gameSession(session);
+        }
+        if (response.data['players'] != null) {
+          final List<dynamic> playersList = response.data['players'];
+          sessionPlayers.assignAll(
+            playersList.map((e) => UserModel.fromJson(e)).toList(),
+          );
+        }
+        if (response.data['teams'] != null) {
+          final List<dynamic> teamsList = response.data['teams'];
+          teams.assignAll(
+            teamsList.map((e) => TeamModel.fromJson(e)).toList(),
+          );
+        }
+      }
+    } on DioException {
+      // Error already shown by interceptor
+    } catch (e) {
+      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Join Game Session
+  Future<bool> joinGameSession({required String sessionCode}) async {
+    try {
+      isLoading(true);
+      final response = await GameRepository().joinGameSession(
+        sessionCode: sessionCode,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Response should contain session info
+        if (response.data != null) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    } on DioException {
+      // Error already shown by interceptor
+      return false;
+    } catch (e) {
+      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      return false;
+    } finally {
+      isLoading(false);
+    }
+  }
 }

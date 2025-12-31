@@ -175,4 +175,62 @@ class GameRepository extends GetxService {
     );
     return response;
   }
+
+  // Get Game Session Details API
+  Future<Response<dynamic>> getGameSessionDetails({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getGameSessionDetails(sessionId);
+    var response = await _dioHelper.get(
+      url: url,
+      isAuthRequired: true,
+    );
+    return response;
+  }
+
+  // Get Game Session by ID API
+  Future<Response<dynamic>> getGameSessionById({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getGameSessionById(sessionId);
+    var response = await _dioHelper.get(
+      url: url,
+      isAuthRequired: true,
+    );
+    return response;
+  }
+
+  // Get Scoreboard API
+  Future<Response<dynamic>> getScoreboard({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getGameSessionScoreboard(sessionId);
+    var response = await _dioHelper.get(
+      url: url,
+      isAuthRequired: true,
+    );
+    return response;
+  }
+
+  // Get Game Result API
+  Future<Response<dynamic>> getGameResult({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getGameSessionResult(sessionId);
+    var response = await _dioHelper.get(
+      url: url,
+      isAuthRequired: true,
+    );
+    return response;
+  }
+
+  // Get User Balance API
+  Future<Response<dynamic>> getUserBalance() async {
+    final String url = ServerConfig.userBalance;
+    var response = await _dioHelper.get(
+      url: url,
+      isAuthRequired: true,
+    );
+    return response;
+  }
 }
