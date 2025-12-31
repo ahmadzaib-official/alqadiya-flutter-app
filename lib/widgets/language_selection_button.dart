@@ -4,6 +4,7 @@ import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/widgets/language_selection_bottomsheet.dart';
+import 'package:alqadiya_game/widgets/language_selection_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -52,32 +53,51 @@ class LanguageSelectionButton extends StatelessWidget {
     }
   }
 
-  void _handleLanguageSelection() {
+  void _handleLanguageSelection(BuildContext context) {
     if (onTap != null) {
       onTap!();
       return;
     }
 
-    final currentLang = Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
+    final currentLang =
+        Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
     final currentLanguageName = currentLang == 'ar' ? 'Arabic' : 'English';
 
-    LanguageSelectionBottomSheet.show(
-      currentLanguage: currentLanguageName,
-      onEnglishSelected: () async {
-        Get.back();
-        await LocalizationService().changeLocale('en');
-      },
-      onArabicSelected: () async {
-        Get.back();
-        await LocalizationService().changeLocale('ar');
-      },
-    );
+    // Check orientation
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    if (isLandscape) {
+      // Use drawer in landscape mode
+      LanguageSelectionDrawer.show(
+        currentLanguage: currentLanguageName,
+        onEnglishSelected: () async {
+          await LocalizationService().changeLocale('en');
+        },
+        onArabicSelected: () async {
+          await LocalizationService().changeLocale('ar');
+        },
+      );
+    } else {
+      // Use bottom sheet in portrait mode
+      LanguageSelectionBottomSheet.show(
+        currentLanguage: currentLanguageName,
+        onEnglishSelected: () async {
+          Get.back();
+          await LocalizationService().changeLocale('en');
+        },
+        onArabicSelected: () async {
+          Get.back();
+          await LocalizationService().changeLocale('ar');
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _handleLanguageSelection,
+      onTap: () => _handleLanguageSelection(context),
       child: Container(
         height: height ?? 50.h,
         width: width ?? 80.w,
