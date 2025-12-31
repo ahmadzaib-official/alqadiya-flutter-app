@@ -296,7 +296,7 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
                       ),
                       SizedBox(height: 10.h),
                       Text(
-                        suspect.nameEn ?? suspect.nameAr ?? 'Unknown',
+                        suspect.nameEn ?? suspect.nameAr ?? 'Unknown'.tr,
                         style: TextStyle(
                           fontSize: 6.sp,
                           color: MyColors.white,

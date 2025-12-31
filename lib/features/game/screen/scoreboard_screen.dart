@@ -204,8 +204,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                               ),
                                               Obx(
                                                 () => Text(
-                                                  ' ${timerController.timerText.value}'
-                                                      .tr,
+                                                  ' ${timerController.timerText.value}',
                                                   style:
                                                       AppTextStyles.heading1()
                                                           .copyWith(

@@ -22,7 +22,6 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
-import 'dart:async';
 
 class GameScreen extends StatefulWidget {
   GameScreen({super.key});
@@ -102,13 +101,13 @@ class _GameScreenState extends State<GameScreen> {
     if (question == null ||
         sessionId == null ||
         selectedAnswerIndex.value == null) {
-      CustomSnackbar.showError('Please select an answer');
+      CustomSnackbar.showError('Please select an answer'.tr);
       return;
     }
 
     final selectedAnswer = question.answers?[selectedAnswerIndex.value!];
     if (selectedAnswer == null || selectedAnswer.id == null) {
-      CustomSnackbar.showError('Invalid answer selected');
+      CustomSnackbar.showError('Invalid answer selected'.tr);
       return;
     }
 
@@ -129,7 +128,7 @@ class _GameScreenState extends State<GameScreen> {
       // Update local state - the Obx will rebuild automatically via answerController.lastAnswer
       lastSubmittedAnswer = answerController.lastAnswer.value;
     } else {
-      CustomSnackbar.showError('Failed to submit answer. Please try again.');
+      CustomSnackbar.showError('Failed to submit answer. Please try again.'.tr);
     }
   }
 
@@ -243,7 +242,7 @@ class _GameScreenState extends State<GameScreen> {
                             width: 50.w,
                             height: 40.h,
                             borderRadius: 100.r,
-                            text: 'View List',
+                            text: 'View List'.tr,
                             fontSize: 5.sp,
                             backgroundColor: MyColors.redButtonColor,
                             onPressed: () {
@@ -478,7 +477,7 @@ class _GameScreenState extends State<GameScreen> {
           builder:
               (_) => VideoEvidenceDialog(
                 videoUrl: hint.mediaUrl ?? '',
-                title: hint.hintName ?? "Hint",
+                title: hint.hintName ?? 'Hint'.tr,
                 onContinue: () {},
                 showHintText: hint.hintDescription != null,
               ),
@@ -509,7 +508,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
             if (pointsCost > 0)
               Text(
-                '(-$pointsCost Points)'.tr,
+                '(-$pointsCost ${'Points'.tr})',
                 style: AppTextStyles.captionSemiBold10().copyWith(
                   fontSize: 6.sp,
                   color: MyColors.white.withValues(alpha: 0.5),

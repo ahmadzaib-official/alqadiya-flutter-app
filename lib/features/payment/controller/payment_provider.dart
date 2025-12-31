@@ -84,11 +84,11 @@ class PaymentController extends GetxController {
   /// Process payment
   Future<void> processPayment() async {
     if (!termsAccepted.value) {
-      CustomSnackbar.showError("Please accept terms and conditions");
+      CustomSnackbar.showError("Please accept terms and conditions".tr);
       return;
     }
     if (selectedPaymentMethod.value == null) {
-      CustomSnackbar.showError("Please select a payment method");
+      CustomSnackbar.showError("Please select a payment method".tr);
       return;
     }
 
@@ -107,7 +107,7 @@ class PaymentController extends GetxController {
         Get.offAllNamed(AppRoutes.paymentDoneScreen);
       }
     } catch (e) {
-      CustomSnackbar.showError("Payment Failed: $e");
+      CustomSnackbar.showError("${'Payment Failed:'.tr} $e");
     } finally {
       isLoading(false);
     }

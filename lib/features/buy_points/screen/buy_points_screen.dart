@@ -87,7 +87,7 @@ class BuyPointsScreen extends StatelessWidget {
                     if (buyPointsController.pointPackages.isEmpty) {
                       return Center(
                         child: Text(
-                          "No packages available",
+                          "No packages available".tr,
                           style: AppTextStyles.heading2().copyWith(
                             fontSize: 12.sp,
                             color: Colors.white,

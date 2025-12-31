@@ -1,5 +1,4 @@
 import 'package:alqadiya_game/features/notifcation/model/notifcation_modal.dart';
-import 'package:alqadiya_game/core/network/api_fetch.dart';
 import 'package:get/get.dart';
 
 class NotificationController extends GetxController {

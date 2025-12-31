@@ -174,7 +174,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Share this code with friends to join.',
+                      'Share this code with friends to join.'.tr,
                       style: AppTextStyles.captionRegular12().copyWith(
                         color: MyColors.white,
                         height: 1.5,

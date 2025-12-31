@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 class UserAnswerController extends GetxController {
   final _repository = UserAnswerRepository();
-  
+
   Rx<UserAnswerModel?> lastAnswer = Rx<UserAnswerModel?>(null);
   var isLoading = false.obs;
 
@@ -40,11 +40,12 @@ class UserAnswerController extends GetxController {
       // Error already shown by interceptor
       return false;
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
       return false;
     } finally {
       isLoading(false);
     }
   }
 }
-

@@ -1,5 +1,4 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/home/controller/home_controller.dart';
 import 'package:alqadiya_game/features/joingame/controller/join_game_controller.dart';
@@ -175,7 +174,7 @@ class JoinGameScreen extends StatelessWidget {
                                                       ? () {}
                                                       : joinGameController
                                                           .joinGame,
-                                              buttonText: 'Join the Game',
+                                              buttonText: 'Join the Game'.tr,
                                             ),
                                           ),
                                         ),

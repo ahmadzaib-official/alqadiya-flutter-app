@@ -426,13 +426,13 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
           // SizedBox(height: 5.h),
 
           // Metrics
-          _buildMetricRow('Total score', '${result['totalScore']}'),
+          _buildMetricRow('Total score'.tr, '${result['totalScore']}'),
           SizedBox(height: 3.h),
-          _buildMetricRow('Time taken', result['timeTaken'] as String),
+          _buildMetricRow('Time taken'.tr, result['timeTaken'] as String),
           SizedBox(height: 3.h),
-          _buildMetricRow('Accuracy', '${result['accuracy']}%'),
+          _buildMetricRow('Accuracy'.tr, '${result['accuracy']}%'),
           SizedBox(height: 3.h),
-          _buildMetricRow('Hints used', '${result['hintsUsed']}'),
+          _buildMetricRow('Hints used'.tr, '${result['hintsUsed']}'),
         ],
       ),
     );

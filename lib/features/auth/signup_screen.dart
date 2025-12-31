@@ -52,7 +52,7 @@ class SignupScreen extends StatelessWidget with Validators {
                           AuthHeading(
                             screenHeight: screenHeight,
                             actionButtonIcon: MyImages.lock,
-                            actionButtonText: 'Log in',
+                            actionButtonText: 'Log in'.tr,
                             onTap: () {
                               Get.offNamedUntil(
                                 AppRoutes.sigin,
@@ -322,7 +322,7 @@ class SignupScreen extends StatelessWidget with Validators {
                                       await controller.signUp();
                                     } else {
                                       Toaster.showToast(
-                                        'Please accept the terms and conditions',
+                                        'Please accept the terms and conditions'.tr,
                                       );
                                     }
                                   }

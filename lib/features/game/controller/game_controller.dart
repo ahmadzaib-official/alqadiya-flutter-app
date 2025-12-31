@@ -119,7 +119,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       if (isLoadMore) {
         isMoreLoading(false);
@@ -143,7 +143,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -165,7 +165,7 @@ class GameController extends GetxController {
       return false;
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
       return false;
     } finally {
       isLoading(false);
@@ -188,7 +188,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -218,7 +218,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -248,14 +248,14 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data;
         this.teams.assignAll(list.map((e) => TeamModel.fromJson(e)).toList());
-        CustomSnackbar.showSuccess('Teams created successfully');
+        CustomSnackbar.showSuccess('Teams created successfully'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
         Get.toNamed(AppRoutes.playerSelectionScreen);
       }
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -281,7 +281,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -305,7 +305,7 @@ class GameController extends GetxController {
         // Refresh session details to get updated team assignments
         await getGameSessionDetails(sessionId: sessionId);
 
-        CustomSnackbar.showSuccess('Members assigned successfully');
+        CustomSnackbar.showSuccess('Members assigned successfully'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
 
         final firstTeamId = teams.isNotEmpty ? teams.first.id : null;
@@ -320,7 +320,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -339,14 +339,14 @@ class GameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        CustomSnackbar.showSuccess('Team leader assigned successfully');
+        CustomSnackbar.showSuccess('Team leader assigned successfully'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
         Get.toNamed(AppRoutes.caseVideoScreen);
       }
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -380,7 +380,7 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }
@@ -406,7 +406,7 @@ class GameController extends GetxController {
       // Error already shown by interceptor
       return false;
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
       return false;
     } finally {
       isLoading(false);

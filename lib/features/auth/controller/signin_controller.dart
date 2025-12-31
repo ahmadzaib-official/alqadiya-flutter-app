@@ -87,7 +87,7 @@ class SignInController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data == 'Phone number not verified') {
           CustomSnackbar.showError(
-            "Phone number not verified. Please verify your phone number.",
+            "Phone number not verified. Please verify your phone number.".tr,
           );
           await verifyPhoneNumber();
           return;
@@ -124,7 +124,7 @@ class SignInController extends GetxController {
       }
     } catch (e) {
       Get.back(); // Close progress dialog
-      CustomSnackbar.showError("Failed to sign in: ${e.toString()}");
+      CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
     } finally {
       isSignIn(false);
     }
@@ -169,7 +169,9 @@ class SignInController extends GetxController {
         throw Exception("Invalid response from server");
       }
     } catch (e) {
-      CustomSnackbar.showError("Google sign in failed: ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Google sign in failed:'.tr} ${e.toString()}",
+      );
       DebugPoint.log(e);
     } finally {
       isLoading.value = false;

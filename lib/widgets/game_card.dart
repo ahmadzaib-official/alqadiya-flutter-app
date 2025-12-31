@@ -108,7 +108,7 @@ class GameCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      game.difficulty ?? 'Unknown',
+                      game.difficulty ?? 'Unknown'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 6.sp,
@@ -137,7 +137,7 @@ class GameCard extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    game.title ?? 'Unknown Game',
+                    game.title ?? 'Unknown Game'.tr,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -160,7 +160,7 @@ class GameCard extends StatelessWidget {
                   SizedBox(
                     height: 6.sp * 1.4 * 2,
                     child: Text(
-                      game.description ?? 'No description available',
+                      game.description ?? 'No description available'.tr,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

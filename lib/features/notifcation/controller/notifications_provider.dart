@@ -62,7 +62,7 @@ class NotificationsController extends GetxController {
       menuItems: [
         DrawerMenuItem(
           icon: MyIcons.coins,
-          label: 'My purchases',
+          label: 'My purchases'.tr,
           onTap: () {
             closeDrawer();
             // Navigate to purchases
@@ -71,7 +71,7 @@ class NotificationsController extends GetxController {
         ),
         DrawerMenuItem(
           icon: MyIcons.settings,
-          label: 'Settings',
+          label: 'Settings'.tr,
           onTap: () {
             closeDrawer();
             // Navigate to settings
@@ -80,7 +80,7 @@ class NotificationsController extends GetxController {
         ),
         DrawerMenuItem(
           icon: MyIcons.circlequestionmark,
-          label: 'FAQ & Support',
+          label: 'FAQ & Support'.tr,
           onTap: () async {
             closeDrawer();
 

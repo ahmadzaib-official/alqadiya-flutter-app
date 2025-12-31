@@ -817,7 +817,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                     ),
                     child: AudioPlayerWidget(
                       audioUrl: audio.mediaUrl ?? '',
-                      title: audio.attachmentNameEn ?? 'Audio ${index + 1}',
+                      title: audio.attachmentNameEn ?? '${'Audio'.tr} ${index + 1}',
                     ),
                   ),
                 );

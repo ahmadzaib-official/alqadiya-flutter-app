@@ -1,5 +1,4 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';

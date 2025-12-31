@@ -33,9 +33,10 @@ class _StartGameScreenState extends State<StartGameScreen> {
       body: Obx(
         () => GameBackground(
           isPurchased: true,
-          imageUrl: controller.gameDetail.value?.coverImageUrl ?? 
-                   controller.gameDetail.value?.coverImage ?? 
-                   "https://picsum.photos/200",
+          imageUrl:
+              controller.gameDetail.value?.coverImageUrl ??
+              controller.gameDetail.value?.coverImage ??
+              "https://picsum.photos/200",
           body: Column(
             children: [
               // Top Bar
@@ -47,118 +48,121 @@ class _StartGameScreenState extends State<StartGameScreen> {
                     children: [
                       Text(
                         controller.gameDetail.value?.title ?? 'Who did it?'.tr,
-                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                        ),
                       ),
-                    SizedBox(width: 5.w),
-                    Container(
-                      width: 1.w,
-                      height: 20.h,
-                      color: MyColors.white.withValues(alpha: 0.2),
-                    ),
-                    SizedBox(width: 5.w),
-                    Text(
-                      'Start the Game'.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 7.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
-                        fontWeight: FontWeight.w100,
+                      SizedBox(width: 5.w),
+                      Container(
+                        width: 1.w,
+                        height: 20.h,
+                        color: MyColors.white.withValues(alpha: 0.2),
                       ),
-                    ),
-                  ],
-                ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                      SizedBox(width: 5.w),
+                      Text(
+                        'Start the Game'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 7.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                    ],
+                  ),
+                  actionButtons: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                  ),
                 ),
               ),
-            ),
-            // Body
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Case Image
-                Container(
-                  height: 0.7.sh,
-                  width: 0.3.sw,
-                  padding: EdgeInsets.all(12.sp),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.r),
-                    color: MyColors.black.withValues(alpha: 0.1),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Create Teams'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 8.sp,
+              // Body
+              Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Case Image
+                  Container(
+                    height: 0.7.sh,
+                    width: 0.3.sw,
+                    padding: EdgeInsets.all(12.sp),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.r),
+                      color: MyColors.black.withValues(alpha: 0.1),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Create Teams'.tr,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 8.sp,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 40.h),
-                      Obx(
-                        () => CopyCodeButton(
-                          code: controller.gameSession.value?.sessionCode ?? '',
-                          horizontalPadding: 14,
+                        SizedBox(height: 40.h),
+                        Obx(
+                          () => CopyCodeButton(
+                            code:
+                                controller.gameSession.value?.sessionCode ?? '',
+                            horizontalPadding: 14,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10.h),
+                        SizedBox(height: 10.h),
 
-                      Text(
-                        'Share this code with friends to join.',
-                        style: AppTextStyles.captionRegular12().copyWith(
-                          color: MyColors.white,
-                          height: 1.5,
-                          fontSize: 5.sp,
+                        Text(
+                          'Share this code with friends to join.'.tr,
+                          style: AppTextStyles.captionRegular12().copyWith(
+                            color: MyColors.white,
+                            height: 1.5,
+                            fontSize: 5.sp,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 30.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.sp),
-                        child: StartPlayButton(
-                          buttonText: 'Start Play'.tr,
-                          onTap: () {
-                            controller.updateSessionMode(mode: 'team');
-                          },
+                        SizedBox(height: 30.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.sp),
+                          child: StartPlayButton(
+                            buttonText: 'Start Play'.tr,
+                            onTap: () {
+                              controller.updateSessionMode(mode: 'team');
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(width: 16.w),
+                  SizedBox(width: 16.w),
 
-                // Right Content
-                Container(
-                  height: 0.7.sh,
-                  width: 0.3.sw,
-                  padding: EdgeInsets.all(12.sp),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.r),
-                    color: MyColors.black.withValues(alpha: 0.1),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Play Solo'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 8.sp,
+                  // Right Content
+                  Container(
+                    height: 0.7.sh,
+                    width: 0.3.sw,
+                    padding: EdgeInsets.all(12.sp),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.r),
+                      color: MyColors.black.withValues(alpha: 0.1),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Play Solo'.tr,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 8.sp,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 40.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.sp),
-                        child: StartPlayButton(
-                          buttonText: 'Start Play'.tr,
-                          onTap: () {
-                            controller.updateSessionMode(mode: 'solo');
-                          },
+                        SizedBox(height: 40.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.sp),
+                          child: StartPlayButton(
+                            buttonText: 'Start Play'.tr,
+                            onTap: () {
+                              controller.updateSessionMode(mode: 'solo');
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
               Spacer(),
             ],
           ),

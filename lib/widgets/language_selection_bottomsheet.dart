@@ -31,102 +31,154 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
       ),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      isDismissible: true,
+      enableDrag: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20.r),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final screenHeight = Get.height;
+    
+    // Calculate responsive height based on orientation
+    final height = isLandscape 
+        ? screenHeight * 0.5  // Taller in landscape
+        : screenHeight * 0.35; // Original height in portrait
+    
     return Container(
-      height: Get.height * .35,
+      height: height,
+      constraints: BoxConstraints(
+        maxHeight: isLandscape ? screenHeight * 0.7 : screenHeight * 0.5,
+        minHeight: 200.h,
+      ),
       padding: EdgeInsets.symmetric(
         horizontal: AppConstants.paddingOnly,
       ).copyWith(
         bottom: AppConstants.paddingOnly,
         top: AppConstants.paddingOnly + 5,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: MyColors.backgroundColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        border: Border.all(
+          color: MyColors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 8.h),
-              // Spacing.y(3),
-              Text(
-                "Select Language",
-                style: AppTextStyles.labelBold14().copyWith(fontSize: 28.sp),
+          SizedBox(height: 8.h),
+          // Drag handle
+          Center(
+            child: Container(
+              width: 40.w,
+              height: 4.h,
+              margin: EdgeInsets.only(bottom: 8.h),
+              decoration: BoxDecoration(
+                color: MyColors.white.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2.r),
               ),
-              AppSizedBoxes.smallSizedBox,
-              Text(
-                "Please choose your preferred language",
-                style: AppTextStyles.captionSemiBold12().copyWith(
-                  color: MyColors.white.withValues(alpha: 0.5),
-                ),
-              ),
-              // Spacing.y(4),
-              SizedBox(height: 8.h),
-
-              // English Option
-              _buildLanguageOption(
-                title: "English",
-                flagEmoji: "🇬🇧",
-                isSelected: currentLanguage == "English",
-                onTap: onEnglishSelected,
-              ),
-
-              // Spacing.y(2),
-              SizedBox(height: 8.h),
-
-              // Arabic Option
-              _buildLanguageOption(
-                title: "العربية",
-                flagEmoji: "🇰🇼",
-                isSelected: currentLanguage == "Arabic",
-                onTap: onArabicSelected,
-              ),
-            ],
+            ),
           ),
-          // const DragHandle(),
+          Text(
+            'Select Language'.tr,
+            style: AppTextStyles.labelBold14().copyWith(
+              fontSize: isLandscape ? 20.sp : 28.sp,
+              color: MyColors.white,
+            ),
+          ),
+          AppSizedBoxes.smallSizedBox,
+          Text(
+            'Please choose your preferred language'.tr,
+            style: AppTextStyles.captionSemiBold12().copyWith(
+              color: MyColors.white.withValues(alpha: 0.7),
+              fontSize: isLandscape ? 10.sp : 12.sp,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Language Options
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // English Option
+                  _buildLanguageOption(
+                    context: context,
+                    title: "English",
+                    flagEmoji: "🇬🇧",
+                    isSelected: currentLanguage == "English",
+                    onTap: onEnglishSelected,
+                  ),
+
+                  SizedBox(height: 12.h),
+
+                  // Arabic Option
+                  _buildLanguageOption(
+                    context: context,
+                    title: "العربية",
+                    flagEmoji: "🇰🇼",
+                    isSelected: currentLanguage == "Arabic",
+                    onTap: onArabicSelected,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildLanguageOption({
+    required BuildContext context,
     required String title,
     required String flagEmoji,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
+        padding: EdgeInsets.symmetric(
+          vertical: isLandscape ? 10.h : 12.h,
+          horizontal: 14.w,
+        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? MyColors.redButtonColor : MyColors.white,
+            color: isSelected 
+                ? MyColors.redButtonColor 
+                : MyColors.white.withValues(alpha: 0.2),
             width: 1.2.w,
           ),
-          color:
-              isSelected
-                  ? MyColors.redButtonColor.withValues(alpha: 0.1)
-                  : Colors.white,
+          color: isSelected
+              ? MyColors.redButtonColor.withValues(alpha: 0.2)
+              : MyColors.black.withValues(alpha: 0.2),
         ),
         child: Row(
           children: [
-            Text(flagEmoji, style: TextStyle(fontSize: 22.sp)),
-            // Spacing.x(2),
-            SizedBox(width: 8.w),
-
+            Text(
+              flagEmoji,
+              style: TextStyle(fontSize: isLandscape ? 18.sp : 22.sp),
+            ),
+            SizedBox(width: 12.w),
             Expanded(
               child: Text(
                 title,
                 style: AppTextStyles.captionSemiBold12().copyWith(
                   color: MyColors.white,
+                  fontSize: isLandscape ? 11.sp : 12.sp,
                 ),
               ),
             ),
@@ -134,7 +186,7 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
               Icon(
                 Icons.check_circle,
                 color: MyColors.redButtonColor,
-                size: 22.sp,
+                size: isLandscape ? 20.sp : 22.sp,
               ),
           ],
         ),

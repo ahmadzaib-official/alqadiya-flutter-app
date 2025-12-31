@@ -44,7 +44,7 @@ class OnboardingScreen extends StatelessWidget {
                 AuthHeading(
                   screenHeight: screenHeight,
                   actionButtonIcon: MyImages.lock,
-                  actionButtonText: 'Log in',
+                  actionButtonText: 'Log in'.tr,
                   onTap: () {
                     Get.toNamed(AppRoutes.sigin);
                   },

@@ -221,7 +221,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           }
           if (controller.paymentMethods.isEmpty) {
             return Text(
-              "No payment methods available",
+              "No payment methods available".tr,
               style: AppTextStyles.bodyTextMedium16().copyWith(
                 color: Colors.white,
               ),
@@ -399,7 +399,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Image(image: AssetImage(MyIcons.safegaurd), height: 60.h),
         SizedBox(height: 8.h),
         Text(
-          'سداد آمن وخدمة عملاء ممتازة',
+          'Secure payment and excellent customer service'.tr,
           style: AppTextStyles.heading2().copyWith(
             fontSize: 7.sp,
             color: MyColors.greenColor,

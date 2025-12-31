@@ -59,7 +59,7 @@ class TransactionsListScreen extends StatelessWidget {
                         if (transactionsController.transactions.isEmpty) {
                           return Center(
                             child: Text(
-                              "No transactions",
+                              "No transactions".tr,
                               style: AppTextStyles.heading2().copyWith(
                                 fontSize: 12.sp,
                                 color: Colors.white,

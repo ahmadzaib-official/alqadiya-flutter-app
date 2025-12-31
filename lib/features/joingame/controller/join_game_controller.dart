@@ -19,7 +19,7 @@ class JoinGameController extends GetxController {
 
   Future<void> joinGame() async {
     if (teamCodeController.text.trim().isEmpty) {
-      CustomSnackbar.showError('Please enter a game code');
+      CustomSnackbar.showError('Please enter a game code'.tr);
       return;
     }
 
@@ -44,7 +44,7 @@ class JoinGameController extends GetxController {
         }
         
         isWaiting.value = true;
-        CustomSnackbar.showSuccess('Joined game successfully');
+        CustomSnackbar.showSuccess('Joined game successfully'.tr);
 
         Future.delayed(const Duration(seconds: 3), () {
           Get.toNamed(AppRoutes.caseVideoScreen);
@@ -54,7 +54,7 @@ class JoinGameController extends GetxController {
       // Error already shown by interceptor
       isWaiting.value = false;
     } catch (e) {
-      CustomSnackbar.showError('Failed to join game: $e');
+      CustomSnackbar.showError('${'Failed to join game:'.tr} $e');
       isWaiting.value = false;
     } finally {
       isLoading.value = false;

@@ -111,7 +111,7 @@ class ChooseTeamLeaderController extends GetxController {
         }
       }
     } catch (e) {
-      CustomSnackbar.showError("Failed to fetch team members: ${e.toString()}");
+      CustomSnackbar.showError("${'Failed to fetch team members:'.tr} ${e.toString()}");
       if (teamLeaders.isEmpty) {
         _initializeTeamLeaders();
       }
@@ -154,7 +154,7 @@ class ChooseTeamLeaderController extends GetxController {
   /// Proceed to next screen with selected leader
   Future<void> proceedWithSelectedLeader() async {
     if (selectedLeader.value == null) {
-      CustomSnackbar.showError('Please select a team leader');
+      CustomSnackbar.showError('Please select a team leader'.tr);
       return;
     }
 
@@ -168,7 +168,7 @@ class ChooseTeamLeaderController extends GetxController {
       );
 
     } catch (e) {
-      CustomSnackbar.showError("Failed to select leader: ${e.toString()}");
+      CustomSnackbar.showError("${'Failed to select leader:'.tr} ${e.toString()}");
     } finally {
       isLoading.value = false;
     }

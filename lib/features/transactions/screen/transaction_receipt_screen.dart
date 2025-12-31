@@ -56,7 +56,7 @@ class TransactionReceiptScreen extends StatelessWidget {
                         if (receipt == null) {
                           return Center(
                             child: Text(
-                              "Receipt not found",
+                              "Receipt not found".tr,
                               style: AppTextStyles.heading2().copyWith(
                                 color: Colors.white,
                               ),
@@ -77,7 +77,7 @@ class TransactionReceiptScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 10.h),
                               Text(
-                                receipt.status ?? "Success",
+                                receipt.status ?? "Success".tr,
                                 style: AppTextStyles.heading1().copyWith(
                                   fontSize: 14.sp,
                                   color: MyColors.greenColor,
@@ -100,42 +100,42 @@ class TransactionReceiptScreen extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     _buildReceiptRow(
-                                      "Transaction ID",
+                                      "Transaction ID".tr,
                                       receipt.id != null
                                           ? receipt.id!.substring(0, 6) +
                                               "..." +
                                               receipt.id!.substring(
                                                 receipt.id!.length - 6,
                                               )
-                                          : "N/A",
+                                          : "N/A".tr,
                                     ),
                                     _buildDivider(),
                                     _buildReceiptRow(
-                                      "Date",
+                                      "Date".tr,
                                       receipt.createdAt != null
                                           ? DateFormat(
                                             'yyyy-MM-dd HH:mm',
                                           ).format(receipt.createdAt!)
-                                          : "N/A",
+                                          : "N/A".tr,
                                     ),
                                     _buildDivider(),
                                     _buildReceiptRow(
-                                      "Description",
-                                      receipt.description ?? "N/A",
+                                      "Description".tr,
+                                      receipt.description ?? "N/A".tr,
                                     ),
                                     _buildDivider(),
                                     _buildReceiptRow(
-                                      "Type",
-                                      receipt.type ?? "N/A",
+                                      "Type".tr,
+                                      receipt.type ?? "N/A".tr,
                                     ),
                                     _buildDivider(),
                                     _buildReceiptRow(
-                                      "Points",
+                                      "Points".tr,
                                       "${receipt.points ?? 0}",
                                     ),
                                     _buildDivider(),
                                     _buildReceiptRow(
-                                      "Amount",
+                                      "Amount".tr,
                                       "${receipt.price ?? 0} ${receipt.currency ?? 'KD'}",
                                       valueColor: MyColors.redButtonColor,
                                       isBold: true,
@@ -170,7 +170,7 @@ class TransactionReceiptScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label.tr,
+            label,
             style: AppTextStyles.bodyTextMedium16().copyWith(
               fontSize: 10.sp,
               color: MyColors.white.withValues(alpha: 0.7),

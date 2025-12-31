@@ -302,7 +302,7 @@ class PlayerSelectionController extends GetxController {
 
     // Check if any players are left unassigned (optional validation)
     if (availablePlayers.isNotEmpty) {
-      CustomSnackbar.showInfo('Some players are not assigned to any team');
+      CustomSnackbar.showInfo('Some players are not assigned to any team'.tr);
       return;
     }
 

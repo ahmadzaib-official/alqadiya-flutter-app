@@ -18,7 +18,7 @@ class VerificationSuccessfulScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String title = Get.arguments['title'] ?? 'Verification Successful';
+    final String title = Get.arguments['title'] ?? 'Verification Successful'.tr;
     final String message =
         Get.arguments['message'] ??
         'Your phone number has been successfully verified. You can now proceed to the next step.'

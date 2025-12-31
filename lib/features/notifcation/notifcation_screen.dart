@@ -269,7 +269,7 @@ class NotifcationScreen extends StatelessWidget {
       final months = (days / 30).floor();
 
       if (minutes < 1) {
-        return 'now';
+        return 'now'.tr;
       } else if (minutes < 60) {
         return '${minutes}m';
       } else if (hours < 24) {
@@ -282,7 +282,7 @@ class NotifcationScreen extends StatelessWidget {
         return '${months}mo';
       }
     } catch (e) {
-      return 'Invalid date';
+      return 'Invalid date'.tr;
     }
   }
 

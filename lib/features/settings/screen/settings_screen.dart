@@ -720,7 +720,7 @@ class SettingsScreen extends StatelessWidget {
                   // Points balance section
                   Obx(
                     () => Text(
-                      'My points balance ${controller.user.value?.pointsBalance ?? 0}',
+                      '${'My points balance'.tr} ${controller.user.value?.pointsBalance ?? 0}',
                       style: AppTextStyles.heading2().copyWith(
                         fontSize: 9.sp,
                         color: MyColors.white.withValues(alpha: 0.8),
