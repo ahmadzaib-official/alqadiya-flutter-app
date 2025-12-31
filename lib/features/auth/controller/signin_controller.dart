@@ -92,7 +92,8 @@ class SignInController extends GetxController {
           await verifyPhoneNumber();
           return;
         }
-        if (response.data['userId'] != null && response.data['accessToken'] != null) {
+        if (response.data['userId'] != null &&
+            response.data['accessToken'] != null) {
           String userId = response.data['userId'];
           String assesToken = response.data['accessToken'];
           await Get.find<Preferences>().setString(AppStrings.userId, userId);
@@ -100,6 +101,14 @@ class SignInController extends GetxController {
             AppStrings.accessToken,
             assesToken,
           );
+
+          // Store refresh token if provided
+          if (response.data['refreshToken'] != null) {
+            await Get.find<Preferences>().setString(
+              AppStrings.refreshToken,
+              response.data['refreshToken'],
+            );
+          }
         }
 
         Get.back(); // Close progress dialog
@@ -137,7 +146,8 @@ class SignInController extends GetxController {
       DebugPoint.log("Google Sign In Body: $body");
       final response = await ApiFetch().signIn(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data['userId'] != null && response.data['accessToken'] != null) {
+        if (response.data['userId'] != null &&
+            response.data['accessToken'] != null) {
           // Store tokens securely
           await Get.find<Preferences>().setString(
             AppStrings.userId,
@@ -186,7 +196,8 @@ class SignInController extends GetxController {
       final response = await ApiFetch().signIn(body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data['userId'] != null && response.data['accessToken'] != null) {
+        if (response.data['userId'] != null &&
+            response.data['accessToken'] != null) {
           String userId = response.data['userId'];
           String assesToken = response.data['accessToken'];
           await Get.find<Preferences>().setString(AppStrings.userId, userId);

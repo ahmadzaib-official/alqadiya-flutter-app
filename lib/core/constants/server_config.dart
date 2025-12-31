@@ -5,6 +5,7 @@ class ServerConfig {
   static const login = "${baseUrl}auth/signIn";
   static const register = "${baseUrl}auth/signUp";
   static const verifyOtp = "${baseUrl}auth/verifyOtp";
+  static const refreshToken = "${baseUrl}auth/refreshToken";
   static const sendOtp = "${baseUrl}users/public/sendOTP";
   static const forgetPassword = "${baseUrl}auth/forgetPassword";
   static const currentUser = "${baseUrl}users/currentUser";
