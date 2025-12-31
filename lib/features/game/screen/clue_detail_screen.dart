@@ -3,6 +3,8 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/game/controller/clue_detail_provider.dart';
+import 'package:alqadiya_game/features/game/controller/evidence_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/audio_player_widget.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/image_preview_screen.dart';
@@ -11,14 +13,32 @@ import 'package:alqadiya_game/features/game/widget/suspect_detail/video_player_s
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 
-class ClueDetailScreen extends StatelessWidget {
+class ClueDetailScreen extends StatefulWidget {
   const ClueDetailScreen({super.key});
+
+  @override
+  State<ClueDetailScreen> createState() => _ClueDetailScreenState();
+}
+
+class _ClueDetailScreenState extends State<ClueDetailScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    final evidenceController = Get.find<EvidenceController>();
+    final arguments = Get.arguments as Map<String, dynamic>?;
+    final evidenceId = arguments?['evidenceId'];
+    
+    if (evidenceId != null) {
+      evidenceController.getEvidenceById(evidenceId: evidenceId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,96 +52,127 @@ class ClueDetailScreen extends StatelessWidget {
 
     // Initialize clue detail controller
     final clueController = Get.find<ClueDetailController>();
+    final evidenceController = Get.find<EvidenceController>();
+    final gameController = Get.find<GameController>();
 
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Header
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'New Clue'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
-                    SizedBox(width: 20.w),
-                    Text(
-                      'Timer '.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 10.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
+                   gameController.gameDetail.value?.coverImage ?? 
+                   "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Header
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        evidenceController.evidenceDetail.value?.evidenceName ?? 
+                        gameController.gameDetail.value?.title ?? 
+                        'New Clue'.tr,
+                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                       ),
-                    ),
-                    Obx(
-                      () => Text(
-                        timerController.timerText.value,
+                      SizedBox(width: 20.w),
+                      Text(
+                        'Timer '.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 5.h),
-
-            // Main Content
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Panel - Clue Image
-                    _buildClueImage(),
-
-                    SizedBox(width: 8.w),
-
-                    // Right Panel - Content Area
-                    Expanded(
-                      child: Column(
-                        children: [
-                          // Tab Bar
-                          Obx(() => _buildTabBar(clueController)),
-
-                          SizedBox(height: 10.h),
-
-                          // Content Area
-                          Expanded(
-                            child: Obx(() => _buildContentArea(clueController)),
+                      Obx(
+                        () => Text(
+                          timerController.timerText.value,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 10.sp,
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  actionButtons: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                  ),
                 ),
               ),
-            ),
 
-            // Footer
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
-              child: GameFooter(onGameResultTap: () {}),
-            ),
-          ],
+              SizedBox(height: 5.h),
+
+              // Main Content
+              Expanded(
+                child: Obx(() {
+                  if (evidenceController.isLoading.value) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: MyColors.redButtonColor,
+                      ),
+                    );
+                  }
+                  
+                  if (evidenceController.evidenceDetail.value == null) {
+                    return Center(
+                      child: Text(
+                        'No evidence details available'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                          color: MyColors.white,
+                        ),
+                      ),
+                    );
+                  }
+                  
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Panel - Clue Image
+                        _buildClueImage(evidenceController.evidenceDetail.value!),
+
+                        SizedBox(width: 8.w),
+
+                        // Right Panel - Content Area
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // Tab Bar
+                              _buildTabBar(clueController),
+
+                              SizedBox(height: 10.h),
+
+                              // Content Area
+                              Expanded(
+                                child: _buildContentArea(clueController, evidenceController),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+
+              // Footer
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
+                child: GameFooter(onGameResultTap: () {}),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildClueImage() {
+  Widget _buildClueImage(evidence) {
     return Container(
       width: 0.2.sw,
       height: double.infinity,
@@ -129,7 +180,24 @@ class ClueDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.r)),
       ),
-      child: Image.asset(MyImages.suspect, fit: BoxFit.cover),
+      child: CachedNetworkImage(
+        imageUrl: evidence.profileImageURL ?? 
+                 evidence.profileImage ?? 
+                 "https://picsum.photos/200",
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          color: MyColors.darkBlueColor,
+          child: Center(
+            child: CircularProgressIndicator(
+              color: MyColors.redButtonColor,
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => Image.asset(
+          MyImages.suspect,
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 
@@ -205,32 +273,61 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContentArea(ClueDetailController controller) {
-    // if (controller.selectedTab.value == 0) {
-    //   return _buildClueInformation();
-    // } else {
-    if (controller.selectedAttachmentType.value == null) {
-      return _buildAttachmentsGrid(controller);
-    } else if (controller.selectedAttachmentType.value == 'Videos') {
-      return _buildVideosList(controller);
-    } else if (controller.selectedAttachmentType.value == 'Images') {
-      return _buildImagesList(controller);
-    } else if (controller.selectedAttachmentType.value == 'Documents') {
-      return _buildDocumentsList(controller);
-    } else if (controller.selectedAttachmentType.value == 'Audio') {
-      return _buildAudioList(controller);
+  Widget _buildContentArea(ClueDetailController controller, EvidenceController evidenceController) {
+    final evidence = evidenceController.evidenceDetail.value;
+    if (evidence == null) {
+      return Center(
+        child: Text(
+          'No evidence details'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.white,
+          ),
+        ),
+      );
     }
-    // }
-    // return _buildClueInformation();
-    return _buildAttachmentsGrid(controller);
+    
+    if (controller.selectedAttachmentType.value == null) {
+      return _buildAttachmentsGrid(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Videos') {
+      return _buildVideosList(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Images') {
+      return _buildImagesList(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Documents') {
+      return _buildDocumentsList(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Audio') {
+      return _buildAudioList(controller, evidence);
+    }
+    return _buildAttachmentsGrid(controller, evidence);
   }
 
-  Widget _buildAttachmentsGrid(ClueDetailController controller) {
+  Widget _buildAttachmentsGrid(ClueDetailController controller, evidence) {
+    final attachments = evidence.attachments ?? [];
     final attachmentTypes = [
-      {'icon': MyIcons.videos, 'label': 'Videos', 'type': 'Videos'},
-      {'icon': MyIcons.gallery, 'label': 'Images', 'type': 'Images'},
-      {'icon': MyIcons.audios, 'label': 'Audio', 'type': 'Audio'},
-      {'icon': MyIcons.document, 'label': 'Documents', 'type': 'Documents'},
+      {
+        'icon': MyIcons.videos,
+        'label': 'Videos',
+        'type': 'Videos',
+        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'video').length,
+      },
+      {
+        'icon': MyIcons.gallery,
+        'label': 'Images',
+        'type': 'Images',
+        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'image').length,
+      },
+      {
+        'icon': MyIcons.audios,
+        'label': 'Audio',
+        'type': 'Audio',
+        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'audio').length,
+      },
+      {
+        'icon': MyIcons.document,
+        'label': 'Documents',
+        'type': 'Documents',
+        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'document').length,
+      },
     ];
 
     return Container(
@@ -245,6 +342,10 @@ class ClueDetailScreen extends StatelessWidget {
         itemCount: attachmentTypes.length,
         itemBuilder: (context, index) {
           final item = attachmentTypes[index];
+          final count = item['count'] as int;
+          if (count == 0) {
+            return SizedBox.shrink();
+          }
           return GestureDetector(
             onTap: () {
               controller.setSelectedAttachmentType(item['type'] as String);
@@ -275,6 +376,16 @@ class ClueDetailScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (count > 0) ...[
+                    SizedBox(height: 4.h),
+                    Text(
+                      '($count)',
+                      style: AppTextStyles.heading2().copyWith(
+                        fontSize: 6.sp,
+                        color: MyColors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -284,12 +395,22 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVideosList(ClueDetailController controller) {
-    final videos = [
-      'https://picsum.photos/300/200?random=1',
-      'https://picsum.photos/300/200?random=2',
-      'https://picsum.photos/300/200?random=3',
-    ];
+  Widget _buildVideosList(ClueDetailController controller, evidence) {
+    final videos = (evidence.attachments ?? [])
+        .where((a) => a.attachmentType?.toLowerCase() == 'video')
+        .toList();
+    
+    if (videos.isEmpty) {
+      return Center(
+        child: Text(
+          'No videos available'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.white,
+          ),
+        ),
+      );
+    }
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -330,6 +451,7 @@ class ClueDetailScreen extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: videos.length,
               itemBuilder: (context, index) {
+                final video = videos[index];
                 return GestureDetector(
                   onTap: () {
                     // Navigate to video player
@@ -338,8 +460,7 @@ class ClueDetailScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder:
                             (context) => VideoPlayerScreen(
-                              videoUrl:
-                                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                              videoUrl: video.mediaUrl ?? '',
                             ),
                       ),
                     );
@@ -355,7 +476,9 @@ class ClueDetailScreen extends StatelessWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.r),
                           child: CachedNetworkImage(
-                            imageUrl: videos[index],
+                            imageUrl: video.thumbnailUrl ?? 
+                                     video.mediaUrl ?? 
+                                     "https://picsum.photos/300/200",
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.cover,
@@ -400,12 +523,22 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildImagesList(ClueDetailController controller) {
-    final images = [
-      'https://picsum.photos/300/200?random=4',
-      'https://picsum.photos/300/200?random=5',
-      'https://picsum.photos/300/200?random=6',
-    ];
+  Widget _buildImagesList(ClueDetailController controller, evidence) {
+    final images = (evidence.attachments ?? [])
+        .where((a) => a.attachmentType?.toLowerCase() == 'image')
+        .toList();
+    
+    if (images.isEmpty) {
+      return Center(
+        child: Text(
+          'No images available'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.white,
+          ),
+        ),
+      );
+    }
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -445,6 +578,7 @@ class ClueDetailScreen extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
               itemBuilder: (context, index) {
+                final image = images[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -452,7 +586,7 @@ class ClueDetailScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder:
                             (context) =>
-                                ImagePreviewScreen(imageUrl: images[index]),
+                                ImagePreviewScreen(imageUrl: image.mediaUrl ?? ''),
                       ),
                     );
                   },
@@ -465,7 +599,7 @@ class ClueDetailScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.r),
                       child: CachedNetworkImage(
-                        imageUrl: images[index],
+                        imageUrl: image.mediaUrl ?? "https://picsum.photos/300/200",
                         width: double.infinity,
                         height: double.infinity,
                         fit: BoxFit.cover,
@@ -495,7 +629,23 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDocumentsList(ClueDetailController controller) {
+  Widget _buildDocumentsList(ClueDetailController controller, evidence) {
+    final documents = (evidence.attachments ?? [])
+        .where((a) => a.attachmentType?.toLowerCase() == 'document')
+        .toList();
+    
+    if (documents.isEmpty) {
+      return Center(
+        child: Text(
+          'No documents available'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.white,
+          ),
+        ),
+      );
+    }
+    
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -532,8 +682,9 @@ class ClueDetailScreen extends StatelessWidget {
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 0),
               scrollDirection: Axis.horizontal,
-              itemCount: 3,
+              itemCount: documents.length,
               itemBuilder: (context, index) {
+                final document = documents[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -541,8 +692,7 @@ class ClueDetailScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder:
                             (context) => PDFViewerScreen(
-                              pdfUrl:
-                                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                              pdfUrl: document.mediaUrl ?? '',
                             ),
                       ),
                     );
@@ -570,11 +720,14 @@ class ClueDetailScreen extends StatelessWidget {
                           SvgPicture.asset(MyIcons.file),
                           SizedBox(height: 8.h),
                           Text(
-                            'Document 1',
+                            document.attachmentNameEn ?? 'Document ${index + 1}',
                             style: AppTextStyles.heading2().copyWith(
                               fontSize: 6.sp,
                               color: MyColors.BlueColor,
                             ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -589,7 +742,23 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAudioList(ClueDetailController controller) {
+  Widget _buildAudioList(ClueDetailController controller, evidence) {
+    final audios = (evidence.attachments ?? [])
+        .where((a) => a.attachmentType?.toLowerCase() == 'audio')
+        .toList();
+    
+    if (audios.isEmpty) {
+      return Center(
+        child: Text(
+          'No audio available'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.white,
+          ),
+        ),
+      );
+    }
+    
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -626,8 +795,9 @@ class ClueDetailScreen extends StatelessWidget {
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 0),
               scrollDirection: Axis.horizontal,
-              itemCount: 1,
+              itemCount: audios.length,
               itemBuilder: (context, index) {
+                final audio = audios[index];
                 return Container(
                   width: 60.w,
                   margin: EdgeInsets.only(right: 10.w),
@@ -646,9 +816,8 @@ class ClueDetailScreen extends StatelessWidget {
                       ),
                     ),
                     child: AudioPlayerWidget(
-                      audioUrl:
-                          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                      title: 'Audio 1',
+                      audioUrl: audio.mediaUrl ?? '',
+                      title: audio.attachmentNameEn ?? 'Audio ${index + 1}',
                     ),
                   ),
                 );
