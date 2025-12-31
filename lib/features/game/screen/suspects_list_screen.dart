@@ -52,57 +52,62 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Header
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'List of suspects'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
-                    SizedBox(width: 20.w),
-                    Text(
-                      'Timer '.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 10.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
+                   gameController.gameDetail.value?.coverImage ?? 
+                   "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Header
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        gameController.gameDetail.value?.title ?? 'List of suspects'.tr,
+                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                       ),
-                    ),
-                    Obx(
-                      () => Text(
-                        timerController.timerText.value,
+                      SizedBox(width: 20.w),
+                      Text(
+                        'Timer '.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                      Obx(
+                        () => Text(
+                          timerController.timerText.value,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 10.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actionButtons: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                  ),
                 ),
               ),
-            ),
 
-            SizedBox(height: 20.h),
+              SizedBox(height: 20.h),
 
-            // Main Content - Suspects List
-            Expanded(child: _buildSuspectsList()),
+              // Main Content - Suspects List
+              Expanded(child: _buildSuspectsList()),
 
-            // Footer
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
-              child: GameFooter(onGameResultTap: () {}),
-            ),
-          ],
+              // Footer
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
+                child: GameFooter(onGameResultTap: () {}),
+              ),
+            ],
+          ),
         ),
       ),
     );

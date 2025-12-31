@@ -15,6 +15,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 
 class GameScreen extends StatefulWidget {
@@ -51,30 +52,36 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gameController = Get.find<GameController>();
+    
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Top Bar
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'Game : '.tr,
-                      style: AppTextStyles.heading2().copyWith(
-                        fontSize: 10.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
+                   gameController.gameDetail.value?.coverImage ?? 
+                   "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Top Bar
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        'Game : '.tr,
+                        style: AppTextStyles.heading2().copyWith(
+                          fontSize: 10.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Who did it?'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
+                      Text(
+                        gameController.gameDetail.value?.title ?? 'Who did it?'.tr,
+                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                      ),
                     SizedBox(width: 20.w),
                     Text(
                       'Timer '.tr,
@@ -297,12 +304,13 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
 
-            // Footer
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
-              child: GameFooter(onGameResultTap: () {}),
-            ),
-          ],
+              // Footer
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
+                child: GameFooter(onGameResultTap: () {}),
+              ),
+            ],
+          ),
         ),
       ),
     );

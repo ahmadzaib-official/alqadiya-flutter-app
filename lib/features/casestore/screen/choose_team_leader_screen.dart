@@ -1,7 +1,7 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/casestore/controller/choose_team_leader_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/start_play_button.dart';
@@ -16,27 +16,31 @@ class ChooseTeamLeaderScreen extends StatelessWidget {
   ChooseTeamLeaderScreen({super.key});
 
   final ChooseTeamLeaderController controller = Get.find<ChooseTeamLeaderController>();
+  final gameController = Get.find<GameController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        isPurchased: true,
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Top Bar
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'Who did it?'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
+                   gameController.gameDetail.value?.coverImage ?? 
+                   "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Top Bar
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        gameController.gameDetail.value?.title ?? 'Who did it?'.tr,
+                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                      ),
                     SizedBox(width: 5.w),
                     Container(
                       width: 1.w,
@@ -143,8 +147,9 @@ class ChooseTeamLeaderScreen extends StatelessWidget {
                 Expanded(flex: 1, child: SizedBox()),
               ],
             ),
-            Spacer(),
-          ],
+              Spacer(),
+            ],
+          ),
         ),
       ),
     );

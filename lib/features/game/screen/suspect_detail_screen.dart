@@ -4,6 +4,7 @@ import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_detail_provider.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/audio_player_widget.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/image_preview_screen.dart';
@@ -55,94 +56,109 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     final suspectDetailController = Get.find<SuspectDetailController>();
     final suspectController = Get.find<SuspectController>();
 
+    final gameController = Get.find<GameController>();
+
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Header
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'List of suspects'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
-                    SizedBox(width: 20.w),
-                    Text(
-                      'Timer '.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 10.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    Obx(
-                      () => Text(
-                        timerController.timerText.value,
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl:
+              gameController.gameDetail.value?.coverImageUrl ??
+              gameController.gameDetail.value?.coverImage ??
+              "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Header
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        gameController.gameDetail.value?.title ??
+                            'List of suspects'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                      SizedBox(width: 20.w),
+                      Text(
+                        'Timer '.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      Obx(
+                        () => Text(
+                          timerController.timerText.value,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 10.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actionButtons: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                  ),
                 ),
               ),
-            ),
 
-            SizedBox(height: 5.h),
+              SizedBox(height: 5.h),
 
-            // Main Content
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Panel - Suspect Portrait
-                    _buildSuspectPortrait(),
+              // Main Content
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left Panel - Suspect Portrait
+                      _buildSuspectPortrait(),
 
-                    SizedBox(width: 8.w),
+                      SizedBox(width: 8.w),
 
-                    // Right Panel - Content Area
-                    Expanded(
-                      child: Column(
-                        children: [
-                          // Main Navigation Tabs
-                          Obx(() => _buildMainTabs(suspectDetailController)),
+                      // Right Panel - Content Area
+                      Expanded(
+                        child: Column(
+                          children: [
+                            // Main Navigation Tabs
+                            Obx(() => _buildMainTabs(suspectDetailController)),
 
-                          SizedBox(height: 10.h),
+                            SizedBox(height: 10.h),
 
-                          // Content Area
-                          Expanded(
-                            child: Obx(
-                              () => _buildContentArea(
-                                suspectDetailController,
-                                suspectController,
+                            // Content Area
+                            Expanded(
+                              child: Obx(
+                                () => _buildContentArea(
+                                  suspectDetailController,
+                                  suspectController,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Footer
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
-              child: GameFooter(onGameResultTap: () {}),
-            ),
-          ],
+              // Footer
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 10.sp,
+                  right: 10.sp,
+                  bottom: 5.sp,
+                ),
+                child: GameFooter(onGameResultTap: () {}),
+              ),
+            ],
+          ),
         ),
       ),
     );

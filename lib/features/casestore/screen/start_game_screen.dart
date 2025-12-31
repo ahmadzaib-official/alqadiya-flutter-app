@@ -30,22 +30,25 @@ class _StartGameScreenState extends State<StartGameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        isPurchased: true,
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Top Bar
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'Who did it?'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl: controller.gameDetail.value?.coverImageUrl ?? 
+                   controller.gameDetail.value?.coverImage ?? 
+                   "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Top Bar
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        controller.gameDetail.value?.title ?? 'Who did it?'.tr,
+                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                      ),
                     SizedBox(width: 5.w),
                     Container(
                       width: 1.w,
@@ -156,8 +159,9 @@ class _StartGameScreenState extends State<StartGameScreen> {
                 ),
               ],
             ),
-            Spacer(),
-          ],
+              Spacer(),
+            ],
+          ),
         ),
       ),
     );
