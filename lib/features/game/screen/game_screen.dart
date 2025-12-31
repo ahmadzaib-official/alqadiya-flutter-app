@@ -375,7 +375,11 @@ class _GameScreenState extends State<GameScreen> {
 
                               // Hint Button
                               Obx(() {
-                                final question = currentQuestion;
+                                // Access observable to trigger rebuild
+                                final questions = questionController.questions;
+                                final question = questions.firstWhereOrNull(
+                                  (q) => q.order == currentQuestionOrder,
+                                );
                                 if (question == null) {
                                   return Center(
                                     child: CircularProgressIndicator(
@@ -412,7 +416,16 @@ class _GameScreenState extends State<GameScreen> {
                               }),
                               SizedBox(height: 16.h),
                               // Answer Options
-                              Obx(() => _buildAnswerOptions()),
+                              Obx(() {
+                                // Access observables to trigger rebuild
+                                final questions = questionController.questions;
+                                final lastAnswer =
+                                    answerController.lastAnswer.value;
+                                return _buildAnswerOptions(
+                                  questions,
+                                  lastAnswer,
+                                );
+                              }),
                               const Spacer(),
                               // Footer Buttons
                               _buildFooterButtons(),
@@ -506,8 +519,13 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildAnswerOptions() {
-    final question = currentQuestion;
+  Widget _buildAnswerOptions(
+    RxList<QuestionModel> questions,
+    UserAnswerModel? lastAnswer,
+  ) {
+    final question = questions.firstWhereOrNull(
+      (q) => q.order == currentQuestionOrder,
+    );
     if (question == null ||
         question.answers == null ||
         question.answers!.isEmpty) {
@@ -523,8 +541,7 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     final answers = question.answers!;
-    final isAnswerSubmitted = lastSubmittedAnswer != null;
-    final isCorrect = lastSubmittedAnswer?.isCorrect ?? false;
+    final isAnswerSubmitted = lastAnswer != null;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -649,7 +666,9 @@ class _GameScreenState extends State<GameScreen> {
         ),
         SizedBox(width: 12.w),
         Obx(() {
-          final isSubmitted = lastSubmittedAnswer != null;
+          // Access observable to trigger rebuild
+          final lastAnswer = answerController.lastAnswer.value;
+          final isSubmitted = lastAnswer != null;
 
           return GestureDetector(
             onTap: () {
@@ -676,7 +695,7 @@ class _GameScreenState extends State<GameScreen> {
                 ],
                 color:
                     isSubmitted
-                        ? ((lastSubmittedAnswer?.isCorrect ?? false)
+                        ? ((lastAnswer?.isCorrect ?? false)
                             ? MyColors.greenColor
                             : MyColors.redButtonColor)
                         : MyColors.redButtonColor,
@@ -688,7 +707,7 @@ class _GameScreenState extends State<GameScreen> {
                     Text(
                       !isSubmitted
                           ? 'Send answer'.tr
-                          : (lastSubmittedAnswer?.isCorrect ?? false)
+                          : (lastAnswer?.isCorrect ?? false)
                           ? 'Correct'.tr
                           : 'Wrong answer'.tr,
                       style: AppTextStyles.heading1().copyWith(
@@ -699,7 +718,7 @@ class _GameScreenState extends State<GameScreen> {
                     if (isSubmitted) ...[
                       SizedBox(width: 3.w),
                       SvgPicture.asset(
-                        (lastSubmittedAnswer?.isCorrect ?? false)
+                        (lastAnswer?.isCorrect ?? false)
                             ? MyIcons.circle_check_outline
                             : MyIcons.close,
                         colorFilter: ColorFilter.mode(
