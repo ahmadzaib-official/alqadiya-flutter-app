@@ -3,9 +3,9 @@ import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/features/game/controller/game_result_provider.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
-import 'package:alqadiya_game/widgets/gradient_box_border.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +13,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class GameResultSummaryScreen extends StatelessWidget {
+class GameResultSummaryScreen extends StatefulWidget {
   const GameResultSummaryScreen({super.key});
+
+  @override
+  State<GameResultSummaryScreen> createState() => _GameResultSummaryScreenState();
+}
+
+class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final gameResultController = Get.find<GameResultController>();
+    final gameController = Get.find<GameController>();
+    final sessionId = gameController.gameSession.value?.id;
+    
+    if (sessionId != null) {
+      gameResultController.getGameResult(sessionId: sessionId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,28 +64,46 @@ class GameResultSummaryScreen extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Team Result Card
-                    Expanded(
-                      child: _buildTeamResultCard(
-                        context,
-                        gameResultController.teamResults[0],
-                      ),
-                    ),
-                    SizedBox(width: 6.w),
-                    Expanded(
-                      child: _buildTeamResultCard(
-                        context,
-                        gameResultController.teamResults[1],
-                      ),
-                    ),
-                    SizedBox(width: 6.w),
+                child: Obx(
+                  () {
+                    final teamResults = gameResultController.teamResults;
+                    if (teamResults.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'Loading results...'.tr,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 8.sp,
+                            color: MyColors.white.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Team Result Card
+                        if (teamResults.length > 0)
+                          Expanded(
+                            child: _buildTeamResultCard(
+                              context,
+                              teamResults[0],
+                            ),
+                          ),
+                        if (teamResults.length > 0) SizedBox(width: 6.w),
+                        if (teamResults.length > 1)
+                          Expanded(
+                            child: _buildTeamResultCard(
+                              context,
+                              teamResults[1],
+                            ),
+                          ),
+                        if (teamResults.length <= 1) Expanded(child: SizedBox()),
+                        if (teamResults.length > 1) SizedBox(width: 6.w),
 
-                    // Right Side - Team Card, Winner & Actions
-                    Expanded(
-                      child: Container(
+                        // Right Side - Team Card, Winner & Actions
+                        Expanded(
+                          child: Container(
                         padding: EdgeInsets.symmetric(
                           vertical: 8.h,
                           horizontal: 6.w,
@@ -102,7 +137,7 @@ class GameResultSummaryScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    ' ${gameResultController.winnerTeam}'.tr,
+                                    ' ${gameResultController.winnerTeamName ?? ''}'.tr,
                                     style: AppTextStyles.heading1().copyWith(
                                       fontSize: 8.sp,
                                       color: MyColors.white,
@@ -170,9 +205,11 @@ class GameResultSummaryScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -193,7 +230,6 @@ class GameResultSummaryScreen extends StatelessWidget {
     Map<String, dynamic> result,
   ) {
     final players = result['players'] as List<Map<String, dynamic>>;
-    final isCorrect = result['isCorrect'] as bool;
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),

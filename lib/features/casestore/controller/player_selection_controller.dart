@@ -101,22 +101,36 @@ class PlayerSelectionController extends GetxController {
 
   void _syncTeams(List<TeamModel> apiTeams) {
     if (apiTeams.isEmpty) {
-      // if api returns empty, maybe keep default for testing or clear
-      // _initializeTeams();
-      // For now, if we have api teams, we map them
+      // If no teams from API and we don't have any teams, initialize default
+      if (teams.isEmpty) {
+        _initializeTeams();
+      }
       return;
     }
 
-    List<Team> newTeams =
-        apiTeams
-            .map(
-              (t) => Team(
-                id: t.id ?? '',
-                name: t.teamName ?? 'Team ${t.teamNumber}',
-                players: [],
-              ),
-            )
-            .toList();
+    // Map API teams to local Team objects
+    // Preserve existing players in teams if team IDs match
+    List<Team> newTeams = [];
+    for (var apiTeam in apiTeams) {
+      // Check if we already have this team with players
+      Team? existingTeam = teams.firstWhereOrNull(
+        (t) => t.id == (apiTeam.id ?? ''),
+      );
+
+      if (existingTeam != null) {
+        // Keep existing team with its players, just update the name if needed
+        newTeams.add(existingTeam);
+      } else {
+        // Create new team
+        newTeams.add(
+          Team(
+            id: apiTeam.id ?? '',
+            name: apiTeam.teamName ?? 'Team ${apiTeam.teamNumber}',
+            players: [],
+          ),
+        );
+      }
+    }
 
     teams.assignAll(newTeams);
   }

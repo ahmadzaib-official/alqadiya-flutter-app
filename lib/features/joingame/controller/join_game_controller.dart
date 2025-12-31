@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,19 @@ class JoinGameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Update game session if response contains session data
+        if (response.data != null && response.data['session'] != null) {
+          final gameController = Get.find<GameController>();
+          final session = gameController.gameSession.value;
+          if (session != null) {
+            // Session is already updated by the API response
+            // Fetch session details to get full session info
+            if (session.id != null) {
+              await gameController.getGameSessionDetails(sessionId: session.id!);
+            }
+          }
+        }
+        
         isWaiting.value = true;
         CustomSnackbar.showSuccess('Joined game successfully');
 
@@ -36,7 +50,7 @@ class JoinGameController extends GetxController {
           Get.toNamed(AppRoutes.caseVideoScreen);
         });
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
       isWaiting.value = false;
     } catch (e) {

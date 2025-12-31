@@ -302,14 +302,18 @@ class GameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Refresh session details to get updated team assignments
+        await getGameSessionDetails(sessionId: sessionId);
+
         CustomSnackbar.showSuccess('Members assigned successfully');
         await Future.delayed(const Duration(milliseconds: 500));
 
         final firstTeamId = teams.isNotEmpty ? teams.first.id : null;
+        final firstTeamName = teams.isNotEmpty ? teams.first.teamName : null;
         if (firstTeamId != null) {
           Get.toNamed(
             AppRoutes.chooseTeamLeaderScreen,
-            arguments: {'teamId': firstTeamId},
+            arguments: {'teamId': firstTeamId, 'teamName': firstTeamName},
           );
         }
       }
@@ -370,9 +374,7 @@ class GameController extends GetxController {
         }
         if (response.data['teams'] != null) {
           final List<dynamic> teamsList = response.data['teams'];
-          teams.assignAll(
-            teamsList.map((e) => TeamModel.fromJson(e)).toList(),
-          );
+          teams.assignAll(teamsList.map((e) => TeamModel.fromJson(e)).toList());
         }
       }
     } on DioException {

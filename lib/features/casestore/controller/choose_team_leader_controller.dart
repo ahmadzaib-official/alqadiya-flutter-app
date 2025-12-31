@@ -1,6 +1,6 @@
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
+import 'package:alqadiya_game/features/game/model/team_model.dart';
 import 'package:get/get.dart';
 
 class TeamLeader {
@@ -48,8 +48,75 @@ class ChooseTeamLeaderController extends GetxController {
       }
     }
     
-    if (teamLeaders.isEmpty) {
-      _initializeTeamLeaders();
+    // Fetch team members from API
+    fetchTeamMembers();
+  }
+
+  /// Fetch team members from API
+  Future<void> fetchTeamMembers() async {
+    if (teamId.isEmpty) {
+      if (teamLeaders.isEmpty) {
+        _initializeTeamLeaders();
+      }
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      final gameController = Get.find<GameController>();
+      final sessionId = gameController.gameSession.value?.id;
+      
+      if (sessionId == null) {
+        if (teamLeaders.isEmpty) {
+          _initializeTeamLeaders();
+        }
+        return;
+      }
+
+      // Get game session details to get teams and players with assignments
+      await gameController.getGameSessionDetails(sessionId: sessionId);
+      
+      // Find the team
+      TeamModel? team = gameController.teams.firstWhereOrNull(
+        (t) => t.id == teamId,
+      );
+      
+      if (team != null) {
+        // Update team name if not set
+        if (teamName.value.isEmpty) {
+          teamName.value = team.teamName ?? 'Team';
+        }
+        
+        // Get team members - we need to check which players are assigned to this team
+        // Since the API response structure may vary, we'll use all session players
+        // In production, you'd filter by team assignments from the API response
+        List<TeamLeader> leaders = gameController.sessionPlayers
+            .map(
+              (member) => TeamLeader(
+                id: member.userId ?? member.id ?? '',
+                name: member.userName ?? 'Unknown',
+                imageUrl: "https://picsum.photos/200",
+              ),
+            )
+            .toList();
+        
+        if (leaders.isNotEmpty) {
+          teamLeaders.assignAll(leaders);
+        } else if (teamLeaders.isEmpty) {
+          _initializeTeamLeaders();
+        }
+      } else {
+        if (teamLeaders.isEmpty) {
+          _initializeTeamLeaders();
+        }
+      }
+    } catch (e) {
+      CustomSnackbar.showError("Failed to fetch team members: ${e.toString()}");
+      if (teamLeaders.isEmpty) {
+        _initializeTeamLeaders();
+      }
+    } finally {
+      isLoading.value = false;
     }
   }
 

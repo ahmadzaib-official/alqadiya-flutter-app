@@ -1,5 +1,4 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/widgets/copy_code_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
@@ -20,13 +19,11 @@ class StartGameScreen extends StatefulWidget {
 
 class _StartGameScreenState extends State<StartGameScreen> {
   final controller = Get.find<GameController>();
-  String sessionCode = '';
 
   @override
   void initState() {
     super.initState();
-    sessionCode = Get.arguments?['sessionCode'] ?? '';
-  
+    // Session code will be fetched from gameSession
   }
 
   @override
@@ -96,7 +93,12 @@ class _StartGameScreenState extends State<StartGameScreen> {
                         ),
                       ),
                       SizedBox(height: 40.h),
-                      CopyCodeButton(code: sessionCode, horizontalPadding: 14),
+                      Obx(
+                        () => CopyCodeButton(
+                          code: controller.gameSession.value?.sessionCode ?? '',
+                          horizontalPadding: 14,
+                        ),
+                      ),
                       SizedBox(height: 10.h),
 
                       Text(

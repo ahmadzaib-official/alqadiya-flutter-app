@@ -3,7 +3,6 @@ import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/casestore/controller/player_selection_controller.dart';
-import 'package:alqadiya_game/features/home/screen/home_screen.dart';
 import 'package:alqadiya_game/widgets/available_players_section.dart';
 import 'package:alqadiya_game/widgets/copy_code_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
@@ -163,21 +162,25 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
             SizedBox(height: 50.h),
 
             // Code sharing section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Share this code with friends to join.',
-                  style: AppTextStyles.captionRegular12().copyWith(
-                    color: MyColors.white,
-                    height: 1.5,
-                    fontSize: 6.sp,
+            Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Share this code with friends to join.',
+                    style: AppTextStyles.captionRegular12().copyWith(
+                      color: MyColors.white,
+                      height: 1.5,
+                      fontSize: 6.sp,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(width: 10.w),
-                CopyCodeButton(code: "12312-asd-23e-sssasd"),
-              ],
+                  SizedBox(width: 10.w),
+                  CopyCodeButton(
+                    code: gameController.gameSession.value?.sessionCode ?? '',
+                  ),
+                ],
+              ),
             ),
 
             SizedBox(height: 0.06.sh),

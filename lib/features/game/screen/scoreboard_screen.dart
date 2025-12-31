@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/features/game/controller/scoreboard_provider.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/widget/team_progress_indicator.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
@@ -14,8 +16,39 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class ScoreboardScreen extends StatelessWidget {
+class ScoreboardScreen extends StatefulWidget {
   const ScoreboardScreen({super.key});
+
+  @override
+  State<ScoreboardScreen> createState() => _ScoreboardScreenState();
+}
+
+class _ScoreboardScreenState extends State<ScoreboardScreen> {
+  Timer? _pollingTimer;
+  final gameController = Get.find<GameController>();
+
+  @override
+  void initState() {
+    super.initState();
+    final scoreboardController = Get.find<ScoreboardController>();
+    final sessionId = gameController.gameSession.value?.id;
+    
+    if (sessionId != null) {
+      // Initial fetch
+      scoreboardController.getScoreboard(sessionId: sessionId);
+      
+      // Start polling every 5 seconds
+      _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        scoreboardController.refreshScoreboard(sessionId: sessionId);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,27 +120,45 @@ class ScoreboardScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           // Teams Row
-                          Expanded(
-                            child: Row(
-                              children: [
-                                // Team 1
-                                Expanded(
-                                  child: _buildTeamCard(
-                                    context,
-                                    scoreboardController.teams[0],
+                          Obx(
+                            () {
+                              final teams = scoreboardController.teams;
+                              if (teams.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    'Loading scoreboard...'.tr,
+                                    style: AppTextStyles.heading1().copyWith(
+                                      fontSize: 8.sp,
+                                      color: MyColors.white.withValues(alpha: 0.5),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 10.w),
-                                // Team 2
-                                Expanded(
-                                  child: _buildTeamCard(
-                                    context,
-                                    scoreboardController.teams[1],
-                                  ),
-                                ),
-                                SizedBox(width: 10.w),
+                                );
+                              }
+                              
+                              return Expanded(
+                                child: Row(
+                                  children: [
+                                    // Team 1
+                                    if (teams.length > 0)
+                                      Expanded(
+                                        child: _buildTeamCard(
+                                          context,
+                                          teams[0],
+                                        ),
+                                      ),
+                                    if (teams.length > 0) SizedBox(width: 10.w),
+                                    // Team 2
+                                    if (teams.length > 1)
+                                      Expanded(
+                                        child: _buildTeamCard(
+                                          context,
+                                          teams[1],
+                                        ),
+                                      ),
+                                    if (teams.length <= 1) Expanded(child: SizedBox()),
+                                    if (teams.length > 1) SizedBox(width: 10.w),
 
-                                Expanded(
+                                    Expanded(
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
                                       vertical: 8.h,
@@ -215,8 +266,10 @@ class ScoreboardScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -248,12 +301,6 @@ class ScoreboardScreen extends StatelessWidget {
     final players = team['players'] as List<Map<String, dynamic>>;
     final progressStart = team['progressStart'] as int;
     final progressEnd = team['progressEnd'] as int;
-    // Calculate progress: how much of the journey from start to end is complete
-    // Assuming we're going from start (24) down to end (19 or 21)
-    // Progress = (start - end) / start, but we want it as a fraction of completion
-    final totalQuestions = progressStart;
-    final completed = progressStart - progressEnd;
-    final progress = completed / totalQuestions;
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
@@ -302,9 +349,10 @@ class ScoreboardScreen extends StatelessWidget {
                                     height: 25.w,
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(50.r),
-                                      child: CachedNetworkImage(
-                                        imageUrl: player['avatar'] as String,
-                                        fit: BoxFit.cover,
+                                      child: (player['avatar'] as String).isNotEmpty
+                                          ? CachedNetworkImage(
+                                              imageUrl: player['avatar'] as String,
+                                              fit: BoxFit.cover,
                                         placeholder:
                                             (context, url) => Container(
                                               color: MyColors.darkBlueColor,
@@ -328,7 +376,15 @@ class ScoreboardScreen extends StatelessWidget {
                                                     .withValues(alpha: 0.5),
                                               ),
                                             ),
-                                      ),
+                                          )
+                                          : Container(
+                                              color: MyColors.darkBlueColor,
+                                              child: Icon(
+                                                Icons.person,
+                                                size: 25.sp,
+                                                color: MyColors.white.withValues(alpha: 0.5),
+                                              ),
+                                            ),
                                     ),
                                   ),
                                   // Green checkmark overlay - only on rightmost member
@@ -374,7 +430,10 @@ class ScoreboardScreen extends StatelessWidget {
           ),
 
           // Progress Indicator
-          TeamProgressIndicator(currentQuestion: 19, totalQuestions: 24),
+          TeamProgressIndicator(
+            currentQuestion: progressStart - progressEnd,
+            totalQuestions: progressStart,
+          ),
 
           SizedBox(height: 10.h),
 
@@ -390,7 +449,7 @@ class ScoreboardScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '14'.tr,
+                  '${team['score'] ?? 0}'.tr,
                   style: AppTextStyles.heading1().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
