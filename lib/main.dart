@@ -26,3 +26,6 @@ void main() async {
   final locale = await LocalizationService.getCurrentLocale();
   runApp(MyApp(locale: locale));
 }
+
+// 31277864
+// Qwerty@123
