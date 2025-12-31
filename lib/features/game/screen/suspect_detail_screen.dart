@@ -3,6 +3,7 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_detail_provider.dart';
+import 'package:alqadiya_game/features/game/controller/suspect_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/audio_player_widget.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/image_preview_screen.dart';
@@ -17,8 +18,28 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 
-class SuspectDetailScreen extends StatelessWidget {
+class SuspectDetailScreen extends StatefulWidget {
   const SuspectDetailScreen({super.key});
+
+  @override
+  State<SuspectDetailScreen> createState() => _SuspectDetailScreenState();
+}
+
+class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Suspect details should already be fetched when navigating from list
+    // But if navigated directly, we might need to fetch
+    final suspectController = Get.find<SuspectController>();
+    if (suspectController.suspectDetail.value == null) {
+      // If no suspect detail, try to get from arguments or first suspect
+      final suspectId = Get.arguments?['suspectId'];
+      if (suspectId != null) {
+        suspectController.getSuspectById(suspectId: suspectId);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +52,8 @@ class SuspectDetailScreen extends StatelessWidget {
           ..startTimer();
 
     // Initialize suspect detail controller
-    final suspectController = Get.find<SuspectDetailController>();
+    final suspectDetailController = Get.find<SuspectDetailController>();
+    final suspectController = Get.find<SuspectController>();
 
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
@@ -94,14 +116,17 @@ class SuspectDetailScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           // Main Navigation Tabs
-                          Obx(() => _buildMainTabs(suspectController)),
+                          Obx(() => _buildMainTabs(suspectDetailController)),
 
                           SizedBox(height: 10.h),
 
                           // Content Area
                           Expanded(
                             child: Obx(
-                              () => _buildContentArea(suspectController),
+                              () => _buildContentArea(
+                                suspectDetailController,
+                                suspectController,
+                              ),
                             ),
                           ),
                         ],
@@ -124,13 +149,38 @@ class SuspectDetailScreen extends StatelessWidget {
   }
 
   Widget _buildSuspectPortrait() {
-    return Container(
-      width: 0.2.sw,
-      height: double.infinity,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.r)),
-      child: Image.asset(MyImages.suspect, fit: BoxFit.cover),
-    );
+    final suspectController = Get.find<SuspectController>();
+    return Obx(() {
+      final suspect = suspectController.suspectDetail.value;
+      final imageUrl =
+          suspect?.profileImageURL ?? suspect?.profileImage ?? MyImages.suspect;
+
+      return Container(
+        width: 0.2.sw,
+        height: double.infinity,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.r)),
+        child:
+            imageUrl.startsWith('http')
+                ? CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Container(
+                        color: MyColors.darkBlueColor,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: MyColors.redButtonColor,
+                          ),
+                        ),
+                      ),
+                  errorWidget:
+                      (context, url, error) =>
+                          Image.asset(MyImages.suspect, fit: BoxFit.cover),
+                )
+                : Image.asset(imageUrl, fit: BoxFit.cover),
+      );
+    });
   }
 
   Widget _buildMainTabs(SuspectDetailController controller) {
@@ -185,63 +235,88 @@ class SuspectDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContentArea(SuspectDetailController controller) {
+  Widget _buildContentArea(
+    SuspectDetailController controller,
+    SuspectController suspectController,
+  ) {
     if (controller.selectedMainTab.value == 0) {
-      return _buildPersonalInformation();
+      return _buildPersonalInformation(suspectController);
     } else if (controller.selectedMainTab.value == 1) {
-      return _buildAttachments(controller);
+      return _buildAttachments(controller, suspectController);
     } else if (controller.selectedMainTab.value == 2) {
-      return _buildInvestigationReport(controller);
+      return _buildInvestigationReport(controller, suspectController);
     }
-    return _buildPersonalInformation();
+    return _buildPersonalInformation(suspectController);
   }
 
-  Widget _buildPersonalInformation() {
+  Widget _buildPersonalInformation(SuspectController suspectController) {
     final scrollController = ScrollController();
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Scrollable content
-          Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Personal Information Fields
-                    _buildInfoField('Full Name:', 'Azmi Kame'),
-                    SizedBox(height: 6.h),
-                    _buildInfoField('Age:', '54 years old'),
-                    SizedBox(height: 6.h),
-                    _buildInfoField('Job:', 'Unemployed for 10 years'),
+    return Obx(() {
+      final suspect = suspectController.suspectDetail.value;
+      if (suspect == null) {
+        return Center(
+          child: CircularProgressIndicator(color: MyColors.redButtonColor),
+        );
+      }
 
-                    SizedBox(height: 12.h),
-
-                    // Descriptive Paragraph
-                    Text(
-                      'Overindulgence in financial problems and impulsive spending is a common problem that hinders financial stability. Some people find it difficult to control their spending habits and often overindulge in financial problems and impulsive spending is a common problem that hinders financial stability. Some people find it difficult to control their spending habits and often overindulge in financial problems and impulsive spending is a common problem.',
-                      style: AppTextStyles.bodyTextRegular16().copyWith(
-                        fontSize: 6.sp,
-                        color: MyColors.white,
-                        fontWeight: FontWeight.w500,
+      return Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 8.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Personal Information Fields
+                      _buildInfoField(
+                        'Full Name:',
+                        suspect.nameEn ?? suspect.nameAr ?? 'Unknown',
                       ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
+                      SizedBox(height: 6.h),
+                      _buildInfoField(
+                        'Age:',
+                        suspect.age != null
+                            ? '${suspect.age} years old'
+                            : 'N/A',
+                      ),
+                      SizedBox(height: 6.h),
+                      _buildInfoField(
+                        'Job:',
+                        suspect.jobEn ?? suspect.jobAr ?? 'N/A',
+                      ),
+
+                      SizedBox(height: 12.h),
+
+                      // Descriptive Paragraph
+                      Text(
+                        suspect.biographyEn ??
+                            suspect.biographyAr ??
+                            'No biography available',
+                        style: AppTextStyles.bodyTextRegular16().copyWith(
+                          fontSize: 6.sp,
+                          color: MyColors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Custom Scrollbar
-          _buildCustomScrollbar(scrollController),
-        ],
-      ),
-    );
+            // Custom Scrollbar
+            _buildCustomScrollbar(scrollController),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildCustomScrollbar(ScrollController controller) {
@@ -373,18 +448,21 @@ class SuspectDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAttachments(SuspectDetailController controller) {
+  Widget _buildAttachments(
+    SuspectDetailController controller,
+    SuspectController suspectController,
+  ) {
     return Obx(() {
       if (controller.selectedAttachmentType.value == null) {
         return _buildAttachmentsGrid(controller);
       } else if (controller.selectedAttachmentType.value == 'Videos') {
-        return _buildVideosList(controller);
+        return _buildVideosList(controller, suspectController);
       } else if (controller.selectedAttachmentType.value == 'Images') {
-        return _buildImagesList(controller);
+        return _buildImagesList(controller, suspectController);
       } else if (controller.selectedAttachmentType.value == 'Documents') {
-        return _buildDocumentsList(controller);
+        return _buildDocumentsList(controller, suspectController);
       } else if (controller.selectedAttachmentType.value == 'Audio') {
-        return _buildAudioList(controller);
+        return _buildAudioList(controller, suspectController);
       }
       return _buildAttachmentsGrid(controller);
     });
@@ -444,270 +522,461 @@ class SuspectDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVideosList(SuspectDetailController suspectController) {
-    final videos = [
-      'https://picsum.photos/300/200?random=1',
-      'https://picsum.photos/300/200?random=2',
-      'https://picsum.photos/300/200?random=3',
-    ];
+  Widget _buildVideosList(
+    SuspectDetailController suspectController,
+    SuspectController suspectApiController,
+  ) {
+    return Obx(() {
+      final suspect = suspectApiController.suspectDetail.value;
+      final videos =
+          suspect?.attachments
+              ?.where((att) => att.attachmentType?.toLowerCase() == 'video')
+              .map((att) => att.mediaUrl ?? '')
+              .where((url) => url.isNotEmpty)
+              .toList() ??
+          [];
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
-      decoration: BoxDecoration(
-        color: MyColors.BlueColor,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with title and refresh
-          Row(
-            children: [
-              SvgPicture.asset(MyIcons.videos, height: 10.sp),
-              SizedBox(width: 5.w),
-              Text(
-                'Videos',
-                style: AppTextStyles.heading2().copyWith(
-                  fontSize: 8.sp,
-                  color: MyColors.white,
-                ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () => suspectController.resetAttachmentType(),
-                child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
-              ),
-            ],
-          ),
-          SizedBox(height: 5.h),
-          Divider(color: Colors.white.withValues(alpha: 0.1)),
-          SizedBox(height: 5.h),
-
-          // Video thumbnails
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: videos.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to video player
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => VideoPlayerScreen(
-                              videoUrl:
-                                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                            ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.r),
-                          child: CachedNetworkImage(
-                            imageUrl: videos[index],
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => Container(
-                                  color: MyColors.darkBlueColor,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: MyColors.redButtonColor,
-                                    ),
-                                  ),
-                                ),
-                            errorWidget:
-                                (context, url, error) => Container(
-                                  color: MyColors.darkBlueColor,
-                                  child: Icon(
-                                    Icons.error,
-                                    color: MyColors.white,
-                                  ),
-                                ),
-                          ),
-                        ),
-                        // Play button overlay
-                        Positioned.fill(
-                          child: Center(
-                            child: Icon(
-                              Icons.play_arrow_outlined,
-                              color: MyColors.white.withValues(alpha: 0.5),
-                              size: 30.sp,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+      if (videos.isEmpty) {
+        return Center(
+          child: Text(
+            'No videos available'.tr,
+            style: AppTextStyles.heading1().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.5),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        );
+      }
 
-  Widget _buildImagesList(SuspectDetailController suspectController) {
-    final images = [
-      'https://picsum.photos/300/200?random=4',
-      'https://picsum.photos/300/200?random=5',
-      'https://picsum.photos/300/200?random=6',
-    ];
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
-      decoration: BoxDecoration(
-        color: MyColors.BlueColor,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with title and refresh
-          Row(
-            children: [
-              SvgPicture.asset(MyIcons.gallery, height: 10.sp),
-              SizedBox(width: 5.w),
-              Text(
-                'Images',
-                style: AppTextStyles.heading2().copyWith(
-                  fontSize: 8.sp,
-                  color: MyColors.white,
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
+        decoration: BoxDecoration(
+          color: MyColors.BlueColor,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with title and refresh
+            Row(
+              children: [
+                SvgPicture.asset(MyIcons.videos, height: 10.sp),
+                SizedBox(width: 5.w),
+                Text(
+                  'Videos',
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 8.sp,
+                    color: MyColors.white,
+                  ),
                 ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () => suspectController.resetAttachmentType(),
-                child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
-              ),
-            ],
-          ),
-          SizedBox(height: 5.h),
-          Divider(color: Colors.white.withValues(alpha: 0.1)),
-          SizedBox(height: 5.h),
-          // Image thumbnails
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                ImagePreviewScreen(imageUrl: images[index]),
+                Spacer(),
+                GestureDetector(
+                  onTap: () => suspectController.resetAttachmentType(),
+                  child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
+                ),
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Divider(color: Colors.white.withValues(alpha: 0.1)),
+            SizedBox(height: 5.h),
+
+            // Video thumbnails
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                scrollDirection: Axis.horizontal,
+                itemCount: videos.length,
+                itemBuilder: (context, index) {
+                  final videoUrl = videos[index];
+                  final videoAttachment = suspect?.attachments
+                      ?.firstWhereOrNull(
+                        (att) =>
+                            att.attachmentType?.toLowerCase() == 'video' &&
+                            att.mediaUrl == videoUrl,
+                      );
+                  final thumbnailUrl = videoAttachment?.thumbnailUrl ?? '';
+
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to video player
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  VideoPlayerScreen(videoUrl: videoUrl),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 60.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.r),
-                      child: CachedNetworkImage(
-                        imageUrl: images[index],
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        placeholder:
-                            (context, url) => Container(
-                              color: MyColors.darkBlueColor,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: MyColors.redButtonColor,
-                                ),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.r),
+                            child:
+                                thumbnailUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                      imageUrl: thumbnailUrl,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                      placeholder:
+                                          (context, url) => Container(
+                                            color: MyColors.darkBlueColor,
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                color: MyColors.redButtonColor,
+                                              ),
+                                            ),
+                                          ),
+                                      errorWidget:
+                                          (context, url, error) => Container(
+                                            color: MyColors.darkBlueColor,
+                                            child: Icon(
+                                              Icons.error,
+                                              color: MyColors.white,
+                                            ),
+                                          ),
+                                    )
+                                    : Container(
+                                      color: MyColors.darkBlueColor,
+                                      child: Icon(
+                                        Icons.play_circle_outline,
+                                        color: MyColors.white,
+                                        size: 30.sp,
+                                      ),
+                                    ),
+                          ),
+                          // Play button overlay
+                          Positioned.fill(
+                            child: Center(
+                              child: Icon(
+                                Icons.play_arrow_outlined,
+                                color: MyColors.white.withValues(alpha: 0.5),
+                                size: 30.sp,
                               ),
                             ),
-                        errorWidget:
-                            (context, url, error) => Container(
-                              color: MyColors.darkBlueColor,
-                              child: Icon(Icons.error, color: MyColors.white),
-                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildDocumentsList(SuspectDetailController suspectController) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
-      decoration: BoxDecoration(
-        color: MyColors.BlueColor,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with title and refresh
-          Row(
-            children: [
-              SvgPicture.asset(MyIcons.document, height: 10.sp),
-              SizedBox(width: 5.w),
-              Text(
-                'Documents',
-                style: AppTextStyles.heading2().copyWith(
-                  fontSize: 8.sp,
-                  color: MyColors.white,
-                ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () => suspectController.resetAttachmentType(),
-                child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
-              ),
-            ],
+  Widget _buildImagesList(
+    SuspectDetailController suspectController,
+    SuspectController suspectApiController,
+  ) {
+    return Obx(() {
+      final suspect = suspectApiController.suspectDetail.value;
+      final images =
+          suspect?.attachments
+              ?.where((att) => att.attachmentType?.toLowerCase() == 'image')
+              .map((att) => att.mediaUrl ?? '')
+              .where((url) => url.isNotEmpty)
+              .toList() ??
+          [];
+
+      if (images.isEmpty) {
+        return Center(
+          child: Text(
+            'No images available'.tr,
+            style: AppTextStyles.heading1().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.5),
+            ),
           ),
-          SizedBox(height: 5.h),
-          Divider(color: Colors.white.withValues(alpha: 0.1)),
-          SizedBox(height: 5.h),
-          // Document button
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => PDFViewerScreen(
-                              pdfUrl:
-                                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                            ),
+        );
+      }
+
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
+        decoration: BoxDecoration(
+          color: MyColors.BlueColor,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with title and refresh
+            Row(
+              children: [
+                SvgPicture.asset(MyIcons.gallery, height: 10.sp),
+                SizedBox(width: 5.w),
+                Text(
+                  'Images',
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 8.sp,
+                    color: MyColors.white,
+                  ),
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () => suspectController.resetAttachmentType(),
+                  child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
+                ),
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Divider(color: Colors.white.withValues(alpha: 0.1)),
+            SizedBox(height: 5.h),
+            // Image thumbnails
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                scrollDirection: Axis.horizontal,
+                itemCount: images.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  ImagePreviewScreen(imageUrl: images[index]),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 60.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
-                    );
-                  },
-                  child: Container(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: CachedNetworkImage(
+                          imageUrl: images[index],
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder:
+                              (context, url) => Container(
+                                color: MyColors.darkBlueColor,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: MyColors.redButtonColor,
+                                  ),
+                                ),
+                              ),
+                          errorWidget:
+                              (context, url, error) => Container(
+                                color: MyColors.darkBlueColor,
+                                child: Icon(Icons.error, color: MyColors.white),
+                              ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildDocumentsList(
+    SuspectDetailController suspectController,
+    SuspectController suspectApiController,
+  ) {
+    return Obx(() {
+      final suspect = suspectApiController.suspectDetail.value;
+      final documents =
+          suspect?.attachments
+              ?.where((att) => att.attachmentType?.toLowerCase() == 'document')
+              .toList() ??
+          [];
+
+      if (documents.isEmpty) {
+        return Center(
+          child: Text(
+            'No documents available'.tr,
+            style: AppTextStyles.heading1().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.5),
+            ),
+          ),
+        );
+      }
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
+        decoration: BoxDecoration(
+          color: MyColors.BlueColor,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with title and refresh
+            Row(
+              children: [
+                SvgPicture.asset(MyIcons.document, height: 10.sp),
+                SizedBox(width: 5.w),
+                Text(
+                  'Documents',
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 8.sp,
+                    color: MyColors.white,
+                  ),
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () => suspectController.resetAttachmentType(),
+                  child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
+                ),
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Divider(color: Colors.white.withValues(alpha: 0.1)),
+            SizedBox(height: 5.h),
+            // Document button
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                scrollDirection: Axis.horizontal,
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
+                  final document = documents[index];
+                  return GestureDetector(
+                    onTap: () {
+                      if (document.mediaUrl != null &&
+                          document.mediaUrl!.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    PDFViewerScreen(pdfUrl: document.mediaUrl!),
+                          ),
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: 60.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      decoration: BoxDecoration(
+                        color: MyColors.white,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.r),
+                          gradient: RadialGradient(
+                            colors: [
+                              Colors.black.withValues(alpha: 0),
+                              Colors.black.withValues(alpha: 0.2),
+                            ],
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(MyIcons.file),
+                            SizedBox(height: 8.h),
+                            Text(
+                              document.attachmentNameEn ??
+                                  document.attachmentNameAr ??
+                                  'Document ${index + 1}',
+                              style: AppTextStyles.heading2().copyWith(
+                                fontSize: 6.sp,
+                                color: MyColors.BlueColor,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildAudioList(
+    SuspectDetailController suspectController,
+    SuspectController suspectApiController,
+  ) {
+    return Obx(() {
+      final suspect = suspectApiController.suspectDetail.value;
+      final audioFiles =
+          suspect?.attachments
+              ?.where((att) => att.attachmentType?.toLowerCase() == 'audio')
+              .toList() ??
+          [];
+
+      if (audioFiles.isEmpty) {
+        return Center(
+          child: Text(
+            'No audio files available'.tr,
+            style: AppTextStyles.heading1().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.5),
+            ),
+          ),
+        );
+      }
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
+        decoration: BoxDecoration(
+          color: MyColors.BlueColor,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with title and refresh
+            Row(
+              children: [
+                SvgPicture.asset(MyIcons.audios, height: 10.sp),
+                SizedBox(width: 5.w),
+                Text(
+                  'Audio',
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 8.sp,
+                    color: MyColors.white,
+                  ),
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () => suspectController.resetAttachmentType(),
+                  child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
+                ),
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Divider(color: Colors.white.withValues(alpha: 0.1)),
+            SizedBox(height: 5.h),
+            // Audio players
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                scrollDirection: Axis.horizontal,
+                itemCount: audioFiles.length,
+                itemBuilder: (context, index) {
+                  final audio = audioFiles[index];
+                  return Container(
                     width: 60.w,
                     margin: EdgeInsets.only(right: 10.w),
                     decoration: BoxDecoration(
@@ -724,125 +993,73 @@ class SuspectDetailScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(MyIcons.file),
-                          SizedBox(height: 8.h),
-                          Text(
-                            'Document 1',
-                            style: AppTextStyles.heading2().copyWith(
-                              fontSize: 6.sp,
-                              color: MyColors.BlueColor,
-                            ),
-                          ),
-                        ],
+                      child: AudioPlayerWidget(
+                        audioUrl: audio.mediaUrl ?? '',
+                        title:
+                            audio.attachmentNameEn ??
+                            audio.attachmentNameAr ??
+                            'Audio ${index + 1}',
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildAudioList(SuspectDetailController suspectController) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
-      decoration: BoxDecoration(
-        color: MyColors.BlueColor,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with title and refresh
-          Row(
-            children: [
-              SvgPicture.asset(MyIcons.audios, height: 10.sp),
-              SizedBox(width: 5.w),
-              Text(
-                'Audio',
-                style: AppTextStyles.heading2().copyWith(
-                  fontSize: 8.sp,
-                  color: MyColors.white,
-                ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () => suspectController.resetAttachmentType(),
-                child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
-              ),
-            ],
-          ),
-          SizedBox(height: 5.h),
-          Divider(color: Colors.white.withValues(alpha: 0.1)),
-          SizedBox(height: 5.h),
-          // Audio players
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return Container(
-                  width: 60.w,
-                  margin: EdgeInsets.only(right: 10.w),
-                  decoration: BoxDecoration(
-                    color: MyColors.white,
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      gradient: RadialGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: 0),
-                          Colors.black.withValues(alpha: 0.2),
-                        ],
-                      ),
-                    ),
-                    child: AudioPlayerWidget(
-                      audioUrl:
-                          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                      title: 'Audio 1',
-                    ),
-                  ),
-                );
-              },
+  Widget _buildInvestigationReport(
+    SuspectDetailController suspectController,
+    SuspectController suspectApiController,
+  ) {
+    return Obx(() {
+      final suspect = suspectApiController.suspectDetail.value;
+      final reports = suspect?.investigationReports ?? [];
+
+      if (reports.isEmpty) {
+        return Center(
+          child: Text(
+            'No investigation reports available'.tr,
+            style: AppTextStyles.heading1().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.5),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        );
+      }
 
-  Widget _buildInvestigationReport(SuspectDetailController suspectController) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
-        childAspectRatio: 2.5,
-      ),
-      itemCount: 2,
-      itemBuilder: (context, index) {
-        if (index == 0) {
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10.w,
+          mainAxisSpacing: 10.h,
+          childAspectRatio: 2.5,
+        ),
+        itemCount: reports.length,
+        itemBuilder: (context, index) {
+          final report = reports[index];
+          final isDocument = report.attachmentType?.toLowerCase() == 'document';
+          final isAudio = report.attachmentType?.toLowerCase() == 'audio';
+
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => PDFViewerScreen(
-                        pdfUrl:
-                            'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                      ),
-                ),
-              );
+              if (isDocument &&
+                  report.mediaUrl != null &&
+                  report.mediaUrl!.isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => PDFViewerScreen(pdfUrl: report.mediaUrl!),
+                  ),
+                );
+              } else if (isAudio) {
+                suspectController.setSelectedMainTab(1);
+                suspectController.setSelectedAttachmentType('Audio');
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -852,52 +1069,30 @@ class SuspectDetailScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(MyIcons.document, height: 30.h),
+                  SvgPicture.asset(
+                    isDocument ? MyIcons.document : MyIcons.audios,
+                    height: 30.h,
+                  ),
                   SizedBox(height: 8.h),
                   Text(
-                    'Investigation report',
+                    report.attachmentNameEn ??
+                        report.attachmentNameAr ??
+                        (isDocument ? 'Investigation report' : 'Audio'),
                     style: AppTextStyles.heading1().copyWith(
                       fontSize: 8.sp,
                       color: MyColors.white,
                       fontWeight: FontWeight.w600,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
           );
-        } else {
-          return GestureDetector(
-            onTap: () {
-              suspectController.setSelectedMainTab(1);
-              suspectController.setSelectedAttachmentType('Audio');
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: MyColors.BlueColor,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(MyIcons.audios, height: 30.h),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Audios',
-                    style: AppTextStyles.heading1().copyWith(
-                      fontSize: 8.sp,
-                      fontWeight: FontWeight.w600,
-                      color: MyColors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-      },
-    );
+        },
+      );
+    });
   }
 }

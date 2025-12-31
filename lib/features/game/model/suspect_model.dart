@@ -46,16 +46,18 @@ class SuspectModel {
       biographyAr: json["biographyAr"],
       profileImageURL: json["profileImageURL"],
       profileImage: json["profileImage"],
-      attachments: json["attachments"] != null
-          ? (json["attachments"] as List)
-              .map((e) => SuspectAttachment.fromJson(e))
-              .toList()
-          : null,
-      investigationReports: json["investigationReports"] != null
-          ? (json["investigationReports"] as List)
-              .map((e) => SuspectAttachment.fromJson(e))
-              .toList()
-          : null,
+      attachments:
+          json["attachments"] != null
+              ? (json["attachments"] as List)
+                  .map((e) => SuspectAttachment.fromJson(e))
+                  .toList()
+              : null,
+      investigationReports:
+          json["investigationReports"] != null
+              ? (json["investigationReports"] as List)
+                  .map((e) => SuspectAttachment.fromJson(e))
+                  .toList()
+              : null,
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
@@ -74,7 +76,8 @@ class SuspectModel {
     "profileImageURL": profileImageURL,
     "profileImage": profileImage,
     "attachments": attachments?.map((e) => e.toJson()).toList(),
-    "investigationReports": investigationReports?.map((e) => e.toJson()).toList(),
+    "investigationReports":
+        investigationReports?.map((e) => e.toJson()).toList(),
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
   };
@@ -121,4 +124,3 @@ class SuspectAttachment {
     "thumbnailUrl": thumbnailUrl,
   };
 }
-
