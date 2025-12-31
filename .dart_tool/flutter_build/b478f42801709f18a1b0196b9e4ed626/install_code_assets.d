@@ -1,0 +1,1 @@
+ /Volumes/Data/alqadiya-flutter-app/.dart_tool/flutter_build/b478f42801709f18a1b0196b9e4ed626/native_assets.json: 

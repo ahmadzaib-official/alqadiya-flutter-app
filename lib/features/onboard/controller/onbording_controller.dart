@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_images.dart';
-import 'package:alqadiya_game/features/location/find_location_user_controller.dart';
 import 'package:alqadiya_game/features/onboard/model/onbording_model.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +47,7 @@ class OnboardingController extends GetxController {
     super.onInit();
     pageController = PageController(initialPage: 0, viewportFraction: 1.0);
     // startAutoSlide();
-    LocationServices().getCurrentLocation();
+ 
   }
 
   @override
