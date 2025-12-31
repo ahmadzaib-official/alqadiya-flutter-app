@@ -15,10 +15,7 @@ class EvidenceRepository extends GetxService {
     final String url = ServerConfig.getEvidencesByGame(gameId);
     var response = await _dioHelper.get(
       url: url,
-      queryParameters: {
-        'page': page,
-        'limit': limit,
-      },
+      queryParameters: {'page': page, 'limit': limit},
       isAuthRequired: true,
     );
     return response;
@@ -29,11 +26,7 @@ class EvidenceRepository extends GetxService {
     required String evidenceId,
   }) async {
     final String url = ServerConfig.getEvidenceById(evidenceId);
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 }
-
