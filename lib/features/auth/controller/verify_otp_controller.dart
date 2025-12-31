@@ -87,7 +87,7 @@ class VerificationController extends GetxController {
       // Error already shown by interceptor
       DebugPoint.log("Resend OTP error: $e");
     } catch (e) {
-      CustomSnackbar.showError('Error: ${e.toString()}');
+      CustomSnackbar.showError('${'Error:'.tr} ${e.toString()}');
       DebugPoint.log("Resend OTP error: $e");
     } finally {
       isResendingOtp.value = false;

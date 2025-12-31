@@ -28,7 +28,7 @@ class ScoreboardController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("Something went wrong!!!: ${e.toString()}");
+      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
     } finally {
       isLoading(false);
     }

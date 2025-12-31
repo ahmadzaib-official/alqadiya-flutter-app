@@ -137,7 +137,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                     ),
                                   ),
                                   Text(
-                                    ' ${gameResultController.winnerTeamName ?? ''}'.tr,
+                                    ' ${gameResultController.winnerTeamName ?? ''}',
                                     style: AppTextStyles.heading1().copyWith(
                                       fontSize: 8.sp,
                                       color: MyColors.white,

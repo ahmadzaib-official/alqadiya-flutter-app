@@ -155,7 +155,7 @@ class BuyPointsScreen extends StatelessWidget {
         children: [
           // Points amount
           Text(
-            '${package.points} Points',
+            '${package.points} ${'Points'.tr}',
             style: AppTextStyles.heading1().copyWith(
               fontSize: 10.sp,
               color: MyColors.white,
@@ -193,7 +193,7 @@ class BuyPointsScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                ' KD',
+                ' ${'KD'.tr}',
                 style: AppTextStyles.heading2().copyWith(
                   fontSize: 6.sp,
                   color: MyColors.white,

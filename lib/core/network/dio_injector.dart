@@ -351,7 +351,7 @@ void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
 
   if (statusCode >= 500 && statusCode < 600) {
     Future.delayed(Duration.zero, () {
-      CustomSnackbar.showError('Server error occurred. Please try again later');
+      CustomSnackbar.showError('Server error occurred. Please try again later'.tr);
     });
     return;
   }

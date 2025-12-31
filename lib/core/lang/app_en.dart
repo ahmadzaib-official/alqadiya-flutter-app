@@ -916,4 +916,13 @@ const Map<String, String> enUS = {
   'terms and conditions': 'terms and conditions',
   'Secure payment and excellent customer service':
       'Secure payment and excellent customer service',
+  'Pay now': 'Pay now',
+  'KD': 'KD',
+  'English': 'English',
+  'Arabic': 'Arabic',
+  'Error:': 'Error:',
+  'OTP sent successfully': 'OTP sent successfully',
+  'Server error occurred. Please try again later':
+      'Server error occurred. Please try again later',
+  'Phone Number': 'Phone Number',
 };

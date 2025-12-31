@@ -448,7 +448,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${team['score'] ?? 0}'.tr,
+                  '${team['score'] ?? 0}',
                   style: AppTextStyles.heading1().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,

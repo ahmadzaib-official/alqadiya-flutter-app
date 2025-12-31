@@ -434,7 +434,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               Padding(
                 padding: EdgeInsets.only(bottom: 2.h),
                 child: Text(
-                  'KD',
+                  'KD'.tr,
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 10.sp,
                     color: MyColors.black.withValues(alpha: 0.7),

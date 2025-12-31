@@ -916,4 +916,13 @@ const Map<String, String> lnAr = {
   'terms and conditions': 'الشروط والأحكام',
   'Secure payment and excellent customer service':
       'سداد آمن وخدمة عملاء ممتازة',
+  'Pay now': 'ادفع الآن',
+  'KD': 'د.ك',
+  'English': 'الإنجليزية',
+  'Arabic': 'العربية',
+  'Error:': 'خطأ:',
+  'OTP sent successfully': 'تم إرسال رمز التحقق بنجاح',
+  'Server error occurred. Please try again later':
+      'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقًا',
+  'Phone Number': 'رقم الهاتف',
 };

@@ -113,7 +113,7 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
                   // English Option
                   _buildLanguageOption(
                     context: context,
-                    title: "English",
+                    title: "English".tr,
                     flagEmoji: "🇬🇧",
                     isSelected: currentLanguage == "English",
                     onTap: onEnglishSelected,
@@ -124,7 +124,7 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
                   // Arabic Option
                   _buildLanguageOption(
                     context: context,
-                    title: "العربية",
+                    title: "Arabic".tr,
                     flagEmoji: "🇰🇼",
                     isSelected: currentLanguage == "Arabic",
                     onTap: onArabicSelected,
