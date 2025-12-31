@@ -54,20 +54,19 @@ class _GameScreenState extends State<GameScreen> {
 
     // Fetch questions for the game
     final gameController = Get.find<GameController>();
-    // For testing - use test game ID
-    const testGameId = '85bb6d0e-45af-443d-9362-7a5feeb66610';
     final gameId =
         gameController.gameDetail.value?.id ??
-        gameController.gameSession.value?.gameId ??
-        testGameId;
+        gameController.gameSession.value?.gameId;
 
-    // Fetch game details if not already loaded
-    if (gameController.gameDetail.value?.id == null) {
-      gameController.getGameDetail(gameId: gameId);
+    if (gameId != null) {
+      // Fetch game details if not already loaded
+      if (gameController.gameDetail.value?.id == null) {
+        gameController.getGameDetail(gameId: gameId);
+      }
+
+      // Fetch questions
+      questionController.getQuestionsByGame(gameId: gameId, language: 'en');
     }
-
-    // Fetch questions
-    questionController.getQuestionsByGame(gameId: gameId, language: 'en');
 
     // Initialize question start time
     questionStartTime = DateTime.now();
