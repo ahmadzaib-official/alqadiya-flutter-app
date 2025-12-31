@@ -28,6 +28,7 @@ class LanguageSelectionDrawer extends StatelessWidget {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       barrierDismissible: true,
+      useSafeArea: false,
       builder:
           (context) => Material(
             type: MaterialType.transparency,
@@ -44,8 +45,9 @@ class LanguageSelectionDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final screenHeight = MediaQuery.sizeOf(context).height;
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
 
     // Adjust width based on orientation - wider in landscape for better UX
     final drawerWidth = isLandscape ? screenWidth * 0.35 : screenWidth * 0.3;
@@ -280,6 +282,9 @@ class _LanguageDrawerDialogState extends State<_LanguageDrawerDialog>
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+
     return Stack(
       children: [
         // Backdrop
@@ -291,24 +296,27 @@ class _LanguageDrawerDialogState extends State<_LanguageDrawerDialog>
             height: double.infinity,
           ),
         ),
-        // Drawer positioned on the right
+        // Drawer positioned on the right, flush with screen edge
         Positioned(
           right: 0,
           top: 0,
           bottom: 0,
           child: SlideTransition(
             position: _slideAnimation,
-            child: LanguageSelectionDrawer(
-              currentLanguage: widget.currentLanguage,
-              onEnglishSelected: () {
-                widget.onEnglishSelected();
-                _closeDrawer();
-              },
-              onArabicSelected: () {
-                widget.onArabicSelected();
-                _closeDrawer();
-              },
-              onCloseTap: _closeDrawer,
+            child: SizedBox(
+              height: screenHeight,
+              child: LanguageSelectionDrawer(
+                currentLanguage: widget.currentLanguage,
+                onEnglishSelected: () {
+                  widget.onEnglishSelected();
+                  _closeDrawer();
+                },
+                onArabicSelected: () {
+                  widget.onArabicSelected();
+                  _closeDrawer();
+                },
+                onCloseTap: _closeDrawer,
+              ),
             ),
           ),
         ),
