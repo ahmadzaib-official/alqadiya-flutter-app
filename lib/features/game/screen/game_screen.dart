@@ -48,8 +48,6 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     // Initialize timer controller (permanent to persist across navigation)
     timerController = Get.put(GameTimerController(), permanent: true);
-    // Start timer when entering game screen
-    timerController.startTimer();
 
     // Fetch questions for the game
     final gameController = Get.find<GameController>();
@@ -60,15 +58,42 @@ class _GameScreenState extends State<GameScreen> {
     if (gameId != null) {
       // Fetch game details if not already loaded
       if (gameController.gameDetail.value?.id == null) {
-        gameController.getGameDetail(gameId: gameId);
+        gameController.getGameDetail(gameId: gameId).then((_) {
+          // Start timer with duration from game details after loading
+          _startTimerFromGameDetails(gameController);
+        });
+      } else {
+        // Game details already loaded, start timer immediately
+        _startTimerFromGameDetails(gameController);
       }
 
       // Fetch questions
       questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+    } else {
+      // Fallback: start timer with default values if game details not available
+      timerController.startTimer();
     }
 
     // Initialize question start time
     questionStartTime = DateTime.now();
+  }
+
+  void _startTimerFromGameDetails(GameController gameController) {
+    // Get timer duration from game details
+    final estimatedDuration = gameController.gameDetail.value.estimatedDuration;
+    
+    if (estimatedDuration != null && estimatedDuration > 0) {
+      // estimatedDuration is in minutes, convert to minutes:seconds
+      final minutes = estimatedDuration;
+      final seconds = 0; // Start with 0 seconds
+      timerController.startTimer(
+        initialMinutes: minutes,
+        initialSeconds: seconds,
+      );
+    } else {
+      // Fallback to default if duration not available
+      timerController.startTimer();
+    }
   }
 
   int get totalQuestions => questionController.questions.length;
