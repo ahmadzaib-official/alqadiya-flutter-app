@@ -37,3 +37,4 @@ class SuspectRepository extends GetxService {
   }
 }
 
+

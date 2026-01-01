@@ -28,7 +28,6 @@ class LanguageSelectionDrawer extends StatelessWidget {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       barrierDismissible: true,
-      useSafeArea: false,
       builder:
           (context) => Material(
             type: MaterialType.transparency,
@@ -50,7 +49,7 @@ class LanguageSelectionDrawer extends StatelessWidget {
     final screenHeight = mediaQuery.size.height;
 
     // Adjust width based on orientation - wider in landscape for better UX
-    final drawerWidth = isLandscape ? screenWidth * 0.3 : screenWidth * 0.3;
+    final drawerWidth = isLandscape ? screenWidth * 0.35 : screenWidth * 0.3;
 
     return Container(
       width: drawerWidth,
