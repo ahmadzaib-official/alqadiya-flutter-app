@@ -1,10 +1,10 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
+import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
-import 'package:alqadiya_game/features/game/screen/suspect_detail_screen.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:flutter/material.dart';
@@ -234,13 +234,11 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
               final suspect = suspects[index];
               return GestureDetector(
                 onTap: () {
-                  // Fetch suspect details and navigate
+                  // Fetch suspect details and navigate using GetX
                   suspectController.getSuspectById(suspectId: suspect.id ?? '');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SuspectDetailScreen(),
-                    ),
+                  Get.toNamed(
+                    AppRoutes.suspectDetailScreen,
+                    arguments: {'suspectId': suspect.id},
                   );
                 },
                 child: Container(
