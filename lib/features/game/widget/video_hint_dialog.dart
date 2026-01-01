@@ -104,7 +104,9 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
 
   @override
   void dispose() {
-    if (Get.isRegistered<VideoPlayerStateController>(tag: _videoControllerTag)) {
+    if (Get.isRegistered<VideoPlayerStateController>(
+      tag: _videoControllerTag,
+    )) {
       Get.delete<VideoPlayerStateController>(tag: _videoControllerTag);
     }
     if (Get.isRegistered<AudioPlayerController>(tag: _audioControllerTag)) {
@@ -118,31 +120,33 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Container(
-        width: 0.4.sw,
-        constraints: BoxConstraints(maxHeight: 0.9.sh),
-        decoration: BoxDecoration(
-          color: MyColors.redButtonColor,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildHeader(),
-                  _buildContent(),
-                  SizedBox(height: 16.h),
-                  _buildContinueButton(),
-                  SizedBox(height: 16.h),
-                ],
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: 0.9.sh, maxWidth: 0.4.sw),
+        child: Container(
+          width: 0.4.sw,
+          decoration: BoxDecoration(
+            color: MyColors.redButtonColor,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildHeader(),
+                    _buildContent(),
+                    SizedBox(height: 16.h),
+                    _buildContinueButton(),
+                    SizedBox(height: 16.h),
+                  ],
+                ),
               ),
-            ),
-            _buildCloseButton(),
-          ],
+              _buildCloseButton(),
+            ],
+          ),
         ),
       ),
     );
@@ -180,18 +184,29 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildContent() {
-    final contentHeight = _showText ? 20.h : _getContentHeight();
-    return Container(
-      width: double.infinity,
-      height: contentHeight,
-      margin: EdgeInsets.symmetric(horizontal: _showText ? 5.w : 12.w),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.r),
+    // Calculate max available height: 90% screen - header (~50h) - buttons (~80h) - padding (~32h)
+    final maxAvailableHeight = (0.9.sh - 162.h).clamp(100.h, 500.h);
+    final preferredHeight = _showText ? 20.h : _getContentHeight();
+    final contentHeight =
+        preferredHeight > maxAvailableHeight
+            ? maxAvailableHeight
+            : preferredHeight;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: maxAvailableHeight,
+        minHeight: _showText ? 20.h : 0,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.r),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: _showText ? _buildTextContent() : _buildMediaContent(),
+      child: Container(
+        width: double.infinity,
+        height: contentHeight,
+        margin: EdgeInsets.symmetric(horizontal: _showText ? 5.w : 12.w),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10.r),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: _showText ? _buildTextContent() : _buildMediaContent(),
+        ),
       ),
     );
   }
@@ -237,7 +252,8 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
           return _buildImageContent();
         } else if (widget.audioUrl != null && widget.audioUrl!.isNotEmpty) {
           return _buildAudioContent();
-        } else if (widget.documentUrl != null && widget.documentUrl!.isNotEmpty) {
+        } else if (widget.documentUrl != null &&
+            widget.documentUrl!.isNotEmpty) {
           return _buildDocumentContent();
         }
         return _buildEmptyState();
@@ -308,9 +324,8 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
       imageUrl: widget.mediaUrl!,
       fit: BoxFit.cover,
       placeholder: (context, url) => _buildLoadingState('Loading image...'.tr),
-      errorWidget: (context, url, error) => _buildErrorState(
-        'Failed to load image'.tr,
-      ),
+      errorWidget:
+          (context, url, error) => _buildErrorState('Failed to load image'.tr),
     );
   }
 
@@ -332,115 +347,109 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
         );
       }
 
-      return Container(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Play/Pause button
-            GestureDetector(
-              onTap: () => _audioController.togglePlayPause(),
-              child: Container(
-                width: 60.w,
-                height: 60.w,
-                decoration: BoxDecoration(
-                  color: MyColors.BlueColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  _audioController.isPlaying.value ? Icons.pause : Icons.play_arrow,
-                  color: Colors.white,
-                  size: 32.sp,
-                ),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            // Progress indicator
-            ClipRRect(
-              borderRadius: BorderRadius.circular(2.r),
-              child: LinearProgressIndicator(
-                value: _audioController.progress,
-                backgroundColor: Colors.white.withValues(alpha: 0.2),
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                minHeight: 4.h,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            // Duration info
-            if (_audioController.duration.value != Duration.zero)
-              Text(
-                '${_formatDuration(_audioController.position.value)} / ${_formatDuration(_audioController.duration.value)}',
-                style: AppTextStyles.captionRegular10().copyWith(
-                  color: Colors.white,
-                  fontSize: 10.sp,
+      return SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Play/Pause button
+              GestureDetector(
+                onTap: () => _audioController.togglePlayPause(),
+                child: Container(
+                  width: 60.w,
+                  height: 60.w,
+                  decoration: BoxDecoration(
+                    color: MyColors.BlueColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _audioController.isPlaying.value
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                    color: Colors.white,
+                    size: 32.sp,
+                  ),
                 ),
               ),
-          ],
+              SizedBox(height: 12.h),
+              // Progress indicator
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2.r),
+                child: LinearProgressIndicator(
+                  value: _audioController.progress,
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                  minHeight: 4.h,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              // Duration info
+              if (_audioController.duration.value != Duration.zero)
+                Text(
+                  '${_formatDuration(_audioController.position.value)} / ${_formatDuration(_audioController.duration.value)}',
+                  style: AppTextStyles.captionRegular10().copyWith(
+                    color: Colors.white,
+                    fontSize: 10.sp,
+                  ),
+                ),
+            ],
+          ),
         ),
       );
     });
   }
 
   Widget _buildDocumentContent() {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            MyIcons.document,
-            width: 60.w,
-            height: 60.w,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            'Document'.tr,
-            style: AppTextStyles.heading1().copyWith(
-              fontSize: 10.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'Tap to view document'.tr,
-            style: AppTextStyles.captionRegular10().copyWith(
-              color: Colors.white.withValues(alpha: 0.7),
-              fontSize: 9.sp,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 16.h),
-          GestureDetector(
-            onTap: () {
-              final url = widget.mediaUrl;
-              if (url != null && url.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PDFViewerScreen(pdfUrl: url),
-                  ),
-                );
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                color: MyColors.BlueColor,
-                borderRadius: BorderRadius.circular(8.r),
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              MyIcons.document,
+              width: 16.w,
+              height: 16.w,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
               ),
-              child: Text(
-                'Open Document'.tr,
-                style: AppTextStyles.heading1().copyWith(
-                  fontSize: 8.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            ),
+
+            SizedBox(height: 10.h),
+            GestureDetector(
+              onTap: () {
+                final url = widget.mediaUrl;
+                if (url != null && url.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PDFViewerScreen(pdfUrl: url),
+                    ),
+                  );
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: MyColors.BlueColor,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Text(
+                  'Open Document'.tr,
+                  style: AppTextStyles.heading1().copyWith(
+                    fontSize: 6.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -448,15 +457,19 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   Widget _buildLoadingState(String message) {
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const CircularProgressIndicator(color: Colors.white),
           SizedBox(height: 12.h),
-          Text(
-            message,
-            style: AppTextStyles.captionRegular10().copyWith(
-              color: Colors.white,
-              fontSize: 12.sp,
+          Flexible(
+            child: Text(
+              message,
+              style: AppTextStyles.captionRegular10().copyWith(
+                color: Colors.white,
+                fontSize: 12.sp,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -518,6 +531,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   Widget _buildEmptyState() {
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
@@ -526,11 +540,14 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
             size: 48.sp,
           ),
           SizedBox(height: 8.h),
-          Text(
-            'No media available'.tr,
-            style: AppTextStyles.captionRegular10().copyWith(
-              color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 12.sp,
+          Flexible(
+            child: Text(
+              'No media available'.tr,
+              style: AppTextStyles.captionRegular10().copyWith(
+                color: Colors.white.withValues(alpha: 0.5),
+                fontSize: 12.sp,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
