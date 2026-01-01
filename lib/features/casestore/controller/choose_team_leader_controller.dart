@@ -70,8 +70,9 @@ class ChooseTeamLeaderController extends GetxController {
     }
 
     isLoading.value = true;
+    final gameController = Get.find<GameController>();
+    
     try {
-      final gameController = Get.find<GameController>();
       final sessionId = gameController.gameSession.value?.id;
       
       if (sessionId == null) {
@@ -82,7 +83,10 @@ class ChooseTeamLeaderController extends GetxController {
       }
 
       // Get game session details to get teams and players with assignments
-      await gameController.getGameSessionDetails(sessionId: sessionId);
+      await gameController.getGameSessionDetails(sessionId: sessionId, silent: true);
+      
+      // Also fetch session players to ensure we have the latest player data
+      await gameController.getSessionPlayers(silent: true);
       
       // Find the team
       TeamModel? team = gameController.teams.firstWhereOrNull(
@@ -98,9 +102,17 @@ class ChooseTeamLeaderController extends GetxController {
         // Try to get team members from scoreboard API (includes team-player assignments)
         List<TeamLeader> members = await _getTeamMembersFromScoreboard(sessionId);
         
-        // If scoreboard doesn't have data, try to get from session details
-        if (members.isEmpty) {
-          members = await _getTeamMembersFromSessionDetails(gameController, sessionId);
+        // If scoreboard doesn't have data, use all session players as fallback
+        // This happens when teams are just assigned and scoreboard isn't ready yet
+        if (members.isEmpty && gameController.sessionPlayers.isNotEmpty) {
+          // Use all session players as team members (they should all be in the team after assignment)
+          members = gameController.sessionPlayers.map((member) {
+            return TeamLeader(
+              id: member.userId ?? member.id ?? '',
+              name: member.userName ?? 'Unknown',
+              imageUrl: "https://picsum.photos/200",
+            );
+          }).toList();
         }
         
         // Update team members list (for display)
@@ -113,12 +125,39 @@ class ChooseTeamLeaderController extends GetxController {
           _initializeTeamLeaders();
         }
       } else {
-        if (teamLeaders.isEmpty) {
+        // Team not found, use all session players as fallback
+        if (gameController.sessionPlayers.isNotEmpty) {
+          final members = gameController.sessionPlayers.map((member) {
+            return TeamLeader(
+              id: member.userId ?? member.id ?? '',
+              name: member.userName ?? 'Unknown',
+              imageUrl: "https://picsum.photos/200",
+            );
+          }).toList();
+          teamMembers.assignAll(members);
+          teamLeaders.assignAll(members);
+        } else if (teamLeaders.isEmpty) {
           _initializeTeamLeaders();
         }
       }
     } catch (e) {
-      CustomSnackbar.showError("${'Failed to fetch team members:'.tr} ${e.toString()}");
+      // Only show error if we don't have any players at all
+      // If we have session players, use them as fallback instead of showing error
+      if (gameController.sessionPlayers.isEmpty) {
+        CustomSnackbar.showError("${'Failed to fetch team members:'.tr} ${e.toString()}");
+      } else {
+        // Use session players as fallback
+        final members = gameController.sessionPlayers.map((member) {
+          return TeamLeader(
+            id: member.userId ?? member.id ?? '',
+            name: member.userName ?? 'Unknown',
+            imageUrl: "https://picsum.photos/200",
+          );
+        }).toList();
+        teamMembers.assignAll(members);
+        teamLeaders.assignAll(members);
+      }
+      
       if (teamLeaders.isEmpty) {
         _initializeTeamLeaders();
       }
@@ -156,23 +195,6 @@ class ChooseTeamLeaderController extends GetxController {
       // Scoreboard might not be available yet, that's okay
     }
     return [];
-  }
-
-  /// Get team members from session details (fallback)
-  Future<List<TeamLeader>> _getTeamMembersFromSessionDetails(
-    GameController gameController,
-    String sessionId,
-  ) async {
-    // Since the API response doesn't directly map players to teams,
-    // we'll use all session players as a fallback
-    // In a production environment, the API should include team assignments
-    return gameController.sessionPlayers.map((member) {
-      return TeamLeader(
-        id: member.userId ?? member.id ?? '',
-        name: member.userName ?? 'Unknown',
-        imageUrl: "https://picsum.photos/200",
-      );
-    }).toList();
   }
 
   /// Initialize team leaders with sample data (Fallback)

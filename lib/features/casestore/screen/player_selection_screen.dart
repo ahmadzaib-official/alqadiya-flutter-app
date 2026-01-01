@@ -26,27 +26,42 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   late PlayerSelectionController controller;
   final gameController = Get.find<GameController>();
   Timer? _pollingTimer;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<PlayerSelectionController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      gameController.getSessionPlayers();
-      // Start polling every 2 seconds
-      _startPolling();
+      if (!_isDisposed && mounted) {
+        gameController.getSessionPlayers();
+        // Start polling every 2 seconds
+        _startPolling();
+      }
     });
   }
 
   void _startPolling() {
+    // Cancel any existing timer first
+    _pollingTimer?.cancel();
+    
     _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      gameController.getSessionPlayers();
+      // Check if widget is still mounted and not disposed before making API call
+      if (_isDisposed || !mounted) {
+        timer.cancel();
+        _pollingTimer = null;
+        return;
+      }
+      // Make silent API call to avoid showing loading indicators
+      gameController.getSessionPlayers(silent: true);
     });
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     _pollingTimer?.cancel();
+    _pollingTimer = null;
     super.dispose();
   }
 

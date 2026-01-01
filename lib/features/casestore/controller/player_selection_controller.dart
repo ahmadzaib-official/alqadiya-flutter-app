@@ -54,6 +54,10 @@ class PlayerSelectionController extends GetxController {
 
   // Track dragged player
   final Rx<Player?> draggedPlayer = Rx<Player?>(null);
+  
+  // Workers for cleanup
+  Worker? _teamsWorker;
+  Worker? _playersWorker;
 
   @override
   void onInit() {
@@ -84,19 +88,27 @@ class PlayerSelectionController extends GetxController {
     fetchAvailablePlayers();
   }
 
+  @override
+  void onClose() {
+    // Dispose workers to prevent memory leaks and unwanted API calls
+    _teamsWorker?.dispose();
+    _playersWorker?.dispose();
+    super.onClose();
+  }
+
   /// Initialize available players
   void fetchAvailablePlayers() {
     final gameController = Get.find<GameController>();
 
     // Sync Teams
     _syncTeams(gameController.teams);
-    ever(gameController.teams, _syncTeams);
+    _teamsWorker = ever(gameController.teams, _syncTeams);
 
     // Initial sync players
     _syncPlayers(gameController.sessionPlayers);
 
     // Listen for updates
-    ever(gameController.sessionPlayers, _syncPlayers);
+    _playersWorker = ever(gameController.sessionPlayers, _syncPlayers);
   }
 
   void _syncTeams(List<TeamModel> apiTeams) {

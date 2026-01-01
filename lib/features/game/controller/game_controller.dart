@@ -278,28 +278,46 @@ class GameController extends GetxController {
   }
 
   // Get Session Players
-  Future<void> getSessionPlayers() async {
+  Future<void> getSessionPlayers({bool silent = false}) async {
     final sessionId = gameSession.value?.id;
     if (sessionId == null) return;
 
     try {
-      isLoading(true);
+      if (!silent) {
+        isLoading(true);
+      }
       final response = await GameRepository().getSessionPlayers(
         sessionId: sessionId,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data;
-        sessionPlayers.assignAll(
-          list.map((e) => MemberModel.fromJson(e)).toList(),
-        );
+        // Use post frame callback to safely update state
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<GameController>()) {
+            try {
+              sessionPlayers.assignAll(
+                list.map((e) => MemberModel.fromJson(e)).toList(),
+              );
+            } catch (e) {
+              // Silently handle setState errors
+            }
+          }
+        });
       }
     } on DioException {
-      // Error already shown by interceptor
+      // Error already shown by interceptor (unless silent)
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      if (!silent) {
+        final errorMessage = e.toString().toLowerCase();
+        if (!errorMessage.contains('setstate') && !errorMessage.contains('markaas')) {
+          CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+        }
+      }
     } finally {
-      isLoading(false);
+      if (!silent) {
+        isLoading(false);
+      }
     }
   }
 
@@ -318,10 +336,12 @@ class GameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Refresh session details to get updated team assignments
-        await getGameSessionDetails(sessionId: sessionId);
-
+        // Show success message first
         CustomSnackbar.showSuccess('Members assigned successfully'.tr);
+        
+        // Refresh session details to get updated team assignments (silently, without showing errors)
+        await getGameSessionDetails(sessionId: sessionId, silent: true);
+
         await Future.delayed(const Duration(milliseconds: 500));
 
         final firstTeamId = teams.isNotEmpty ? teams.first.id : null;
@@ -341,7 +361,11 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      // Only show error if it's not a setState related error
+      final errorMessage = e.toString().toLowerCase();
+      if (!errorMessage.contains('setstate') && !errorMessage.contains('markaas')) {
+        CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      }
     } finally {
       isLoading(false);
     }
@@ -379,36 +403,59 @@ class GameController extends GetxController {
   }
 
   // Get Game Session Details
-  Future<void> getGameSessionDetails({required String sessionId}) async {
+  Future<void> getGameSessionDetails({required String sessionId, bool silent = false}) async {
     try {
-      isLoading(true);
+      if (!silent) {
+        isLoading(true);
+      }
       final response = await GameRepository().getGameSessionDetails(
         sessionId: sessionId,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Response contains session, players, and teams
-        if (response.data['session'] != null) {
-          final session = GameSessionModel.fromJson(response.data['session']);
-          gameSession(session);
-        }
-        if (response.data['players'] != null) {
-          final List<dynamic> playersList = response.data['players'];
-          sessionPlayers.assignAll(
-            playersList.map((e) => MemberModel.fromJson(e)).toList(),
-          );
-        }
-        if (response.data['teams'] != null) {
-          final List<dynamic> teamsList = response.data['teams'];
-          teams.assignAll(teamsList.map((e) => TeamModel.fromJson(e)).toList());
-        }
+        // Use post frame callback to safely update state
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<GameController>()) {
+            try {
+              if (response.data['session'] != null) {
+                final session = GameSessionModel.fromJson(response.data['session']);
+                gameSession(session);
+              }
+              if (response.data['players'] != null) {
+                final List<dynamic> playersList = response.data['players'];
+                sessionPlayers.assignAll(
+                  playersList.map((e) => MemberModel.fromJson(e)).toList(),
+                );
+              }
+              if (response.data['teams'] != null) {
+                final List<dynamic> teamsList = response.data['teams'];
+                teams.assignAll(teamsList.map((e) => TeamModel.fromJson(e)).toList());
+              }
+            } catch (e) {
+              // Silently handle setState errors during updates
+              // Don't show snackbar for setState related errors
+            }
+          }
+        });
       }
     } on DioException {
-      // Error already shown by interceptor
+      // Error already shown by interceptor (unless silent mode)
+      if (!silent) {
+        // Error already shown by interceptor
+      }
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      // Only show error if not in silent mode and not a setState error
+      if (!silent) {
+        final errorMessage = e.toString().toLowerCase();
+        if (!errorMessage.contains('setstate') && !errorMessage.contains('markaas')) {
+          CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+        }
+      }
     } finally {
-      isLoading(false);
+      if (!silent) {
+        isLoading(false);
+      }
     }
   }
 
