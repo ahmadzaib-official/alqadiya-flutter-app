@@ -3,6 +3,7 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
+import 'package:alqadiya_game/features/game/controller/game_footer_controller.dart';
 import 'package:alqadiya_game/features/game/controller/question_controller.dart';
 import 'package:alqadiya_game/features/game/controller/user_answer_controller.dart';
 import 'package:alqadiya_game/features/game/model/question_model.dart';
@@ -37,7 +38,7 @@ class _GameScreenState extends State<GameScreen> {
   final UserAnswerController answerController =
       Get.find<UserAnswerController>();
 
-  int currentQuestionOrder = 1;
+  int? currentQuestionOrder;
   var selectedAnswerIndex = Rx<int?>(null);
   bool hintUsed = false;
   DateTime? questionStartTime;
@@ -48,6 +49,32 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     // Initialize timer controller (permanent to persist across navigation)
     timerController = Get.put(GameTimerController(), permanent: true);
+
+    // Initialize game footer controller (permanent to persist across navigation)
+    if (!Get.isRegistered<GameFooterController>()) {
+      Get.put(GameFooterController(), permanent: true);
+    }
+
+    // Listen to questions changes to set the first question when loaded
+    ever(questionController.questions, (questions) {
+      if (questions.isNotEmpty && currentQuestion == null) {
+        // Find the first question (minimum order)
+        final sortedQuestions = List<QuestionModel>.from(questions)
+          ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+
+        final firstQuestion = sortedQuestions.firstOrNull;
+        if (firstQuestion != null && firstQuestion.order != null) {
+          // Set to the first question's order
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && currentQuestion == null) {
+              setState(() {
+                currentQuestionOrder = firstQuestion.order;
+              });
+            }
+          });
+        }
+      }
+    });
 
     // Fetch questions for the game
     final gameController = Get.find<GameController>();
@@ -103,6 +130,7 @@ class _GameScreenState extends State<GameScreen> {
           .length;
 
   QuestionModel? get currentQuestion {
+    if (currentQuestionOrder == null) return null;
     return questionController.questions.firstWhereOrNull(
       (q) => q.order == currentQuestionOrder,
     );
@@ -115,6 +143,8 @@ class _GameScreenState extends State<GameScreen> {
       hintUsed = false;
       questionStartTime = DateTime.now();
       lastSubmittedAnswer = null;
+      // Clear the last answer when loading a new question
+      answerController.lastAnswer.value = null;
     });
   }
 
@@ -151,15 +181,18 @@ class _GameScreenState extends State<GameScreen> {
 
     if (success) {
       // Update local state - the Obx will rebuild automatically via answerController.lastAnswer
-      lastSubmittedAnswer = answerController.lastAnswer.value;
+      setState(() {
+        lastSubmittedAnswer = answerController.lastAnswer.value;
+      });
     } else {
       CustomSnackbar.showError('Failed to submit answer. Please try again.'.tr);
     }
   }
 
   void _nextQuestion() {
-    if (currentQuestionOrder < totalQuestions) {
-      _loadQuestion(currentQuestionOrder + 1);
+    if (currentQuestionOrder != null &&
+        currentQuestionOrder! < totalQuestions) {
+      _loadQuestion(currentQuestionOrder! + 1);
     }
   }
 
@@ -356,7 +389,8 @@ class _GameScreenState extends State<GameScreen> {
                                     Spacer(flex: 1),
                                     // Center: Stepper
                                     QuestionStepper(
-                                      currentQuestion: currentQuestionOrder,
+                                      currentQuestion:
+                                          currentQuestionOrder ?? 1,
                                       totalQuestions:
                                           totalQuestions > 0
                                               ? totalQuestions
@@ -403,13 +437,27 @@ class _GameScreenState extends State<GameScreen> {
                               Obx(() {
                                 // Access observable to trigger rebuild
                                 final questions = questionController.questions;
+                                final isLoading =
+                                    questionController.isLoading.value;
                                 final question = questions.firstWhereOrNull(
                                   (q) => q.order == currentQuestionOrder,
                                 );
                                 if (question == null) {
+                                  if (isLoading && questions.isEmpty) {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyColors.redButtonColor,
+                                      ),
+                                    );
+                                  }
+                                  // If questions are loaded but current question not found, show error
                                   return Center(
-                                    child: CircularProgressIndicator(
-                                      color: MyColors.redButtonColor,
+                                    child: Text(
+                                      'Question not found'.tr,
+                                      style: AppTextStyles.heading1().copyWith(
+                                        fontSize: 6.sp,
+                                        color: MyColors.white,
+                                      ),
                                     ),
                                   );
                                 }
@@ -568,7 +616,9 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     final answers = question.answers!;
-    final isAnswerSubmitted = lastAnswer != null;
+    // Check if the answer belongs to the current question
+    final isAnswerSubmitted =
+        lastAnswer != null && lastAnswer.questionId == question.id;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -702,21 +752,31 @@ class _GameScreenState extends State<GameScreen> {
         Obx(() {
           // Access observable to trigger rebuild
           final lastAnswer = answerController.lastAnswer.value;
-          final isSubmitted = lastAnswer != null;
+          final isLoading = answerController.isLoading.value;
+          final currentQuestion = this.currentQuestion;
+          // Check if the answer belongs to the current question
+          final isSubmitted =
+              lastAnswer != null &&
+              currentQuestion != null &&
+              lastAnswer.questionId == currentQuestion.id;
 
           return GestureDetector(
-            onTap: () {
-              if (!isSubmitted) {
-                _submitAnswer();
-              } else {
-                if (currentQuestionOrder < totalQuestions) {
-                  _nextQuestion();
-                } else {
-                  // Game completed, navigate to result
-                  Get.toNamed(AppRoutes.scoreboardScreen);
-                }
-              }
-            },
+            onTap:
+                isLoading
+                    ? null
+                    : () {
+                      if (!isSubmitted) {
+                        _submitAnswer();
+                      } else {
+                        if (currentQuestionOrder != null &&
+                            currentQuestionOrder! < totalQuestions) {
+                          _nextQuestion();
+                        } else {
+                          // Game completed, navigate to result
+                          Get.toNamed(AppRoutes.scoreboardScreen);
+                        }
+                      }
+                    },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
               decoration: BoxDecoration(
@@ -728,8 +788,10 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ],
                 color:
-                    isSubmitted
-                        ? ((lastAnswer?.isCorrect ?? false)
+                    isLoading
+                        ? MyColors.redButtonColor.withValues(alpha: 0.5)
+                        : isSubmitted
+                        ? (lastAnswer.isCorrect == true
                             ? MyColors.greenColor
                             : MyColors.redButtonColor)
                         : MyColors.redButtonColor,
@@ -737,29 +799,51 @@ class _GameScreenState extends State<GameScreen> {
               ),
               child: Center(
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      !isSubmitted
-                          ? 'Send answer'.tr
-                          : (lastAnswer?.isCorrect ?? false)
-                          ? 'Correct'.tr
-                          : 'Wrong answer'.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 6.sp,
-                        color: MyColors.white,
-                      ),
-                    ),
-                    if (isSubmitted) ...[
-                      SizedBox(width: 3.w),
-                      SvgPicture.asset(
-                        (lastAnswer?.isCorrect ?? false)
-                            ? MyIcons.circle_check_outline
-                            : MyIcons.close,
-                        colorFilter: ColorFilter.mode(
-                          Colors.white,
-                          BlendMode.srcIn,
+                    if (isLoading)
+                      SizedBox(
+                        width: 12.w,
+                        height: 12.h,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            MyColors.white,
+                          ),
+                        ),
+                      )
+                    else ...[
+                      Text(
+                        !isSubmitted
+                            ? 'Send answer'.tr
+                            : (lastAnswer.isCorrect == true
+                                ? 'Correct'.tr
+                                : 'Wrong answer'.tr),
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 6.sp,
+                          color: MyColors.white,
                         ),
                       ),
+                      if (isSubmitted) ...[
+                        SizedBox(width: 3.w),
+                        // Show correct/wrong icon based on answer
+                        if (lastAnswer.isCorrect == true)
+                          SvgPicture.asset(
+                            MyIcons.circle_check_outline,
+                            colorFilter: ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          )
+                        else
+                          SvgPicture.asset(
+                            MyIcons.close,
+                            colorFilter: ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                      ],
                     ],
                   ],
                 ),
