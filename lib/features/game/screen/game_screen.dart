@@ -37,12 +37,14 @@ class _GameScreenState extends State<GameScreen> {
   final QuestionController questionController = Get.find<QuestionController>();
   final UserAnswerController answerController =
       Get.find<UserAnswerController>();
+  late final GameFooterController footerController;
 
   int? currentQuestionOrder;
   var selectedAnswerIndex = Rx<int?>(null);
   bool hintUsed = false;
   DateTime? questionStartTime;
   UserAnswerModel? lastSubmittedAnswer;
+  bool _isNavigatingToResult = false; // Flag to prevent multiple navigations
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _GameScreenState extends State<GameScreen> {
     if (!Get.isRegistered<GameFooterController>()) {
       Get.put(GameFooterController(), permanent: true);
     }
+    footerController = Get.find<GameFooterController>();
 
     // Listen to questions changes to set the first question when loaded
     ever(questionController.questions, (questions) {
@@ -184,9 +187,33 @@ class _GameScreenState extends State<GameScreen> {
       setState(() {
         lastSubmittedAnswer = answerController.lastAnswer.value;
       });
+
+      // Check if all questions are answered and navigate to result screen
+      _checkAndNavigateToResult();
     } else {
       CustomSnackbar.showError('Failed to submit answer. Please try again.'.tr);
     }
+  }
+
+  void _checkAndNavigateToResult() {
+    // Prevent multiple navigation attempts
+    if (_isNavigatingToResult) return;
+
+    // Wait a moment for the footer controller to update
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted || _isNavigatingToResult) return;
+
+      final totalQuestions = questionController.questions.length;
+      final answeredQuestions = footerController.answeredQuestions.value;
+
+      // Check if all questions have been answered
+      // We check >= to handle edge cases where count might be slightly off
+      if (totalQuestions > 0 && answeredQuestions >= totalQuestions) {
+        _isNavigatingToResult = true;
+        // All questions answered - navigate to game result summary screen
+        Get.offNamed(AppRoutes.gameResultSummaryScreen);
+      }
+    });
   }
 
   void _nextQuestion() {
@@ -776,12 +803,14 @@ class _GameScreenState extends State<GameScreen> {
                       if (!isSubmitted) {
                         _submitAnswer();
                       } else {
+                        // Answer already submitted - move to next question or result
                         if (currentQuestionOrder != null &&
                             currentQuestionOrder! < totalQuestions) {
                           _nextQuestion();
                         } else {
-                          // Game completed, navigate to result
-                          Get.toNamed(AppRoutes.scoreboardScreen);
+                          // Last question already answered - navigate to result
+                          // (This is a fallback, automatic navigation should have already happened)
+                          Get.offNamed(AppRoutes.gameResultSummaryScreen);
                         }
                       }
                     },
