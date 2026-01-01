@@ -37,9 +37,26 @@ class GameResultController extends GetxController {
   // Get winner team name
   String? get winnerTeamName => gameResult.value?.winnerTeamName;
 
-  // Check if team mode
-  bool get isTeamMode =>
-      gameResult.value?.teams != null && gameResult.value!.teams!.isNotEmpty;
+  // Check if team mode (multiple teams)
+  bool get isTeamMode {
+    final teams = gameResult.value?.teams;
+    return teams != null && teams.length > 1;
+  }
+
+  // Check if solo mode based on data structure
+  bool get isSoloModeFromData {
+    final result = gameResult.value;
+    if (result == null) return false;
+
+    // Solo mode if: players array exists, OR single team exists
+    if (result.players != null && result.players!.isNotEmpty) {
+      return true;
+    }
+    if (result.teams != null && result.teams!.length == 1) {
+      return true;
+    }
+    return false;
+  }
 
   // Helper method for backward compatibility with existing screens
   List<Map<String, dynamic>> get teamResults {
@@ -61,22 +78,42 @@ class GameResultController extends GetxController {
   }
 
   // Helper method for solo mode
+  // Solo mode can return data in either 'players' array or 'teams' array (with single team)
   Map<String, dynamic>? get soloPlayerResult {
-    if (gameResult.value?.players == null ||
-        gameResult.value!.players!.isEmpty) {
-      return null;
+    final result = gameResult.value;
+    if (result == null) return null;
+
+    // First check if players array exists and has data
+    if (result.players != null && result.players!.isNotEmpty) {
+      final player = result.players!.first;
+      return {
+        'name': player.userName ?? '',
+        'suspectName': player.suspectChosenName ?? '',
+        'suspectImage': '', // Image not in API response
+        'isCorrect': false, // Would need to check against correct suspect
+        'totalScore': player.totalScore ?? 0,
+        'timeTaken': player.timeTaken ?? '',
+        'accuracy': player.accuracy ?? 0,
+        'hintsUsed': player.hintsUsed ?? 0,
+      };
     }
-    final player = gameResult.value!.players!.first;
-    return {
-      'name': player.userName ?? '',
-      'suspectName': player.suspectChosenName ?? '',
-      'suspectImage': '', // Image not in API response
-      'isCorrect': false, // Would need to check against correct suspect
-      'totalScore': player.totalScore ?? 0,
-      'timeTaken': player.timeTaken ?? '',
-      'accuracy': player.accuracy ?? 0,
-      'hintsUsed': player.hintsUsed ?? 0,
-    };
+
+    // If no players, check if teams array exists with a single team (solo mode)
+    if (result.teams != null && result.teams!.isNotEmpty) {
+      final team = result.teams!.first;
+      return {
+        'name': team.leaderName ?? team.teamName ?? '',
+        'suspectName': team.suspectChosenName ?? '',
+        'suspectImage': '', // Image not in API response
+        'isCorrect': false, // Would need to check against correct suspect
+        'totalScore': team.totalScore ?? 0,
+        'timeTaken': team.timeTaken ?? '',
+        'accuracy': team.accuracy ?? 0,
+        'hintsUsed': team.hintsUsed ?? 0,
+      };
+    }
+
+    return null;
   }
 
   // Get winner team (for backward compatibility)
