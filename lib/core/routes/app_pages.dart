@@ -52,6 +52,9 @@ import 'package:alqadiya_game/features/game/controller/game_result_provider.dart
 import 'package:alqadiya_game/features/game/controller/scoreboard_provider.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_detail_provider.dart';
 import 'package:alqadiya_game/features/game/controller/clue_detail_provider.dart';
+import 'package:alqadiya_game/features/game/controller/cutscene_controller.dart';
+import 'package:alqadiya_game/features/game/controller/question_controller.dart';
+import 'package:alqadiya_game/features/game/controller/user_answer_controller.dart';
 import 'package:alqadiya_game/features/payment/controller/payment_done_provider.dart';
 import 'package:alqadiya_game/features/change_language/controller/language_controller.dart';
 import 'package:get/get.dart';
@@ -217,13 +220,25 @@ class AppPages {
     GetPage(
       name: AppRoutes.caseVideoScreen,
       page: () => CaseVideoScreen(),
+      bindings: [
+        BindingsBuilder(() {
+          Get.lazyPut(() => CutsceneController());
+          Get.lazyPut(fenix: true, () => GameController());
+        }),
+      ],
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.gameScreen,
       page: () => GameScreen(),
-
+      bindings: [
+        BindingsBuilder(() {
+          Get.lazyPut(() => QuestionController());
+          Get.lazyPut(() => UserAnswerController());
+          Get.lazyPut(fenix: true, () => GameController());
+        }),
+      ],
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           theme: AppThemeInfo.themeData,
           debugShowCheckedModeBanner: false,
-          initialRoute: AppRoutes.scoreboardScreen,
+          initialRoute: AppRoutes.splash,
         );
       },
     );
