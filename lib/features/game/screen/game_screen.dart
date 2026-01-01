@@ -81,7 +81,7 @@ class _GameScreenState extends State<GameScreen> {
   void _startTimerFromGameDetails(GameController gameController) {
     // Get timer duration from game details
     final estimatedDuration = gameController.gameDetail.value.estimatedDuration;
-    
+
     if (estimatedDuration != null && estimatedDuration > 0) {
       // estimatedDuration is in minutes, convert to minutes:seconds
       final minutes = estimatedDuration;
@@ -425,9 +425,7 @@ class _GameScreenState extends State<GameScreen> {
                                     // Question Text
                                     Expanded(
                                       child: Text(
-                                        question.questionEn ??
-                                            question.questionAr ??
-                                            '',
+                                        question.question ?? '',
                                         style:
                                             AppTextStyles.captionRegular10medium()
                                                 .copyWith(
@@ -630,7 +628,7 @@ class _GameScreenState extends State<GameScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    answer.answerText ?? answer.answerTextAr ?? '',
+                    answer.answerText ?? '',
                     style: AppTextStyles.heading4().copyWith(
                       fontSize: 6.sp,
                       color:

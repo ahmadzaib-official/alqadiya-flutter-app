@@ -23,16 +23,16 @@ class EvidenceListScreen extends StatefulWidget {
 }
 
 class _EvidenceListScreenState extends State<EvidenceListScreen> {
-
   @override
   void initState() {
     super.initState();
     final evidenceController = Get.find<EvidenceController>();
     final gameController = Get.find<GameController>();
-    
+
     // Fetch evidences if gameId is available
-    final gameId = gameController.gameDetail.value?.id ?? 
-                   gameController.gameSession.value?.gameId;
+    final gameId =
+        gameController.gameDetail.value?.id ??
+        gameController.gameSession.value?.gameId;
     if (gameId != null) {
       evidenceController.getEvidencesByGame(gameId: gameId);
     }
@@ -47,18 +47,19 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               ? Get.find<GameTimerController>()
               : Get.put(GameTimerController(), permanent: true)
           ..startTimer();
-    
+
     final evidenceController = Get.find<EvidenceController>();
     final gameController = Get.find<GameController>();
-    
+
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       body: Obx(
         () => GameBackground(
           isPurchased: true,
-          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
-                   gameController.gameDetail.value?.coverImage ?? 
-                   "https://picsum.photos/200",
+          imageUrl:
+              gameController.gameDetail.value?.coverImageUrl ??
+              gameController.gameDetail.value?.coverImage ??
+              "https://picsum.photos/200",
           body: Column(
             children: [
               // Header
@@ -69,8 +70,11 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                   title: Row(
                     children: [
                       Text(
-                        gameController.gameDetail.value?.title ?? 'List of evidence'.tr,
-                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                        gameController.gameDetail.value?.title ??
+                            'List of evidence'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                        ),
                       ),
                       SizedBox(width: 20.w),
                       Text(
@@ -109,7 +113,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                       ),
                     );
                   }
-                  
+
                   if (evidenceController.evidences.isEmpty) {
                     return Center(
                       child: Column(
@@ -128,15 +132,20 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                       ),
                     );
                   }
-                  
+
                   return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
                     itemCount: evidenceController.evidences.length,
                     itemBuilder: (context, index) {
                       final evidence = evidenceController.evidences[index];
                       return GestureDetector(
                         onTap: () {
-                          evidenceController.getEvidenceById(evidenceId: evidence.id ?? '');
+                          evidenceController.getEvidenceById(
+                            evidenceId: evidence.id ?? '',
+                          );
                           Get.toNamed(
                             AppRoutes.clueDetailScreen,
                             arguments: {'evidenceId': evidence.id ?? ''},
@@ -149,7 +158,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                             color: MyColors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(8.r),
                             border: Border.all(
-                              color: MyColors.redButtonColor.withValues(alpha: 0.3),
+                              color: MyColors.redButtonColor.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Row(
@@ -158,31 +169,34 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8.r),
                                 child: CachedNetworkImage(
-                                  imageUrl: evidence.profileImageURL ?? 
-                                           evidence.profileImage ?? 
-                                           "https://picsum.photos/200",
+                                  imageUrl:
+                                      evidence.profileImageURL ??
+                                      evidence.profileImage ??
+                                      "https://picsum.photos/200",
                                   width: 60.w,
                                   height: 60.h,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(
-                                    width: 60.w,
-                                    height: 60.h,
-                                    color: MyColors.darkBlueColor,
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: MyColors.redButtonColor,
+                                  placeholder:
+                                      (context, url) => Container(
+                                        width: 60.w,
+                                        height: 60.h,
+                                        color: MyColors.darkBlueColor,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: MyColors.redButtonColor,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) => Container(
-                                    width: 60.w,
-                                    height: 60.h,
-                                    color: MyColors.darkBlueColor,
-                                    child: Icon(
-                                      Icons.image_not_supported,
-                                      color: MyColors.white,
-                                    ),
-                                  ),
+                                  errorWidget:
+                                      (context, url, error) => Container(
+                                        width: 60.w,
+                                        height: 60.h,
+                                        color: MyColors.darkBlueColor,
+                                        child: Icon(
+                                          Icons.image_not_supported,
+                                          color: MyColors.white,
+                                        ),
+                                      ),
                                 ),
                               ),
                               SizedBox(width: 10.w),
@@ -203,10 +217,13 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                                       SizedBox(height: 4.h),
                                       Text(
                                         evidence.description!,
-                                        style: AppTextStyles.heading2().copyWith(
-                                          fontSize: 6.sp,
-                                          color: MyColors.white.withValues(alpha: 0.7),
-                                        ),
+                                        style: AppTextStyles.heading2()
+                                            .copyWith(
+                                              fontSize: 6.sp,
+                                              color: MyColors.white.withValues(
+                                                alpha: 0.7,
+                                              ),
+                                            ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -232,7 +249,11 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
 
               // Footer
               Padding(
-                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
+                padding: EdgeInsets.only(
+                  left: 10.sp,
+                  right: 10.sp,
+                  bottom: 5.sp,
+                ),
                 child: GameFooter(onGameResultTap: () {}),
               ),
             ],
