@@ -2,6 +2,8 @@ import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/widgets/custom_icon_text_button.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:alqadiya_game/features/game/controller/cutscene_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,33 +23,81 @@ class CaseVideoScreen extends StatefulWidget {
 
 class _CaseVideoScreenState extends State<CaseVideoScreen>
     with WidgetsBindingObserver {
-  late final CachedVideoPlayerPlus _player;
+  CachedVideoPlayerPlus? _player;
   bool _showControls = false;
   Timer? _hideControlsTimer;
+  final cutsceneController = Get.find<CutsceneController>();
+  final gameController = Get.find<GameController>();
+  int _currentCutsceneIndex = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    _player = CachedVideoPlayerPlus.networkUrl(
-      Uri.parse(
+    // Fetch cutscenes and play the first one
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadCutscenes();
+    });
+  }
+
+  Future<void> _loadCutscenes() async {
+    final gameId =
+        gameController.gameDetail.value?.id ??
+        gameController.gameSession.value?.gameId;
+
+    if (gameId != null && gameId.isNotEmpty) {
+      await cutsceneController.getCutscenesByGame(gameId: gameId);
+
+      // Play the first cutscene (intro)
+      if (cutsceneController.cutscenes.isNotEmpty) {
+        _playCutscene(cutsceneController.cutscenes.first);
+      }
+    } else {
+      // Fallback to hardcoded video if no game ID
+      _initializePlayer(
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      ),
+      );
+    }
+  }
+
+  void _playCutscene(dynamic cutscene) {
+    final mediaUrl = cutscene?.mediaUrl as String?;
+    if (mediaUrl != null && mediaUrl.isNotEmpty) {
+      _initializePlayer(mediaUrl);
+    }
+  }
+
+  void _initializePlayer(String videoUrl) {
+    _player?.dispose();
+    _player = CachedVideoPlayerPlus.networkUrl(
+      Uri.parse(videoUrl),
       invalidateCacheIfOlderThan: const Duration(minutes: 120),
     );
 
-    _player.initialize().then((_) {
-      setState(() {});
-      _player.controller.play();
+    _player!.initialize().then((_) {
+      if (mounted) {
+        setState(() {});
+        _player!.controller.play();
+      }
     });
+  }
+
+  void _playNextCutscene() {
+    if (_currentCutsceneIndex < cutsceneController.cutscenes.length - 1) {
+      _currentCutsceneIndex++;
+      _playCutscene(cutsceneController.cutscenes[_currentCutsceneIndex]);
+    } else {
+      // No more cutscenes, navigate to game screen
+      Get.offAndToNamed(AppRoutes.gameScreen);
+    }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _hideControlsTimer?.cancel();
-    _player.dispose();
+    _player?.dispose();
     super.dispose();
   }
 
@@ -61,8 +111,9 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
 
   void _checkAndShowControls() {
     if (mounted &&
-        _player.isInitialized &&
-        !_player.controller.value.isPlaying) {
+        _player != null &&
+        _player!.isInitialized &&
+        !_player!.controller.value.isPlaying) {
       setState(() {
         _showControls = true;
       });
@@ -91,18 +142,20 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
   }
 
   void _togglePlayPause() {
+    if (_player == null || !_player!.isInitialized) return;
     setState(() {
-      _player.controller.value.isPlaying
-          ? _player.controller.pause()
-          : _player.controller.play();
+      _player!.controller.value.isPlaying
+          ? _player!.controller.pause()
+          : _player!.controller.play();
     });
     _startHideTimer();
   }
 
   void _replayVideo() {
-    _player.controller.seekTo(Duration.zero);
-    if (!_player.controller.value.isPlaying) {
-      _player.controller.play();
+    if (_player == null || !_player!.isInitialized) return;
+    _player!.controller.seekTo(Duration.zero);
+    if (!_player!.controller.value.isPlaying) {
+      _player!.controller.play();
     }
     setState(() {
       _showControls = true;
@@ -116,13 +169,23 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
       backgroundColor: MyColors.backgroundColor,
       body: Stack(
         children: [
-          _player.isInitialized
-              ? GestureDetector(
+          Obx(() {
+            if (cutsceneController.isLoading.value) {
+              return Center(
+                child: CupertinoActivityIndicator(
+                  color: Colors.white,
+                  radius: 20.r,
+                ),
+              );
+            }
+
+            if (_player != null && _player!.isInitialized) {
+              return GestureDetector(
                 onTap: _toggleControls,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    VideoPlayer(_player.controller),
+                    VideoPlayer(_player!.controller),
                     if (_showControls)
                       GestureDetector(
                         onTap: _togglePlayPause,
@@ -134,7 +197,7 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
                             color: MyColors.black.withValues(alpha: 0.3),
                           ),
                           child: Icon(
-                            _player.controller.value.isPlaying
+                            _player!.controller.value.isPlaying
                                 ? Icons.pause
                                 : Icons.play_arrow,
                             color: Colors.white,
@@ -144,22 +207,27 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
                       ),
                   ],
                 ),
-              )
-              : Center(
-                child: CupertinoActivityIndicator(
-                  color: Colors.white,
-                  radius: 20.r,
-                ),
+              );
+            }
+
+            return Center(
+              child: CupertinoActivityIndicator(
+                color: Colors.white,
+                radius: 20.r,
               ),
+            );
+          }),
           // Top Bar
           Padding(
             padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
             child: HomeHeader(
               onProfileTap: () async {
-                _player.controller.pause();
+                if (_player != null && _player!.isInitialized) {
+                  _player!.controller.pause();
+                }
                 await Get.toNamed(AppRoutes.settingsScreen);
                 // When returning from settings, show controls if video is paused
-                if (mounted && _player.isInitialized) {
+                if (mounted && _player != null && _player!.isInitialized) {
                   _checkAndShowControls();
                 }
               },
@@ -184,12 +252,31 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
                   icon: MyIcons.refresh,
                   isIconButton: true,
                 ),
-                CustomIconTextButton(
-                  onTap: () => Get.offAndToNamed(AppRoutes.gameScreen),
-                  buttonText: 'Skip'.tr,
-                  icon: MyIcons.arrow_right,
-                  isIconButton: true,
-                ),
+                Obx(() {
+                  final currentCutscene =
+                      _currentCutsceneIndex <
+                              cutsceneController.cutscenes.length
+                          ? cutsceneController.cutscenes[_currentCutsceneIndex]
+                          : null;
+                  final canSkip = currentCutscene?.isSkippable ?? true;
+
+                  if (!canSkip) {
+                    return SizedBox.shrink();
+                  }
+                  return CustomIconTextButton(
+                    onTap: () {
+                      if (_currentCutsceneIndex <
+                          cutsceneController.cutscenes.length - 1) {
+                        _playNextCutscene();
+                      } else {
+                        Get.offAndToNamed(AppRoutes.gameScreen);
+                      }
+                    },
+                    buttonText: 'Skip'.tr,
+                    icon: MyIcons.arrow_right,
+                    isIconButton: true,
+                  );
+                }),
               ],
             ),
           ),

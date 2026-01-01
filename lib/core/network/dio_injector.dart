@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/network/app_exceptions.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
@@ -20,7 +22,7 @@ Dio getData() {
     InterceptorsWrapper(
       onRequest: (options, handler) {
         try {
-          DebugPoint.log('➡️ API URL: ${options.uri}');
+          DebugPoint.log('➡️ [${options.method}] API URL: ${options.uri}');
           DebugPoint.log('📦 HEADER: ${options.headers}');
           DebugPoint.log('📝 REQUEST BODY: ${jsonEncode(options.data)}');
           return handler.next(options);
@@ -38,7 +40,9 @@ Dio getData() {
       },
       onResponse: (response, handler) {
         try {
-          DebugPoint.log('✅ API RESPONSE: ${response.data}');
+          DebugPoint.log(
+            '✅ [${response.requestOptions.method}] API RESPONSE: ${response.data}',
+          );
           return handler.next(response);
         } catch (e) {
           log('Response error $e');
@@ -55,11 +59,103 @@ Dio getData() {
           final statusCode = err.response?.statusCode ?? 0;
           final errorMessage = _extractErrorMessage(err);
 
-          DebugPoint.log('❌ STATUS CODE: $statusCode');
+          DebugPoint.log(
+            '❌ [${err.requestOptions.method}] STATUS CODE: $statusCode',
+          );
           DebugPoint.log('🧨 ERROR TYPE: ${err.type}');
           DebugPoint.log('📢 ERROR MESSAGE: $errorMessage');
           DebugPoint.log('🔍 ERROR DATA: ${err.response?.data ?? ''}');
 
+          // Handle 401 Unauthorized - Try to refresh token
+          if (statusCode == 401) {
+            final requestOptions = err.requestOptions;
+
+            // Prevent refresh loop
+            if (requestOptions.extra['retry'] == true) {
+              // Already retried once → force logout
+              await _clearStorage();
+              if (!DioErrorHandler.isErrorSnackbarShowing) {
+                DioErrorHandler.isErrorSnackbarShowing = true;
+                _handleErrorDisplay(err, statusCode, errorMessage);
+                Future.delayed(const Duration(seconds: 2), () {
+                  DioErrorHandler.isErrorSnackbarShowing = false;
+                });
+              }
+              _handleUnauthorized();
+              handler.reject(
+                DioException(
+                  requestOptions: requestOptions,
+                  error: UnauthorizedException("Session expired"),
+                ),
+              );
+              return;
+            }
+
+            // Ignore login or refresh endpoints
+            if (requestOptions.path.contains('/signIn') ||
+                requestOptions.path.contains('/signUp') ||
+                requestOptions.path.contains('/refreshToken')) {
+              if (!DioErrorHandler.isErrorSnackbarShowing) {
+                DioErrorHandler.isErrorSnackbarShowing = true;
+                _handleErrorDisplay(err, statusCode, errorMessage);
+                Future.delayed(const Duration(seconds: 2), () {
+                  DioErrorHandler.isErrorSnackbarShowing = false;
+                });
+              }
+              final error = _handleDioError(err);
+              handler.reject(
+                DioException(requestOptions: err.requestOptions, error: error),
+              );
+              return;
+            }
+
+            log("⚠️ Token expired → Refreshing token...");
+
+            try {
+              // Call refresh token
+              final newAccessToken = await _refreshToken();
+
+              if (newAccessToken == null || newAccessToken.isEmpty) {
+                log("❌ Refresh token returned NULL / EMPTY");
+                await _clearStorage();
+                _handleUnauthorized();
+                handler.reject(
+                  DioException(
+                    requestOptions: requestOptions,
+                    error: UnauthorizedException("Session expired"),
+                  ),
+                );
+                return;
+              }
+
+              // Mark request as retried
+              requestOptions.extra['retry'] = true;
+
+              // Update header with new token
+              requestOptions.headers['Authorization'] =
+                  'Bearer $newAccessToken';
+
+              log("🔄 Retrying original request → ${requestOptions.uri}");
+
+              // Retry original request
+              final response = await dio.fetch(requestOptions);
+              handler.resolve(response);
+              return;
+            } catch (e) {
+              log("❌ Refresh failed: $e");
+              await _clearStorage();
+              _handleUnauthorized();
+              handler.reject(
+                DioException(
+                  requestOptions: requestOptions,
+                  error: UnauthorizedException("Session expired"),
+                ),
+              );
+              return;
+            }
+          }
+
+          // Handle other errors
           if (!DioErrorHandler.isErrorSnackbarShowing) {
             DioErrorHandler.isErrorSnackbarShowing = true;
             _handleErrorDisplay(err, statusCode, errorMessage);
@@ -70,13 +166,12 @@ Dio getData() {
 
           _handleSpecificStatusCodes(statusCode);
 
-          // return handler.next(e);
           final error = _handleDioError(err);
           handler.reject(
             DioException(requestOptions: err.requestOptions, error: error),
           );
         } catch (e) {
-          log("❌ Refresh failed: $e");
+          log("❌ Error handler failed: $e");
 
           handler.reject(
             DioException(
@@ -90,6 +185,68 @@ Dio getData() {
   );
 
   return dio;
+}
+
+/// Refresh the access token using the refresh token
+Future<String?> _refreshToken() async {
+  try {
+    final preferences = Get.find<Preferences>();
+    final refreshToken = preferences.getString(AppStrings.refreshToken);
+
+    if (refreshToken == null || refreshToken.isEmpty) {
+      log("❌ No refresh token found");
+      return null;
+    }
+
+    // Create a new Dio instance without interceptors to avoid infinite loop
+    final refreshDio = Dio();
+
+    final response = await refreshDio.post(
+      ServerConfig.refreshToken,
+      data: {'refreshToken': refreshToken},
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = response.data;
+
+      if (data['accessToken'] != null) {
+        final newAccessToken = data['accessToken'] as String;
+
+        // Update access token in preferences
+        await preferences.setString(AppStrings.accessToken, newAccessToken);
+
+        // Update refresh token if provided
+        if (data['refreshToken'] != null) {
+          await preferences.setString(
+            AppStrings.refreshToken,
+            data['refreshToken'] as String,
+          );
+        }
+
+        log("✅ Token refreshed successfully");
+        return newAccessToken;
+      }
+    }
+
+    log("❌ Invalid refresh token response");
+    return null;
+  } catch (e) {
+    log("❌ Refresh token error: $e");
+    return null;
+  }
+}
+
+/// Clear storage and logout user
+Future<void> _clearStorage() async {
+  try {
+    final preferences = Get.find<Preferences>();
+    await preferences.remove(AppStrings.accessToken);
+    await preferences.remove(AppStrings.refreshToken);
+    await preferences.remove(AppStrings.userId);
+  } catch (e) {
+    log("Error clearing storage: $e");
+  }
 }
 
 AppException _handleDioError(DioException error) {
@@ -194,7 +351,7 @@ void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
 
   if (statusCode >= 500 && statusCode < 600) {
     Future.delayed(Duration.zero, () {
-      CustomSnackbar.showError('Server error occurred. Please try again later');
+      CustomSnackbar.showError('Server error occurred. Please try again later'.tr);
     });
     return;
   }

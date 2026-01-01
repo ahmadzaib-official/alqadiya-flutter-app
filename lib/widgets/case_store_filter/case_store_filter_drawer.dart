@@ -65,7 +65,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
                       ),
                       SizedBox(width: 7.w),
                       Text(
-                        'Filters',
+                        'Filters'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 9.sp,
                           fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
                       controller.resetFilters();
                     },
                     child: Text(
-                      'Reset',
+                      'Reset'.tr,
                       style: AppTextStyles.labelMedium14().copyWith(
                         fontSize: 7.sp,
                         fontWeight: FontWeight.bold,
@@ -111,7 +111,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
                       ),
                       SizedBox(width: 5.w),
                       Text(
-                        'Difficulty',
+                        'Difficulty'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 7.sp,
                           fontWeight: FontWeight.bold,
@@ -234,7 +234,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
                       ),
                       SizedBox(width: 5.w),
                       Text(
-                        'Points',
+                        'Points'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 7.sp,
                           fontWeight: FontWeight.bold,
@@ -336,7 +336,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
             CustomOutlineButton(
               height: 50.h,
               fontSize: 6.sp,
-              text: 'Cancel',
+              text: 'Cancel'.tr,
               onPressed: onCancelTap,
               textColor: MyColors.white.withValues(alpha: 0.5),
               outlineColor: MyColors.white.withValues(alpha: 0.1),

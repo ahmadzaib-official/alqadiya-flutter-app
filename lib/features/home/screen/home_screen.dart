@@ -13,6 +13,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/home/controller/home_controller.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
+import 'package:alqadiya_game/core/constants/app_strings.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -44,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
+    final prefs = Get.find<Preferences>();
+    final isGuest = prefs.getBool(AppStrings.isGuest) ?? false;
 
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
@@ -105,28 +109,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(width: 20.w),
-                        GestureDetector(
-                          onTap: () {
-                            Get.toNamed(AppRoutes.joinGameScreen);
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                        if (!isGuest) ...[
+                          SizedBox(width: 20.w),
+                          GestureDetector(
+                            onTap: () {
+                              Get.toNamed(AppRoutes.joinGameScreen);
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
 
-                            children: [
-                              SvgPicture.asset(
-                                MyIcons.joingame,
-                                height: screenHeight * 0.2,
-                              ),
-                              Text(
-                                'Join the Game'.tr,
-                                style: AppTextStyles.heading1().copyWith(
-                                  fontSize: 10.sp,
+                              children: [
+                                SvgPicture.asset(
+                                  MyIcons.joingame,
+                                  height: screenHeight * 0.2,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  'Join the Game'.tr,
+                                  style: AppTextStyles.heading1().copyWith(
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),

@@ -1,11 +1,8 @@
 import 'dart:math';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
-import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
-import 'package:alqadiya_game/features/auth/model/user_model.dart';
+import 'package:alqadiya_game/features/casestore/model/member_model.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Player {
@@ -57,6 +54,10 @@ class PlayerSelectionController extends GetxController {
 
   // Track dragged player
   final Rx<Player?> draggedPlayer = Rx<Player?>(null);
+  
+  // Workers for cleanup
+  Worker? _teamsWorker;
+  Worker? _playersWorker;
 
   @override
   void onInit() {
@@ -87,53 +88,90 @@ class PlayerSelectionController extends GetxController {
     fetchAvailablePlayers();
   }
 
+  @override
+  void onClose() {
+    // Dispose workers to prevent memory leaks and unwanted API calls
+    _teamsWorker?.dispose();
+    _playersWorker?.dispose();
+    super.onClose();
+  }
+
   /// Initialize available players
   void fetchAvailablePlayers() {
     final gameController = Get.find<GameController>();
 
     // Sync Teams
     _syncTeams(gameController.teams);
-    ever(gameController.teams, _syncTeams);
+    _teamsWorker = ever(gameController.teams, _syncTeams);
 
     // Initial sync players
     _syncPlayers(gameController.sessionPlayers);
 
-    // Listen for updates
-    ever(gameController.sessionPlayers, _syncPlayers);
+    // Listen for updates - watch the list length and content changes
+    _playersWorker = ever(gameController.sessionPlayers, (List<MemberModel> players) {
+      _syncPlayers(players);
+    });
   }
 
   void _syncTeams(List<TeamModel> apiTeams) {
     if (apiTeams.isEmpty) {
-      // if api returns empty, maybe keep default for testing or clear
-      // _initializeTeams();
-      // For now, if we have api teams, we map them
+      // If no teams from API and we don't have any teams, initialize default
+      if (teams.isEmpty) {
+        _initializeTeams();
+      }
       return;
     }
 
-    List<Team> newTeams =
-        apiTeams
-            .map(
-              (t) => Team(
-                id: t.id ?? '',
-                name: t.teamName ?? 'Team ${t.teamNumber}',
-                players: [],
-              ),
-            )
-            .toList();
+    // Map API teams to local Team objects
+    // Preserve existing players in teams if team IDs match
+    List<Team> newTeams = [];
+    for (var apiTeam in apiTeams) {
+      // Check if we already have this team with players
+      Team? existingTeam = teams.firstWhereOrNull(
+        (t) => t.id == (apiTeam.id ?? ''),
+      );
+
+      if (existingTeam != null) {
+        // Keep existing team with its players, just update the name if needed
+        newTeams.add(existingTeam);
+      } else {
+        // Create new team
+        newTeams.add(
+          Team(
+            id: apiTeam.id ?? '',
+            name: apiTeam.teamName ?? 'Team ${apiTeam.teamNumber}',
+            players: [],
+          ),
+        );
+      }
+    }
 
     teams.assignAll(newTeams);
   }
 
-  void _syncPlayers(List<UserModel> users) {
-    if (users.isEmpty) return;
+  /// Sync players from game controller (public method for manual triggering)
+  void syncPlayersFromGameController() {
+    final gameController = Get.find<GameController>();
+    _syncPlayers(gameController.sessionPlayers);
+  }
+
+  void _syncPlayers(List<MemberModel> members) {
+    if (members.isEmpty) {
+      // Clear available players if no members
+      if (availablePlayers.isNotEmpty) {
+        availablePlayers.clear();
+        availablePlayers.refresh();
+      }
+      return;
+    }
 
     List<Player> players =
-        users
+        members
             .map(
-              (u) => Player(
-                id: u.id ?? '',
-                name: u.fullName ?? 'Unknown',
-                imageUrl: u.photoUrl ?? "https://picsum.photos/200",
+              (m) => Player(
+                id: m.userId ?? m.id ?? '',
+                name: m.userName ?? 'Unknown',
+                imageUrl: "https://picsum.photos/200",
               ),
             )
             .toList();
@@ -153,28 +191,11 @@ class PlayerSelectionController extends GetxController {
       }
     }
 
+    // Always update to ensure UI reflects latest state
+    // This handles cases where players join/leave or are reassigned
     availablePlayers.assignAll(filteredPlayers);
-  }
-
-  /// Initialize available players (Mock)
-  void _initializePlayers() {
-    availablePlayers.assignAll([
-      Player(
-        id: '1',
-        name: 'Issam',
-        imageUrl: 'https://picsum.photos/200?random=1',
-      ),
-      Player(
-        id: '2',
-        name: 'Med',
-        imageUrl: 'https://picsum.photos/200?random=2',
-      ),
-      Player(
-        id: '3',
-        name: 'Khaled',
-        imageUrl: 'https://picsum.photos/200?random=3',
-      ),
-    ]);
+    // Force refresh to ensure UI updates immediately
+    availablePlayers.refresh();
   }
 
   /// Initialize teams (Mock)
@@ -312,7 +333,7 @@ class PlayerSelectionController extends GetxController {
 
     // Check if any players are left unassigned (optional validation)
     if (availablePlayers.isNotEmpty) {
-      CustomSnackbar.showInfo('Some players are not assigned to any team');
+      CustomSnackbar.showInfo('Some players are not assigned to any team'.tr);
       return;
     }
 

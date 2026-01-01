@@ -1,8 +1,14 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
+import 'package:alqadiya_game/core/services/localization_services.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
+import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
+import 'package:alqadiya_game/widgets/language_selection_bottomsheet.dart';
+import 'package:alqadiya_game/widgets/language_selection_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class LanguageSelectionButton extends StatelessWidget {
   const LanguageSelectionButton({
@@ -23,10 +29,75 @@ class LanguageSelectionButton extends StatelessWidget {
   final VoidCallback? onTap;
   final bool isShadow;
 
+  String _getCurrentLanguageName() {
+    try {
+      final lang = Get.find<Preferences>().getString(AppStrings.language);
+      if (lang == 'ar') {
+        return 'عربي';
+      }
+      return 'English';
+    } catch (e) {
+      return Get.locale?.languageCode == 'ar' ? 'عربي' : 'English';
+    }
+  }
+
+  String _getCurrentLanguageFlag() {
+    try {
+      final lang = Get.find<Preferences>().getString(AppStrings.language);
+      if (lang == 'ar') {
+        return MyIcons.flag;
+      }
+      return MyIcons.ukFlag;
+    } catch (e) {
+      return Get.locale?.languageCode == 'ar' ? MyIcons.flag : MyIcons.ukFlag;
+    }
+  }
+
+  void _handleLanguageSelection(BuildContext context) {
+    if (onTap != null) {
+      onTap!();
+      return;
+    }
+
+    final currentLang =
+        Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
+    final currentLanguageName = currentLang == 'ar' ? 'Arabic' : 'English';
+
+    // Check orientation
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    if (isLandscape) {
+      // Use drawer in landscape mode
+      LanguageSelectionDrawer.show(
+        currentLanguage: currentLanguageName,
+        onEnglishSelected: () async {
+          await LocalizationService().changeLocale('en');
+        },
+        onArabicSelected: () async {
+          await LocalizationService().changeLocale('ar');
+        },
+      );
+    } else {
+      // Use bottom sheet in portrait mode
+      LanguageSelectionBottomSheet.show(
+        currentLanguage: currentLanguageName,
+        onEnglishSelected: () async {
+          Get.back();
+          await LocalizationService().changeLocale('en');
+        },
+        onArabicSelected: () async {
+          Get.back();
+          await LocalizationService().changeLocale('ar');
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _handleLanguageSelection(context),
       child: Container(
         height: height ?? 50.h,
         width: width ?? 80.w,
@@ -53,13 +124,13 @@ class LanguageSelectionButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'عربي',
+              _getCurrentLanguageName(),
               style: AppTextStyles.captionRegular12().copyWith(
                 fontSize: textFontSize ?? 12.sp,
               ),
             ),
             SizedBox(width: 4.w),
-            SvgPicture.asset(MyIcons.flag, height: 20.h),
+            SvgPicture.asset(_getCurrentLanguageFlag(), height: 20.h),
           ],
         ),
       ),

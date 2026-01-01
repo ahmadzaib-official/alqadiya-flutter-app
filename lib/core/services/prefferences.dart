@@ -90,6 +90,7 @@ class Preferences extends GetxService {
 
   Future logout() async {
     _preferences.remove(AppStrings.accessToken);
+    _preferences.remove(AppStrings.refreshToken);
     _preferences.remove(AppStrings.userId);
     Get.offAllNamed(AppRoutes.onbordingScreen);
   }

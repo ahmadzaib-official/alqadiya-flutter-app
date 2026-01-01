@@ -1,15 +1,17 @@
 class ServerConfig {
-  // static const baseUrl = "http://192.168.1.10:4000/";
-  static const baseUrl = "http://51.112.131.120/api/";
+  // static const baseUrl = "http://51.112.131.120/api/";
+  static const baseUrl = "http://192.168.1.13:4000/";
   // Below are the all api that are use in our system
   static const login = "${baseUrl}auth/signIn";
   static const register = "${baseUrl}auth/signUp";
   static const verifyOtp = "${baseUrl}auth/verifyOtp";
+  static const refreshToken = "${baseUrl}auth/refreshToken";
   static const sendOtp = "${baseUrl}users/public/sendOTP";
   static const forgetPassword = "${baseUrl}auth/forgetPassword";
   static const currentUser = "${baseUrl}users/currentUser";
   static const deleteUser = "${baseUrl}users";
   static const updateProfile = "${baseUrl}users/updateProfile";
+  static const uploadPhotoLink = "${baseUrl}users/profile/upload-link";
   static const resetPassword = "${baseUrl}auth/resetPassword";
   static const resetUserPassword = "${baseUrl}users/resetUserPassword";
   static const games = "${baseUrl}games/";
@@ -28,4 +30,46 @@ class ServerConfig {
   static const teams = "${baseUrl}teams";
   static const assignMembers = "${baseUrl}teams/assign-members";
   static String getReceipt(String id) => "${baseUrl}transactions/$id/receipt";
+
+  // Cutscenes
+  static String getCutscenesByGame(String gameId) =>
+      "${baseUrl}cutscenes/game/$gameId";
+  static String getCutsceneById(String cutsceneId) =>
+      "${baseUrl}cutscenes/$cutsceneId";
+
+  // Suspects
+  static String getSuspectsByGame(String gameId) =>
+      "${baseUrl}suspects/game/$gameId";
+  static String getSuspectById(String suspectId) =>
+      "${baseUrl}suspects/$suspectId";
+
+  // Evidences
+  static String getEvidencesByGame(String gameId) =>
+      "${baseUrl}evidences/game/$gameId";
+  static String getEvidenceById(String evidenceId) =>
+      "${baseUrl}evidences/$evidenceId";
+
+  // Questions
+  static String getQuestionsByGame(String gameId) =>
+      "${baseUrl}questions/game/$gameId";
+  static String getQuestionById(String questionId) =>
+      "${baseUrl}questions/$questionId";
+
+  // User Answers
+  static const userAnswers = "${baseUrl}user-answers";
+
+  // Game Sessions
+  static String getGameSessionDetails(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/details";
+  static String getGameSessionById(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId";
+  static String getGameSessionPlayers(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/players";
+  static String getGameSessionScoreboard(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/scoreboard";
+  static String getGameSessionResult(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/result";
+
+  // User Balance
+  static const userBalance = "${baseUrl}games/balance";
 }

@@ -1,6 +1,8 @@
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
+import 'package:alqadiya_game/features/game/model/team_model.dart';
+import 'package:alqadiya_game/features/game/model/scoreboard_model.dart';
+import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:get/get.dart';
 
 class TeamLeader {
@@ -18,11 +20,17 @@ class ChooseTeamLeaderController extends GetxController {
   // Observable for team leaders list
   final RxList<TeamLeader> teamLeaders = <TeamLeader>[].obs;
 
+  // Observable for team members (all team members for display)
+  final RxList<TeamLeader> teamMembers = <TeamLeader>[].obs;
+
   // Observable for loading state
-    final RxBool isLoading = false.obs;
+  final RxBool isLoading = false.obs;
+  
   // Team Name
   final RxString teamName = ''.obs;
   String teamId = '';
+  
+  final _repository = GameRepository();
 
   @override
   void onInit() {
@@ -48,9 +56,145 @@ class ChooseTeamLeaderController extends GetxController {
       }
     }
     
-    if (teamLeaders.isEmpty) {
-      _initializeTeamLeaders();
+    // Fetch team members from API
+    fetchTeamMembers();
+  }
+
+  /// Fetch team members from API
+  Future<void> fetchTeamMembers() async {
+    if (teamId.isEmpty) {
+      if (teamLeaders.isEmpty) {
+        _initializeTeamLeaders();
+      }
+      return;
     }
+
+    isLoading.value = true;
+    final gameController = Get.find<GameController>();
+    
+    try {
+      final sessionId = gameController.gameSession.value?.id;
+      
+      if (sessionId == null) {
+        if (teamLeaders.isEmpty) {
+          _initializeTeamLeaders();
+        }
+        return;
+      }
+
+      // Get game session details to get teams and players with assignments
+      await gameController.getGameSessionDetails(sessionId: sessionId, silent: true);
+      
+      // Also fetch session players to ensure we have the latest player data
+      await gameController.getSessionPlayers(silent: true);
+      
+      // Find the team
+      TeamModel? team = gameController.teams.firstWhereOrNull(
+        (t) => t.id == teamId,
+      );
+      
+      if (team != null) {
+        // Update team name if not set
+        if (teamName.value.isEmpty) {
+          teamName.value = team.teamName ?? 'Team';
+        }
+        
+        // Try to get team members from scoreboard API (includes team-player assignments)
+        List<TeamLeader> members = await _getTeamMembersFromScoreboard(sessionId);
+        
+        // If scoreboard doesn't have data, use all session players as fallback
+        // This happens when teams are just assigned and scoreboard isn't ready yet
+        if (members.isEmpty && gameController.sessionPlayers.isNotEmpty) {
+          // Use all session players as team members (they should all be in the team after assignment)
+          members = gameController.sessionPlayers.map((member) {
+            return TeamLeader(
+              id: member.userId ?? member.id ?? '',
+              name: member.userName ?? 'Unknown',
+              imageUrl: "https://picsum.photos/200",
+            );
+          }).toList();
+        }
+        
+        // Update team members list (for display)
+        teamMembers.assignAll(members);
+        
+        // Update team leaders list (for selection)
+        if (members.isNotEmpty) {
+          teamLeaders.assignAll(members);
+        } else if (teamLeaders.isEmpty) {
+          _initializeTeamLeaders();
+        }
+      } else {
+        // Team not found, use all session players as fallback
+        if (gameController.sessionPlayers.isNotEmpty) {
+          final members = gameController.sessionPlayers.map((member) {
+            return TeamLeader(
+              id: member.userId ?? member.id ?? '',
+              name: member.userName ?? 'Unknown',
+              imageUrl: "https://picsum.photos/200",
+            );
+          }).toList();
+          teamMembers.assignAll(members);
+          teamLeaders.assignAll(members);
+        } else if (teamLeaders.isEmpty) {
+          _initializeTeamLeaders();
+        }
+      }
+    } catch (e) {
+      // Only show error if we don't have any players at all
+      // If we have session players, use them as fallback instead of showing error
+      if (gameController.sessionPlayers.isEmpty) {
+        CustomSnackbar.showError("${'Failed to fetch team members:'.tr} ${e.toString()}");
+      } else {
+        // Use session players as fallback
+        final members = gameController.sessionPlayers.map((member) {
+          return TeamLeader(
+            id: member.userId ?? member.id ?? '',
+            name: member.userName ?? 'Unknown',
+            imageUrl: "https://picsum.photos/200",
+          );
+        }).toList();
+        teamMembers.assignAll(members);
+        teamLeaders.assignAll(members);
+      }
+      
+      if (teamLeaders.isEmpty) {
+        _initializeTeamLeaders();
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Get team members from scoreboard API
+  Future<List<TeamLeader>> _getTeamMembersFromScoreboard(String sessionId) async {
+    try {
+      final response = await _repository.getScoreboard(sessionId: sessionId);
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final scoreboard = ScoreboardModel.fromJson(response.data);
+        
+        if (scoreboard.teams != null) {
+          // Find the team in scoreboard
+          final teamScore = scoreboard.teams!.firstWhereOrNull(
+            (t) => t.teamId == teamId,
+          );
+          
+          if (teamScore != null && teamScore.players != null) {
+            return teamScore.players!.map((player) {
+              return TeamLeader(
+                id: player.userId ?? '',
+                name: player.userName ?? 'Unknown',
+                imageUrl: "https://picsum.photos/200",
+              );
+            }).toList();
+          }
+        }
+      }
+    } catch (e) {
+      // Scoreboard might not be available yet, that's okay
+    }
+    return [];
   }
 
   /// Initialize team leaders with sample data (Fallback)
@@ -87,7 +231,7 @@ class ChooseTeamLeaderController extends GetxController {
   /// Proceed to next screen with selected leader
   Future<void> proceedWithSelectedLeader() async {
     if (selectedLeader.value == null) {
-      CustomSnackbar.showError('Please select a team leader');
+      CustomSnackbar.showError('Please select a team leader'.tr);
       return;
     }
 
@@ -101,7 +245,7 @@ class ChooseTeamLeaderController extends GetxController {
       );
 
     } catch (e) {
-      CustomSnackbar.showError("Failed to select leader: ${e.toString()}");
+      CustomSnackbar.showError("${'Failed to select leader:'.tr} ${e.toString()}");
     } finally {
       isLoading.value = false;
     }
@@ -110,5 +254,10 @@ class ChooseTeamLeaderController extends GetxController {
   /// Reset selection
   void resetSelection() {
     selectedLeader.value = null;
+  }
+
+  /// Refresh team members
+  Future<void> refreshTeamMembers() async {
+    await fetchTeamMembers();
   }
 }

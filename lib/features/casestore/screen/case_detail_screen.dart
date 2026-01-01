@@ -173,7 +173,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                     SizedBox(height: 10.h),
 
                                     Text(
-                                      'Share this code with friends to join.',
+                                      'Share this code with friends to join.'.tr,
                                       style: AppTextStyles.captionRegular12()
                                           .copyWith(
                                             color: MyColors.white,
@@ -202,7 +202,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         ),
                                         SizedBox(width: 3.w),
                                         Text(
-                                          'Difficulty',
+                                          'Difficulty'.tr,
                                           style: AppTextStyles.labelMedium14()
                                               .copyWith(
                                                 fontSize: 6.sp,
@@ -250,7 +250,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         ),
                                         SizedBox(width: 3.w),
                                         Text(
-                                          'Duration',
+                                          'Duration'.tr,
                                           style: AppTextStyles.labelMedium14()
                                               .copyWith(
                                                 fontSize: 6.sp,
@@ -274,7 +274,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                             ),
                                           ),
                                           child: Text(
-                                            "${controller.gameDetail.value.estimatedDuration ?? '40'} minutes",
+                                            "${controller.gameDetail.value.estimatedDuration ?? '40'} ${'minutes'.tr}",
                                             style: AppTextStyles.labelMedium14()
                                                 .copyWith(
                                                   fontSize: 6.sp,

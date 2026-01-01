@@ -1,0 +1,2923 @@
+{
+	"info": {
+		"_postman_id": "1755bccd-b353-4deb-9c85-decac4a3d371",
+		"name": "Alqadiya",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32507793",
+		"_collection_link": "https://lively-astronaut-793200.postman.co/workspace/My-Workspace~3d7b2859-f453-40f6-8f70-3ebe0e56976b/collection/32507793-1755bccd-b353-4deb-9c85-decac4a3d371?action=share&source=collection_link&creator=32507793"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "sign up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // If using phone number\r\n    \"fullName\": \"Test phone User\",\r\n    \"phoneNumber\": \"31277864\",\r\n    \"callingCode\": \"+965\",\r\n    \"countryCode\": \"KW\",\r\n    \"password\": \"Qwerty@123\",\r\n    \"authProvider\": \"phone\"\r\n\r\n    // // // If using Email\r\n    // \"fullName\": \"Test phone User\",\r\n    // \"email\": \"irtaza.nawaz+new@mentorsol.com\",\r\n    // \"password\": \"Qwerty@123\",\r\n    // \"authProvider\": \"email\"\r\n\r\n    // If using Google account\r\n    // \"googleId\": \"googleId\",\r\n    // \"fullName\": \"Test Google account user\",\r\n    // \"email\": \"test@gmail.com\",\r\n    // \"authProvider\": \"google\"\r\n\r\n    // If using Google account\r\n    // \"appleId\": \"appleId\",\r\n    // \"fullName\": \"Test apple account user\",\r\n    // \"email\": \"testApple@gmail.com\",\r\n    // \"authProvider\": \"apple\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{clientLiveUrl}}/auth/signUp",
+							"host": [
+								"{{clientLiveUrl}}"
+							],
+							"path": [
+								"auth",
+								"signUp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sign In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    try {\r",
+									"        const response = pm.response.json();\r",
+									"        if (response.accessToken) {\r",
+									"            pm.collectionVariables.set(\"currentToken\", response.accessToken);\r",
+									"            console.log(\"✅ currentToken updated:\", response.accessToken);\r",
+									"        } else {\r",
+									"            console.warn(\"⚠️ accessToken not found in response body.\");\r",
+									"        }\r",
+									"    } catch (err) {\r",
+									"        console.error(\"❌ Failed to parse JSON response:\", err);\r",
+									"    }\r",
+									"} else {\r",
+									"    console.log(`ℹ️ Request did not return 201 Created. Status: ${pm.response.code}`);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // If using phone number\r\n    \"phoneNumber\": \"31277863\",\r\n    \"callingCode\": \"+965\",\r\n    \"countryCode\": \"KW\",\r\n    \"password\": \"Qwerty@123\",\r\n    \"authProvider\": \"phone\"\r\n\r\n    // If using Email\r\n    // \"email\": \"irtaza.nawaz@mentorsol.com\",\r\n    // \"password\": \"Qwerty@123\",\r\n    // \"authProvider\": \"email\"\r\n    // \"email\": \"AutomateTest@gmail.com\",\r\n    // \"password\": \"Qwerty@123\",\r\n    // \"authProvider\": \"email\"\r\n\r\n    // If using Google account\r\n    // \"googleId\": \"googleId\",\r\n    // \"authProvider\": \"google\"\r\n\r\n    // If using Google account\r\n    // \"appleId\": \"appleId\",\r\n    // \"authProvider\": \"apple\"\r\n    // \"email\": null,\r\n    // \"fullName\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localURL}}/auth/signIn",
+							"host": [
+								"{{localURL}}"
+							],
+							"path": [
+								"auth",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forget password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"31277864\",\r\n    \"callingCode\": \"+965\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/forgetPassword",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"forgetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"    try {\r",
+									"        const response = pm.response.json();\r",
+									"        if (response.accessToken) {\r",
+									"            pm.collectionVariables.set(\"currentToken\", response.accessToken);\r",
+									"            console.log(\"✅ currentToken updated:\", response.accessToken);\r",
+									"        } else {\r",
+									"            console.warn(\"⚠️ accessToken not found in response body.\");\r",
+									"        }\r",
+									"    } catch (err) {\r",
+									"        console.error(\"❌ Failed to parse JSON response:\", err);\r",
+									"    }\r",
+									"} else {\r",
+									"    console.log(`ℹ️ Request did not return 201 Created. Status: ${pm.response.code}`);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"feea843b-ee43-47ee-909c-17e33b9dafbc\",\r\n    \"otpCode\": 972317\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{clientLiveUrl}}/auth/verifyOtp",
+							"host": [
+								"{{clientLiveUrl}}"
+							],
+							"path": [
+								"auth",
+								"verifyOtp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newPassword\": \"Qwerty@123\",\r\n    \"confirmPassword\": \"Qwerty@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/resetPassword",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "read all users",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/users",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Games",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"titleEn\": \"The Mysterious Murder Case\",\r\n  \"descriptionEn\": \"A thrilling detective game where you must solve a mysterious murder case by collecting evidence, questioning suspects, and piecing together clues.\",\r\n  \"titleAr\": \"قضية القتل الغامضة\",\r\n  \"descriptionAr\": \"لعبة محقق مثيرة حيث يجب عليك حل قضية قتل غامضة من خلال جمع الأدلة واستجواب المشتبه بهم وربط الأدلة معًا.\",\r\n  \"difficulty\": \"intermediate\",\r\n  \"coverImage\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\",\r\n  \"costPoints\": 15,\r\n  \"estimatedDuration\": 90\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/games",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"games"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read all",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{clientLiveUrl}}/admin/games",
+									"host": [
+										"{{clientLiveUrl}}"
+									],
+									"path": [
+										"admin",
+										"games"
+									],
+									"query": [
+										{
+											"key": "language",
+											"value": "ar",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read by id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{clientLiveUrl}}/admin/games/5c822702-ace7-4a61-bbc3-4f615a0fcbeb",
+									"host": [
+										"{{clientLiveUrl}}"
+									],
+									"path": [
+										"admin",
+										"games",
+										"5c822702-ace7-4a61-bbc3-4f615a0fcbeb"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload link",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"// pm.collectionVariables.set(\"drivingLicenseFront\", jsonData.uploadId);\r",
+											"// pm.collectionVariables.set(\"drivingLicenseFrontData\", JSON.stringify(jsonData));\r",
+											"\r",
+											"pm.test(\"Status code is 201\", function () {\r",
+											"pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const prefix = \"game\"\r",
+											"\r",
+											"pm.collectionVariables.unset(`${prefix}URL`)\r",
+											"pm.collectionVariables.unset(`${prefix}bucket`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Algorithm`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Credential`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Date`)\r",
+											"pm.collectionVariables.unset(`${prefix}key`)\r",
+											"pm.collectionVariables.unset(`${prefix}Policy`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Signature`)\r",
+											"\r",
+											"pm.collectionVariables.set(`${prefix}URL`,jsonData.url)\r",
+											"pm.collectionVariables.set(`${prefix}bucket`,jsonData?.fields.bucket)\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Algorithm`,jsonData.fields['X-Amz-Algorithm'])\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Credential`,jsonData.fields['X-Amz-Credential'])\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Date`,jsonData.fields['X-Amz-Date'])\r",
+											"pm.collectionVariables.set(`${prefix}key`,jsonData.fields.key)\r",
+											"pm.collectionVariables.set(`${prefix}Policy`,jsonData.fields.Policy)\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Signature`,jsonData.fields['X-Amz-Signature'])"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fileType\": \"image/jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/games/upload-link?linkType=coverImage",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"games",
+										"upload-link"
+									],
+									"query": [
+										{
+											"key": "linkType",
+											"value": "coverImage"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "Content-Type",
+											"value": "image/jpg",
+											"type": "text"
+										},
+										{
+											"key": "bucket",
+											"value": "{{gamebucket}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Algorithm",
+											"value": "{{gameX-Amz-Algorithm}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Credential",
+											"value": "{{gameX-Amz-Credential}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Date",
+											"value": "{{gameX-Amz-Date}}",
+											"type": "text"
+										},
+										{
+											"key": "key",
+											"value": "{{gamekey}}",
+											"type": "text"
+										},
+										{
+											"key": "policy",
+											"value": "{{gamePolicy}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Signature",
+											"value": "{{gameX-Amz-Signature}}",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/Dell/Downloads/download.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{gameURL}}",
+									"host": [
+										"{{gameURL}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"titleEn\": \"The Mysterious Murder Case\",\r\n  \"descriptionEn\": \"A thrilling detective game where you must solve a mysterious murder case by collecting evidence, questioning suspects, and piecing together clues.\",\r\n  \"titleAr\": \"قضية القتل الغامضة\",\r\n  \"descriptionAr\": \"لعبة محقق مثيرة حيث يجب عليك حل قضية قتل غامضة من خلال جمع الأدلة واستجواب المشتبه بهم وربط الأدلة معًا.\",\r\n  \"difficulty\": \"intermediate\",\r\n  \"coverImage\": \"327b12d1-5397-44f1-b991-38291388b9bc\",\r\n  \"costPoints\": 15,\r\n  \"estimatedDuration\": 80\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/games/d21a9942-2e1d-4fd6-b4b5-d3d9ddb2ea5c",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"games",
+										"d21a9942-2e1d-4fd6-b4b5-d3d9ddb2ea5c"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/games/d21a9942-2e1d-4fd6-b4b5-d3d9ddb2ea5c",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"games",
+										"d21a9942-2e1d-4fd6-b4b5-d3d9ddb2ea5c"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read actvie games",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/games/active",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"games",
+										"active"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read active game details",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/games/active/500a94a0-3b74-4856-85a8-0974188d7101",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"games",
+										"active",
+										"500a94a0-3b74-4856-85a8-0974188d7101"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Game Questions",
+					"item": [
+						{
+							"name": "Hint Type Uploads",
+							"item": [
+								{
+									"name": "upload link",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();\r",
+													"// pm.collectionVariables.set(\"drivingLicenseFront\", jsonData.uploadId);\r",
+													"// pm.collectionVariables.set(\"drivingLicenseFrontData\", JSON.stringify(jsonData));\r",
+													"\r",
+													"pm.test(\"Status code is 201\", function () {\r",
+													"pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const prefix = \"hint\"\r",
+													"\r",
+													"pm.collectionVariables.unset(`${prefix}URL`)\r",
+													"pm.collectionVariables.unset(`${prefix}bucket`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Algorithm`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Credential`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Date`)\r",
+													"pm.collectionVariables.unset(`${prefix}key`)\r",
+													"pm.collectionVariables.unset(`${prefix}Policy`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Signature`)\r",
+													"\r",
+													"pm.collectionVariables.set(`${prefix}URL`,jsonData.url)\r",
+													"pm.collectionVariables.set(`${prefix}bucket`,jsonData?.fields.bucket)\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Algorithm`,jsonData.fields['X-Amz-Algorithm'])\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Credential`,jsonData.fields['X-Amz-Credential'])\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Date`,jsonData.fields['X-Amz-Date'])\r",
+													"pm.collectionVariables.set(`${prefix}key`,jsonData.fields.key)\r",
+													"pm.collectionVariables.set(`${prefix}Policy`,jsonData.fields.Policy)\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Signature`,jsonData.fields['X-Amz-Signature'])"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{currentToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"fileType\": \"image/jpg\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{localURL}}/admin/questions/hints/upload-link?linkType=hintImage",
+											"host": [
+												"{{localURL}}"
+											],
+											"path": [
+												"admin",
+												"questions",
+												"hints",
+												"upload-link"
+											],
+											"query": [
+												{
+													"key": "linkType",
+													"value": "hintImage"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "upload image",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "Content-Type",
+													"value": "image/jpg",
+													"type": "text"
+												},
+												{
+													"key": "bucket",
+													"value": "{{hintbucket}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Algorithm",
+													"value": "{{hintX-Amz-Algorithm}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Credential",
+													"value": "{{hintX-Amz-Credential}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Date",
+													"value": "{{hintX-Amz-Date}}",
+													"type": "text"
+												},
+												{
+													"key": "key",
+													"value": "{{hintkey}}",
+													"type": "text"
+												},
+												{
+													"key": "policy",
+													"value": "{{hintPolicy}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Signature",
+													"value": "{{hintX-Amz-Signature}}",
+													"type": "text"
+												},
+												{
+													"key": "file",
+													"type": "file",
+													"src": "/C:/Users/MentorSol/Downloads/Test.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{hintURL}}",
+											"host": [
+												"{{hintURL}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"gameId\": \"eae80ff2-6ee6-44c5-a6f7-f8225b171664\",\r\n  \r\n  \"questionEn\": \"Who is the main suspect in the murder case?\",\r\n  \"questionAr\": \"من هو المشتبه به الرئيسي في قضية القتل؟\",\r\n  \r\n  \"type\": \"multiple_choice\",\r\n  \"points\": 15,\r\n  \"difficulty\": 7,\r\n  \"order\": 1,\r\n  \"isRequired\": true,\r\n  \"isFinalAccusation\": false,\r\n  \r\n  \"answers\": [\r\n    {\r\n      \"answerText\": \"John Smith\",\r\n      \"answerTextAr\": \"جون سميث\",\r\n      \"isCorrect\": true\r\n    },\r\n    {\r\n      \"answerText\": \"Mary Johnson\",\r\n      \"answerTextAr\": \"ماري جونسون\",\r\n      \"isCorrect\": false\r\n    },\r\n    {\r\n      \"answerText\": \"Robert Brown\",\r\n      \"answerTextAr\": \"روبرت براون\",\r\n      \"isCorrect\": false\r\n    },\r\n    {\r\n      \"answerText\": \"Sarah Davis\",\r\n      \"answerTextAr\": \"سارة ديفيس\",\r\n      \"isCorrect\": false\r\n    }\r\n  ],\r\n  \r\n  \"hints\": [\r\n    {\r\n      \"hintName\": \"Crime Scene Video\",\r\n      \"hintNameAr\": \"فيديو مسرح الجريمة\",\r\n      \"hintDescription\": \"Watch this video to see the crime scene investigation and gather clues about the suspect.\",\r\n      \"hintDescriptionAr\": \"شاهد هذا الفيديو لرؤية التحقيق في مسرح الجريمة وجمع الأدلة حول المشتبه به.\",\r\n      \"hintType\": \"video\",\r\n      \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\",\r\n      \"pointsCost\": 5\r\n    },\r\n    {\r\n      \"hintName\": \"Evidence Photo\",\r\n      \"hintNameAr\": \"صورة الأدلة\",\r\n      \"hintDescription\": \"View the collected evidence from the crime scene.\",\r\n      \"hintDescriptionAr\": \"عرض الأدلة التي تم جمعها من مسرح الجريمة.\",\r\n      \"hintType\": \"image\",\r\n      \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\",\r\n      \"pointsCost\": 3\r\n    },\r\n    {\r\n      \"hintName\": \"Witness Statement Document\",\r\n      \"hintNameAr\": \"وثيقة شهادة الشاهد\",\r\n      \"hintDescription\": \"Read the witness statement document for important information.\",\r\n      \"hintDescriptionAr\": \"اقرأ وثيقة شهادة الشاهد للحصول على معلومات مهمة.\",\r\n      \"hintType\": \"document\",\r\n      \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\",\r\n      \"pointsCost\": 7\r\n    },\r\n    {\r\n      \"hintName\": \"Audio Recording\",\r\n      \"hintNameAr\": \"تسجيل صوتي\",\r\n      \"hintDescription\": \"Listen to the audio recording from the crime scene.\",\r\n      \"hintDescriptionAr\": \"استمع إلى التسجيل الصوتي من مسرح الجريمة.\",\r\n      \"hintType\": \"audio\",\r\n      \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\",\r\n      \"pointsCost\": 4\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/questions",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"questions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"gameId\": \"3c7b245b-f123-455b-885d-985e166fabac\",\r\n    \"questionEn\": \"Who is the main suspect in the murder case?\",\r\n    \"questionAr\": \"من هو المشتبه به الرئيسي في قضية القتل؟\",\r\n    \"type\": \"multiple_choice\",\r\n    \"points\": 15,\r\n    \"difficulty\": 7,\r\n    \"order\": 1,\r\n    \"isRequired\": true,\r\n    \"isFinalAccusation\": false,\r\n    \"answers\": [\r\n        {\r\n            \"id\": \"bde2765b-b0f0-477d-85a5-6a9b76607080\",\r\n            \"answerText\": \"John Smithhhh\",\r\n            \"answerTextAr\": \"جون سميث\",\r\n            \"isCorrect\": true\r\n        },\r\n        {\r\n            \"id\": \"0ff52975-f8f5-43b7-a9d9-be15087926a9\",\r\n            \"answerText\": \"Mary Johnson\",\r\n            \"answerTextAr\": \"ماري جونسون\",\r\n            \"isCorrect\": false\r\n        },\r\n        {\r\n            \"id\": \"b873b2f1-4cbc-4896-8849-27755991f409\",\r\n            \"answerText\": \"Robert Brown\",\r\n            \"answerTextAr\": \"روبرت براون\",\r\n            \"isCorrect\": false\r\n        },\r\n        {\r\n            \"id\": \"670fe5a4-13bb-4b02-85f8-a61078b5399b\",\r\n            \"answerText\": \"Sarah Davis\",\r\n            \"answerTextAr\": \"سارة ديفيس\",\r\n            \"isCorrect\": false\r\n        },\r\n        {\r\n            \"answerText\": \"Sarah Anyy\",\r\n            \"answerTextAr\": \"سارة ديفيس\",\r\n            \"isCorrect\": false\r\n        }\r\n    ],\r\n    \"hints\": [\r\n        {\r\n            \"id\": \"630c312b-b409-4887-9826-fbd75a2c4d75\",\r\n            \"hintName\": \"Crime Scene Video\",\r\n            \"hintNameAr\": \"فيديو مسرح الجريمة\",\r\n            \"hintDescription\": \"Watch this video to see the crime scene investigation and gather clues about the suspect.\",\r\n            \"hintDescriptionAr\": \"شاهد هذا الفيديو لرؤية التحقيق في مسرح الجريمة وجمع الأدلة حول المشتبه به.\",\r\n            \"hintType\": \"video\",\r\n            \"mediaUrl\": \"https://alqadiya-bucket-vga.s3.me-central-1.amazonaws.com/hints/crime-scene-video.mp4\",\r\n            \"pointsCost\": 5\r\n        },\r\n        {\r\n            \"id\": \"eb552d47-f011-460f-a1eb-2fc5c4545822\",\r\n            \"hintName\": \"Evidence Photo\",\r\n            \"hintNameAr\": \"صورة الأدلة\",\r\n            \"hintDescription\": \"View the collected evidence from the crime scene.\",\r\n            \"hintDescriptionAr\": \"عرض الأدلة التي تم جمعها من مسرح الجريمة.\",\r\n            \"hintType\": \"image\",\r\n            \"mediaUrl\": \"f1647fe3-ced6-4a24-9a89-c75e2164e0c8\",\r\n            \"pointsCost\": 3\r\n        },\r\n        {\r\n            \"id\": \"d28eed37-388a-49a9-bcce-cb74aa9410b3\",\r\n            \"hintName\": \"Witness Statement Document\",\r\n            \"hintNameAr\": \"وثيقة شهادة الشاهد\",\r\n            \"hintDescription\": \"Read the witness statement document for important information.\",\r\n            \"hintDescriptionAr\": \"اقرأ وثيقة شهادة الشاهد للحصول على معلومات مهمة.\",\r\n            \"hintType\": \"document\",\r\n            \"mediaUrl\": \"https://alqadiya-bucket-vga.s3.me-central-1.amazonaws.com/hints/witness-statement.pdf\",\r\n            \"pointsCost\": 7\r\n        },\r\n        {\r\n            \"id\": \"25e346f7-02cb-46a6-85e3-9db43de0786a\",\r\n            \"hintName\": \"Audio Recording\",\r\n            \"hintNameAr\": \"تسجيل صوتي\",\r\n            \"hintDescription\": \"Listen to the audio recording from the crime scene.\",\r\n            \"hintDescriptionAr\": \"استمع إلى التسجيل الصوتي من مسرح الجريمة.\",\r\n            \"hintType\": \"audio\",\r\n            \"mediaUrl\": \"https://alqadiya-bucket-vga.s3.me-central-1.amazonaws.com/hints/crime-scene-audio.mp3\",\r\n            \"pointsCost\": 4\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/questions/f4736720-be38-48d9-af06-1def0d7ac9e3",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"questions",
+										"f4736720-be38-48d9-af06-1def0d7ac9e3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read all",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/questions",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"questions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read by game Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/questions/game/eae80ff2-6ee6-44c5-a6f7-f8225b171664",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"questions",
+										"game",
+										"eae80ff2-6ee6-44c5-a6f7-f8225b171664"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Game Suspects",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"gameId\": \"eae80ff2-6ee6-44c5-a6f7-f8225b171664\",\r\n    \"nameEn\": \"John Doe\",\r\n    \"nameAr\": \"جون دو\",\r\n    \"jobEn\": \"Detective\",\r\n    \"jobAr\": \"مخبر\",\r\n    \"biographyEn\": \"A seasoned detective with 15 years of experience in solving complex murder cases. Known for his sharp intuition and attention to detail.\",\r\n    \"biographyAr\": \"مخبر محترف بخبرة 15 عامًا في حل قضايا القتل المعقدة. معروف بحدسه الحاد واهتمامه بالتفاصيل.\",\r\n    \"age\": 42,\r\n    \"profileImage\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\",\r\n    \"attachments\": [\r\n        {\r\n            \"attachmentNameEn\": \"Photo of suspect running away\",\r\n            \"attachmentNameAr\": \"صورة المشتبه به وهو يهرب\",\r\n            \"attachmentType\": \"image\",\r\n            \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\"\r\n        },\r\n        {\r\n            \"attachmentNameEn\": \"Security camera footage\",\r\n            \"attachmentNameAr\": \"لقطات كاميرا الأمان\",\r\n            \"attachmentType\": \"video\",\r\n            \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\"\r\n        },\r\n        {\r\n            \"attachmentNameEn\": \"Voice recording\",\r\n            \"attachmentNameAr\": \"تسجيل صوتي\",\r\n            \"attachmentType\": \"audio\",\r\n            \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\"\r\n        },\r\n        {\r\n            \"attachmentNameEn\": \"Fingerprint report\",\r\n            \"attachmentNameAr\": \"تقرير البصمات\",\r\n            \"attachmentType\": \"document\",\r\n            \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\"\r\n        }\r\n    ],\r\n    \"investigationReports\": [\r\n        {\r\n            \"attachmentNameEn\": \"Initial Investigation Report\",\r\n            \"attachmentNameAr\": \"تقرير التحقيق الأولي\",\r\n            \"attachmentType\": \"investigation_report\",\r\n            \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\"\r\n        },\r\n        {\r\n            \"attachmentNameEn\": \"Forensic Analysis Report\",\r\n            \"attachmentNameAr\": \"تقرير التحليل الجنائي\",\r\n            \"attachmentType\": \"investigation_report\",\r\n            \"uploadId\": \"36f1e077-6596-44bd-81c8-47d96bb23c84\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/suspects",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"suspects"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read by game Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/suspects/game/eae80ff2-6ee6-44c5-a6f7-f8225b171664",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"suspects",
+										"game",
+										"eae80ff2-6ee6-44c5-a6f7-f8225b171664"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read all",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/suspects",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"suspects"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read by Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/suspects/cb9c77c3-c16c-45a1-81dd-01011151061d",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"suspects",
+										"cb9c77c3-c16c-45a1-81dd-01011151061d"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"gameId\": \"3c7b245b-f123-455b-885d-985e166fabac\",\r\n  \"nameEn\": \"John Doe Updated\",\r\n  \"nameAr\": \"جون دو محدث\",\r\n  \"jobEn\": \"Senior Detective\",\r\n  \"jobAr\": \"مخبر أول\",\r\n  \"biographyEn\": \"Updated biography with more details about the suspect.\",\r\n  \"biographyAr\": \"سيرة ذاتية محدثة مع المزيد من التفاصيل عن المشتبه به.\",\r\n  \"age\": 43,\r\n  \"profileImage\": \"427b12d1-5397-44f1-b991-38291388b9bc\",\r\n  \"attachments\": [\r\n    {\r\n      \"attachmentNameEn\": \"Updated photo\",\r\n      \"attachmentNameAr\": \"صورة محدثة\",\r\n      \"attachmentType\": \"image\",\r\n      \"mediaUrl\": \"527b12d1-5397-44f1-b991-38291388b9bc\"\r\n    }\r\n  ],\r\n  \"investigationReports\": [\r\n    {\r\n      \"attachmentNameEn\": \"Updated investigation report\",\r\n      \"attachmentNameAr\": \"تقرير تحقيق محدث\",\r\n      \"attachmentType\": \"investigation_report\",\r\n      \"mediaUrl\": \"627b12d1-5397-44f1-b991-38291388b9bc\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/suspects/cb9c77c3-c16c-45a1-81dd-01011151061d",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"suspects",
+										"cb9c77c3-c16c-45a1-81dd-01011151061d"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/suspects/cb9c77c3-c16c-45a1-81dd-01011151061d",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"suspects",
+										"cb9c77c3-c16c-45a1-81dd-01011151061d"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Game Evidences",
+					"item": [
+						{
+							"name": "create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"gameId\": \"eae80ff2-6ee6-44c5-a6f7-f8225b171664\",\r\n    \"questionId\": \"9b77b1b9-57d8-4f0e-aeb2-6aa774aef54c\",\r\n    \"evidenceName\": \"Crime Scene Photo\",\r\n    \"evidenceNameAr\": \"صورة مسرح الجريمة\",\r\n    \"description\": \"A photograph taken at the crime scene showing important details\",\r\n    \"descriptionAr\": \"صورة التقطت في مسرح الجريمة تظهر تفاصيل مهمة\",\r\n    \"attachments\": [\r\n        {\r\n            \"attachmentNameEn\": \"Crime Scene Photo\",\r\n            \"attachmentNameAr\": \"صورة مسرح الجريمة\",\r\n            \"attachmentType\": \"image\",\r\n            \"uploadId\": \"c522d894-4bfe-4bf6-8ff3-55979038b21b\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/evidences",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"evidences"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read all",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/evidences",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"evidences"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "read by game Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/evidences/game/eae80ff2-6ee6-44c5-a6f7-f8225b171664",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"evidences",
+										"game",
+										"eae80ff2-6ee6-44c5-a6f7-f8225b171664"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"questionId\": \"9b77b1b9-57d8-4f0e-aeb2-6aa774aef54c\",\r\n    \"evidenceName\": \"Crime Scene Photo\",\r\n    \"evidenceNameAr\": \"صورة مسرح الجريمة\",\r\n    \"evidenceType\": \"image\",\r\n    \"description\": \"A photograph taken at the crime scene showing important details\",\r\n    \"descriptionAr\": \"صورة التقطت في مسرح الجريمة تظهر تفاصيل مهمة\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/evidences/38d05853-3956-4f5c-a03e-4b1c29964450",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"evidences",
+										"38d05853-3956-4f5c-a03e-4b1c29964450"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/evidences/38d05853-3956-4f5c-a03e-4b1c29964450",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"evidences",
+										"38d05853-3956-4f5c-a03e-4b1c29964450"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload link",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"// pm.collectionVariables.set(\"drivingLicenseFront\", jsonData.uploadId);\r",
+											"// pm.collectionVariables.set(\"drivingLicenseFrontData\", JSON.stringify(jsonData));\r",
+											"\r",
+											"pm.test(\"Status code is 201\", function () {\r",
+											"pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const prefix = \"evidence\"\r",
+											"\r",
+											"pm.collectionVariables.unset(`${prefix}URL`)\r",
+											"pm.collectionVariables.unset(`${prefix}bucket`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Algorithm`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Credential`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Date`)\r",
+											"pm.collectionVariables.unset(`${prefix}key`)\r",
+											"pm.collectionVariables.unset(`${prefix}Policy`)\r",
+											"pm.collectionVariables.unset(`${prefix}X-Amz-Signature`)\r",
+											"\r",
+											"pm.collectionVariables.set(`${prefix}URL`,jsonData.url)\r",
+											"pm.collectionVariables.set(`${prefix}bucket`,jsonData?.fields.bucket)\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Algorithm`,jsonData.fields['X-Amz-Algorithm'])\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Credential`,jsonData.fields['X-Amz-Credential'])\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Date`,jsonData.fields['X-Amz-Date'])\r",
+											"pm.collectionVariables.set(`${prefix}key`,jsonData.fields.key)\r",
+											"pm.collectionVariables.set(`${prefix}Policy`,jsonData.fields.Policy)\r",
+											"pm.collectionVariables.set(`${prefix}X-Amz-Signature`,jsonData.fields['X-Amz-Signature'])"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fileType\": \"image/jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/evidences/upload-link?linkType=evidenceImage",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"evidences",
+										"upload-link"
+									],
+									"query": [
+										{
+											"key": "linkType",
+											"value": "evidenceImage"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "Content-Type",
+											"value": "image/jpg",
+											"type": "text"
+										},
+										{
+											"key": "bucket",
+											"value": "{{evidencebucket}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Algorithm",
+											"value": "{{evidenceX-Amz-Algorithm}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Credential",
+											"value": "{{evidenceX-Amz-Credential}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Date",
+											"value": "{{evidenceX-Amz-Date}}",
+											"type": "text"
+										},
+										{
+											"key": "key",
+											"value": "{{evidencekey}}",
+											"type": "text"
+										},
+										{
+											"key": "policy",
+											"value": "{{evidencePolicy}}",
+											"type": "text"
+										},
+										{
+											"key": "x-Amz-Signature",
+											"value": "{{evidenceX-Amz-Signature}}",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/Dell/Downloads/download.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{evidenceURL}}",
+									"host": [
+										"{{evidenceURL}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Settings",
+					"item": [
+						{
+							"name": "Payment Methods",
+							"item": [
+								{
+									"name": "create",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{currentToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"name\": \"My Fatoorah\",\r\n  \"iconUploadId\": \"7916fafa-e8d9-4f78-a87e-b2e89c5983e5\",\r\n  \"isActive\": true,\r\n  \"order\": 0\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{localURL}}/admin/settings/payment-methods",
+											"host": [
+												"{{localURL}}"
+											],
+											"path": [
+												"admin",
+												"settings",
+												"payment-methods"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "read all",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{currentToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{localURL}}/admin/settings/payment-methods",
+											"host": [
+												"{{localURL}}"
+											],
+											"path": [
+												"admin",
+												"settings",
+												"payment-methods"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "upload link",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();\r",
+													"// pm.collectionVariables.set(\"drivingLicenseFront\", jsonData.uploadId);\r",
+													"// pm.collectionVariables.set(\"drivingLicenseFrontData\", JSON.stringify(jsonData));\r",
+													"\r",
+													"pm.test(\"Status code is 201\", function () {\r",
+													"pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"const prefix = \"paymentMethod\"\r",
+													"\r",
+													"pm.collectionVariables.unset(`${prefix}URL`)\r",
+													"pm.collectionVariables.unset(`${prefix}bucket`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Algorithm`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Credential`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Date`)\r",
+													"pm.collectionVariables.unset(`${prefix}key`)\r",
+													"pm.collectionVariables.unset(`${prefix}Policy`)\r",
+													"pm.collectionVariables.unset(`${prefix}X-Amz-Signature`)\r",
+													"\r",
+													"pm.collectionVariables.set(`${prefix}URL`,jsonData.url)\r",
+													"pm.collectionVariables.set(`${prefix}bucket`,jsonData?.fields.bucket)\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Algorithm`,jsonData.fields['X-Amz-Algorithm'])\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Credential`,jsonData.fields['X-Amz-Credential'])\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Date`,jsonData.fields['X-Amz-Date'])\r",
+													"pm.collectionVariables.set(`${prefix}key`,jsonData.fields.key)\r",
+													"pm.collectionVariables.set(`${prefix}Policy`,jsonData.fields.Policy)\r",
+													"pm.collectionVariables.set(`${prefix}X-Amz-Signature`,jsonData.fields['X-Amz-Signature'])"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{currentToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"fileType\": \"image/jpg\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{localURL}}/admin/settings/payment-methods/upload-link?linkType=paymentMethodIcon",
+											"host": [
+												"{{localURL}}"
+											],
+											"path": [
+												"admin",
+												"settings",
+												"payment-methods",
+												"upload-link"
+											],
+											"query": [
+												{
+													"key": "linkType",
+													"value": "paymentMethodIcon"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "upload image",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "Content-Type",
+													"value": "image/jpg",
+													"type": "text"
+												},
+												{
+													"key": "bucket",
+													"value": "{{paymentMethodbucket}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Algorithm",
+													"value": "{{paymentMethodX-Amz-Algorithm}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Credential",
+													"value": "{{paymentMethodX-Amz-Credential}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Date",
+													"value": "{{paymentMethodX-Amz-Date}}",
+													"type": "text"
+												},
+												{
+													"key": "key",
+													"value": "{{paymentMethodkey}}",
+													"type": "text"
+												},
+												{
+													"key": "policy",
+													"value": "{{paymentMethodPolicy}}",
+													"type": "text"
+												},
+												{
+													"key": "x-Amz-Signature",
+													"value": "{{paymentMethodX-Amz-Signature}}",
+													"type": "text"
+												},
+												{
+													"key": "file",
+													"type": "file",
+													"src": "/C:/Users/Dell/Downloads/download.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{paymentMethodURL}}",
+											"host": [
+												"{{paymentMethodURL}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Privacy Policy",
+							"item": [
+								{
+									"name": "update",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{currentToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"termsEn\": \"Terms and conditions text in English...\",\r\n  \"termsAr\": \"نص الشروط والأحكام بالعربية...\",\r\n  \"privacyPolicyEn\": \"Privacy policy text in English...\",\r\n  \"privacyPolicyAr\": \"نص سياسة الخصوصية بالعربية...\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{localURL}}/admin/settings/terms-privacy",
+											"host": [
+												"{{localURL}}"
+											],
+											"path": [
+												"admin",
+												"settings",
+												"terms-privacy"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "read",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{currentToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{localURL}}/admin/settings/terms-privacy",
+											"host": [
+												"{{localURL}}"
+											],
+											"path": [
+												"admin",
+												"settings",
+												"terms-privacy"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Notifications",
+					"item": [
+						{
+							"name": "send notification",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"recipientType\": \"all_users\",\r\n  \"title\": \"New Case Available\",\r\n  \"titleInArabic\": \"قضية جديدة متاحة\",\r\n  \"body\": \"A new case has been added to the platform. Check it out now!\",\r\n  \"bodyInArabic\": \"تمت إضافة قضية جديدة إلى المنصة. تحقق منها الآن!\",\r\n  \"actionLink\": \"/cases/123\",\r\n  \"notificationCategory\": \"game\",\r\n  \"notificationPreferenceType\": \"game_update\"\r\n  \r\n  // For scheduled notification, uncomment:\r\n  // \"scheduledAt\": \"2024-03-15T14:30:00Z\"\r\n  \r\n  // For specific user, change recipientType to \"specific_user\" and add:\r\n  // \"recipientId\": \"user-uuid-here\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{localURL}}/admin/notifications/send",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"notifications",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get history",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/notifications/history",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"notifications",
+										"history"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "10",
+											"disabled": true
+										},
+										{
+											"key": "searchQuery",
+											"value": "",
+											"description": "Search by notification title",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "",
+											"description": "Filter by status: sent, scheduled, failed",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get stats",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/notifications/stats",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"notifications",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get notification details",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/notifications/:notificationId",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"notifications",
+										":notificationId"
+									],
+									"variable": [
+										{
+											"key": "notificationId",
+											"value": "cdf9eb6d-724b-4287-85c7-6f8934a533e7",
+											"description": "Notification UUID"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete notification",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{currentToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{localURL}}/admin/notifications/:notificationId",
+									"host": [
+										"{{localURL}}"
+									],
+									"path": [
+										"admin",
+										"notifications",
+										":notificationId"
+									],
+									"variable": [
+										{
+											"key": "notificationId",
+											"value": "",
+											"description": "Notification UUID"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "current user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/currentUser",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"currentUser"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "current user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/currentUser",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"currentUser"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "363"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"16b-j7eEinUH5qn3sp2LXSuJhc914s4\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 11 Dec 2025 12:26:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"ba30ca31-e398-4b0c-94ed-efb074d9e4ea\",\n    \"fullName\": \"Abdul Rauf\",\n    \"role\": \"customer\",\n    \"email\": null,\n    \"callingCode\": \"+965\",\n    \"photoId\": null,\n    \"photoURL\": null,\n    \"phoneNumber\": \"1234567\",\n    \"countryCode\": \"KW\",\n    \"status\": \"active\",\n    \"authProvider\": \"phone\",\n    \"isPhoneNumberVerified\": true,\n    \"pointsBalance\": 500,\n    \"createdAt\": \"2025-12-11T12:11:16.000Z\",\n    \"updatedAt\": \"2025-12-11T12:11:35.000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "delete user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{clientLiveUrl}}/users",
+							"host": [
+								"{{clientLiveUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "games/balance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{current_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/games/balance",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"games",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Games",
+			"item": [
+				{
+					"name": "read all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/games/?language=ar&difficulty=[intermediate]",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"games",
+								""
+							],
+							"query": [
+								{
+									"key": "language",
+									"value": "ar"
+								},
+								{
+									"key": "difficulty",
+									"value": "[intermediate]"
+								},
+								{
+									"key": "minPoints",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "maxPoints",
+									"value": "10",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/games/0a6c94f6-e516-42c3-b8aa-084690f49202",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"games",
+								"0a6c94f6-e516-42c3-b8aa-084690f49202"
+							],
+							"query": [
+								{
+									"key": "language",
+									"value": "ar",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "purchase game",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{current_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/games/e6faf0b9-01b4-4aa0-966e-cf55109c8aa1/purchase",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"games",
+								"e6faf0b9-01b4-4aa0-966e-cf55109c8aa1",
+								"purchase"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-game-sessions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{current_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"gameId\":\"c369143a-e71f-437e-9e96-b076b9e6fefc\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.1.10:4000/game-sessions",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"1",
+								"10"
+							],
+							"port": "4000",
+							"path": [
+								"game-sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get session details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{current_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.1.10:4000/game-sessions/2a867ca1-d324-4c05-857b-c5fed12871e6",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"1",
+								"10"
+							],
+							"port": "4000",
+							"path": [
+								"game-sessions",
+								"2a867ca1-d324-4c05-857b-c5fed12871e6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "players",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{current_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.1.10:4000/game-sessions/2a867ca1-d324-4c05-857b-c5fed12871e6/players",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"1",
+								"10"
+							],
+							"port": "4000",
+							"path": [
+								"game-sessions",
+								"2a867ca1-d324-4c05-857b-c5fed12871e6",
+								"players"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Teams",
+			"item": [
+				{
+					"name": "create teams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"sessionId\": \"2a867ca1-d324-4c05-857b-c5fed12871e6\",\r\n  \"teams\": [\r\n    {\r\n      \"teamName\": \"Team Alpha\",\r\n      \"teamNumber\": 1\r\n    },\r\n    {\r\n      \"teamName\": \"Team Beta\",\r\n      \"teamNumber\": 2\r\n    },\r\n    {\r\n      \"teamName\": \"Team Gamma\",\r\n      \"teamNumber\": 3\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get team by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/550e8400-e29b-41d4-a716-446655440000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"550e8400-e29b-41d4-a716-446655440000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get teams by session id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/session/2a867ca1-d324-4c05-857b-c5fed12871e6",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"session",
+								"2a867ca1-d324-4c05-857b-c5fed12871e6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"teamName\": \"Team Alpha Updated\",\r\n  \"teamNumber\": 1,\r\n  \"leaderUserId\": \"550e8400-e29b-41d4-a716-446655440001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams/550e8400-e29b-41d4-a716-446655440000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"550e8400-e29b-41d4-a716-446655440000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/550e8400-e29b-41d4-a716-446655440000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"550e8400-e29b-41d4-a716-446655440000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add member to team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams/550e8400-e29b-41d4-a716-446655440000/members",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"550e8400-e29b-41d4-a716-446655440000",
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove member from team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/550e8400-e29b-41d4-a716-446655440000/members/550e8400-e29b-41d4-a716-446655440001",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"550e8400-e29b-41d4-a716-446655440000",
+								"members",
+								"550e8400-e29b-41d4-a716-446655440001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign members to teams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"sessionId\": \"2a867ca1-d324-4c05-857b-c5fed12871e6\",\r\n  \"assignments\": [\r\n    {\r\n      \"teamId\": \"550e8400-e29b-41d4-a716-446655440000\",\r\n      \"userIds\": [\r\n        \"550e8400-e29b-41d4-a716-446655440001\",\r\n        \"550e8400-e29b-41d4-a716-446655440002\"\r\n      ]\r\n    },\r\n    {\r\n      \"teamId\": \"550e8400-e29b-41d4-a716-446655440003\",\r\n      \"userIds\": [\r\n        \"550e8400-e29b-41d4-a716-446655440004\",\r\n        \"550e8400-e29b-41d4-a716-446655440005\"\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams/assign-members",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"assign-members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set team leader",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams/550e8400-e29b-41d4-a716-446655440000/leader",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"550e8400-e29b-41d4-a716-446655440000",
+								"leader"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "get all notifications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get notification by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/:notificationId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications",
+								":notificationId"
+							],
+							"variable": [
+								{
+									"key": "notificationId",
+									"value": "",
+									"description": "Notification UUID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark notification as read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/:notificationId/mark-read",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications",
+								":notificationId",
+								"mark-read"
+							],
+							"variable": [
+								{
+									"key": "notificationId",
+									"value": "",
+									"description": "Notification UUID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark all notifications as read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/mark-all-read",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications",
+								"mark-all-read"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "localURL",
+			"value": ""
+		},
+		{
+			"key": "currentToken",
+			"value": ""
+		},
+		{
+			"key": "gamebucket",
+			"value": ""
+		},
+		{
+			"key": "gameX-Amz-Algorithm",
+			"value": "{{gameX-Amz-Algorithm}}"
+		},
+		{
+			"key": "gameX-Amz-Credential",
+			"value": "{{gameX-Amz-Algorithm}}"
+		},
+		{
+			"key": "gameX-Amz-Date",
+			"value": "{{gameX-Amz-Algorithm}}"
+		},
+		{
+			"key": "gamekey",
+			"value": ""
+		},
+		{
+			"key": "gamePolicy",
+			"value": ""
+		},
+		{
+			"key": "gameX-Amz-Signature",
+			"value": ""
+		},
+		{
+			"key": "gameURL",
+			"value": ""
+		},
+		{
+			"key": "hintURL",
+			"value": ""
+		},
+		{
+			"key": "hintbucket",
+			"value": ""
+		},
+		{
+			"key": "hintX-Amz-Algorithm",
+			"value": ""
+		},
+		{
+			"key": "hintX-Amz-Credential",
+			"value": ""
+		},
+		{
+			"key": "hintX-Amz-Date",
+			"value": ""
+		},
+		{
+			"key": "hintkey",
+			"value": ""
+		},
+		{
+			"key": "hintPolicy",
+			"value": ""
+		},
+		{
+			"key": "hintX-Amz-Signature",
+			"value": ""
+		},
+		{
+			"key": "evidencebucket",
+			"value": ""
+		},
+		{
+			"key": "evidenceX-Amz-Algorithm",
+			"value": ""
+		},
+		{
+			"key": "evidenceX-Amz-Credential",
+			"value": ""
+		},
+		{
+			"key": "evidenceX-Amz-Date",
+			"value": ""
+		},
+		{
+			"key": "evidencekey",
+			"value": ""
+		},
+		{
+			"key": "evidencePolicy",
+			"value": ""
+		},
+		{
+			"key": "evidenceX-Amz-Signature",
+			"value": ""
+		},
+		{
+			"key": "evidenceURL",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodbucket",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodX-Amz-Algorithm",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodX-Amz-Credential",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodX-Amz-Date",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodkey",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodPolicy",
+			"value": ""
+		},
+		{
+			"key": "paymentMethodX-Amz-Signature",
+			"value": ""
+		},
+		{
+			"key": "evidenceURL",
+			"value": ""
+		},
+		{
+			"key": "clientLiveUrl",
+			"value": ""
+		}
+	]
+}

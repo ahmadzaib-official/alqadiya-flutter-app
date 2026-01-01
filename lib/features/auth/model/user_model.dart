@@ -12,6 +12,7 @@ class UserModel {
         required this.status,
         required this.authProvider,
         required this.isPhoneNumberVerified,
+        required this.pointsBalance,
         required this.createdAt,
         required this.updatedAt,
     });
@@ -28,6 +29,7 @@ class UserModel {
     final String? status;
     final String? authProvider;
     final bool? isPhoneNumberVerified;
+    final int? pointsBalance;
     final DateTime? createdAt;
     final DateTime? updatedAt;
 
@@ -45,6 +47,7 @@ class UserModel {
             status: json["status"],
             authProvider: json["authProvider"],
             isPhoneNumberVerified: json["isPhoneNumberVerified"],
+            pointsBalance: json["pointsBalance"],
             createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
             updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
         );
@@ -63,6 +66,7 @@ class UserModel {
         "status": status,
         "authProvider": authProvider,
         "isPhoneNumberVerified": isPhoneNumberVerified,
+        "pointsBalance": pointsBalance,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
     };

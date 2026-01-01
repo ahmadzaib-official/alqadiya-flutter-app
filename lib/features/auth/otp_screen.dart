@@ -228,9 +228,9 @@ class _OtpScreenState extends State<OtpScreen> {
                                             AppRoutes
                                                 .verifcationSussesfulscreen,
                                             arguments: {
-                                              'title': 'Create an account',
+                                              'title': 'Create an account'.tr,
                                               'message':
-                                                  'Account created successfully',
+                                                  'Account created successfully'.tr,
                                               'isRegister': true,
                                             },
                                           );
@@ -251,9 +251,9 @@ class _OtpScreenState extends State<OtpScreen> {
                                             AppRoutes
                                                 .verifcationSussesfulscreen,
                                             arguments: {
-                                              'title': 'Create an account',
+                                              'title': 'Create an account'.tr,
                                               'message':
-                                                  'Account created successfully',
+                                                  'Account created successfully'.tr,
                                               'isVerified': true,
                                             },
                                           );
@@ -261,7 +261,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                       }
                                     }
                                   } else {
-                                    Toaster.showToast("Please enter the OTP");
+                                    Toaster.showToast("Please enter the OTP".tr);
                                   }
                                 },
                               ),

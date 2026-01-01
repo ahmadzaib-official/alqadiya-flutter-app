@@ -1,2 +1,4 @@
 /build
 /ios/build
+/.dart_tool
+pubspec.lock

@@ -113,7 +113,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                               vertical: 3.sp,
                             ),
                             child: Text(
-                              'Sort by category',
+                              'Sort by category'.tr,
                               style: TextStyle(color: MyColors.black),
                             ),
                           ),
@@ -131,7 +131,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                                   PopupMenuItem(
                                     value: 'Recent Cases',
                                     child: Text(
-                                      'Recent Cases',
+                                      'Recent Cases'.tr,
                                       style: AppTextStyles.labelMedium14()
                                           .copyWith(
                                             color: MyColors.white,
@@ -142,7 +142,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                                   PopupMenuItem(
                                     value: 'My Games',
                                     child: Text(
-                                      'My Games',
+                                      'My Games'.tr,
                                       style: AppTextStyles.labelMedium14()
                                           .copyWith(
                                             color: MyColors.white,

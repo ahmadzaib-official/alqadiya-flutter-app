@@ -89,7 +89,37 @@ class GameTimerController extends GetxController {
   /// Resume the timer from current time
   void resumeTimer() {
     if (_isRunning) return;
-    startTimer();
+    
+    // Parse current time from timerText
+    final parts = timerText.value.split(':');
+    int minutes = int.parse(parts[0]);
+    int seconds = int.parse(parts[1]);
+    
+    // Don't resume if timer is already at zero
+    if (minutes == 0 && seconds == 0) return;
+    
+    _isRunning = true;
+    _timer?.cancel();
+    
+    // Start timer from current time
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final parts = timerText.value.split(':');
+      int minutes = int.parse(parts[0]);
+      int seconds = int.parse(parts[1]);
+
+      if (seconds > 0) {
+        seconds--;
+      } else if (minutes > 0) {
+        minutes--;
+        seconds = 59;
+      } else {
+        stopTimer();
+        _onTimerFinished();
+        return;
+      }
+
+      timerText.value = _formatTime(minutes, seconds);
+    });
   }
 
   /// Clean up the timer controller (call when game ends)
@@ -103,9 +133,9 @@ class GameTimerController extends GetxController {
 
   /// Callback when timer reaches zero
   void _onTimerFinished() {
-    // You can add custom logic here, like showing a dialog or navigating
-    // For now, we'll just stop the timer
-    print('Game timer finished!');
+    // Timer finished - should handle game timeout
+    // TODO: Navigate to game result screen or show timeout dialog
+    // Get.toNamed(AppRoutes.gameResultScreen, arguments: {'reason': 'timeout'});
   }
 
   /// Format time as MM:SS

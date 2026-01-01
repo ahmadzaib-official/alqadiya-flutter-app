@@ -60,7 +60,7 @@ class SigninScreen extends StatelessWidget with Validators {
                                 AuthHeading(
                                   screenHeight: screenHeight,
                                   actionButtonIcon: MyIcons.register,
-                                  actionButtonText: 'Register',
+                                  actionButtonText: 'Register'.tr,
                                   onTap: () {
                                     Get.offNamedUntil(
                                       AppRoutes.signUp,

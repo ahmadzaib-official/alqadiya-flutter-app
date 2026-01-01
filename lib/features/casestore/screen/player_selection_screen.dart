@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
@@ -24,146 +25,195 @@ class PlayerSelectionScreen extends StatefulWidget {
 class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   late PlayerSelectionController controller;
   final gameController = Get.find<GameController>();
+  Timer? _pollingTimer;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<PlayerSelectionController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      gameController.getSessionPlayers();
+      if (!_isDisposed && mounted) {
+        gameController.getSessionPlayers();
+        // Start polling every 2 seconds
+        _startPolling();
+      }
     });
+  }
+
+  void _startPolling() {
+    // Cancel any existing timer first
+    _pollingTimer?.cancel();
+
+    _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      // Check if widget is still mounted and not disposed before making API call
+      if (_isDisposed || !mounted) {
+        timer.cancel();
+        _pollingTimer = null;
+        return;
+      }
+      // Make silent API call to avoid showing loading indicators
+      await gameController.getSessionPlayers(silent: true);
+
+      // Manually trigger sync as backup to ensure UI updates
+      // This ensures players update even if the ever() listener doesn't trigger
+      if (mounted && !_isDisposed) {
+        controller.syncPlayersFromGameController();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        isPurchased: true,
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Top Bar
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'Who did it?'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
-                    SizedBox(width: 5.w),
-                    Container(
-                      width: 1.w,
-                      height: 20.h,
-                      color: MyColors.white.withValues(alpha: 0.2),
-                    ),
-                    SizedBox(width: 5.w),
-                    Text(
-                      'Create teams'.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 7.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
-                        fontWeight: FontWeight.w100,
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl:
+              gameController.gameDetail.value?.coverImageUrl ??
+              gameController.gameDetail.value?.coverImage ??
+              "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Top Bar
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        gameController.gameDetail.value?.title ??
+                            'Who did it?'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                      SizedBox(width: 5.w),
+                      Container(
+                        width: 1.w,
+                        height: 20.h,
+                        color: MyColors.white.withValues(alpha: 0.2),
+                      ),
+                      SizedBox(width: 5.w),
+                      Text(
+                        'Create teams'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 7.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                    ],
+                  ),
+                  actionButtons: GestureDetector(
+                    onTap: () => Get.offAllNamed(AppRoutes.homescreen),
+                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                  ),
                 ),
               ),
-            ),
-            // Body - Player Selection with Drag and Drop
-            SizedBox(height: 0.07.sh),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Available Players Section
-                    Expanded(
-                      flex: 1,
-                      child: AvailablePlayersSection(controller: controller),
-                    ),
+              // Body - Player Selection with Drag and Drop
+              SizedBox(height: 0.07.sh),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Available Players Section
+                      Expanded(
+                        flex: 1,
+                        child: AvailablePlayersSection(controller: controller),
+                      ),
 
-                    // Teams Containers
-                    Expanded(
-                      flex: 2,
-                      child: Obx(
-                        () => Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children:
-                              controller.teams
-                                  .asMap()
-                                  .entries
-                                  .map(
-                                    (entry) => Expanded(
-                                      flex: 1,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 2.w,
-                                        ),
-                                        child: TeamContainer(
-                                          team: entry.value,
-                                          controller: controller,
+                      // Teams Containers
+                      Expanded(
+                        flex: 2,
+                        child: Obx(
+                          () => Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children:
+                                controller.teams
+                                    .asMap()
+                                    .entries
+                                    .map(
+                                      (entry) => Expanded(
+                                        flex: 1,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 2.w,
+                                          ),
+                                          child: TeamContainer(
+                                            team: entry.value,
+                                            controller: controller,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
+                                    )
+                                    .toList(),
+                          ),
                         ),
                       ),
+
+                      SizedBox(width: 2.w),
+
+                      // Next Button
+                      Obx(
+                        () => Opacity(
+                          opacity: controller.isLoading.value ? 0.6 : 1.0,
+                          child: StartPlayButton(
+                            buttonWidth: 50.w,
+                            buttonText: 'Next'.tr,
+                            onTap:
+                                controller.isLoading.value
+                                    ? () {}
+                                    : () => controller.proceedWithTeams(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 50.h),
+
+              // Code sharing section
+              Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Share this code with friends to join.'.tr,
+                      style: AppTextStyles.captionRegular12().copyWith(
+                        color: MyColors.white,
+                        height: 1.5,
+                        fontSize: 6.sp,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-
-                    SizedBox(width: 2.w),
-
-                    // Next Button
-                    Obx(
-                      () => Opacity(
-                        opacity: controller.isLoading.value ? 0.6 : 1.0,
-                        child: StartPlayButton(
-                          buttonWidth: 50.w,
-                          buttonText: 'Next'.tr,
-                          onTap: controller.isLoading.value
-                              ? () {}
-                              : () => controller.proceedWithTeams(),
-                        ),
-                      ),
+                    SizedBox(width: 10.w),
+                    CopyCodeButton(
+                      code: gameController.gameSession.value?.sessionCode ?? '',
                     ),
                   ],
                 ),
               ),
-            ),
 
-            SizedBox(height: 50.h),
-
-            // Code sharing section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Share this code with friends to join.',
-                  style: AppTextStyles.captionRegular12().copyWith(
-                    color: MyColors.white,
-                    height: 1.5,
-                    fontSize: 6.sp,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(width: 10.w),
-                CopyCodeButton(code: "12312-asd-23e-sssasd"),
-              ],
-            ),
-
-            SizedBox(height: 0.06.sh),
-          ],
+              SizedBox(height: 0.06.sh),
+            ],
+          ),
         ),
       ),
     );

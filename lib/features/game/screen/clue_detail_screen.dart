@@ -3,6 +3,8 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/game/controller/clue_detail_provider.dart';
+import 'package:alqadiya_game/features/game/controller/evidence_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/audio_player_widget.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/image_preview_screen.dart';
@@ -11,14 +13,31 @@ import 'package:alqadiya_game/features/game/widget/suspect_detail/video_player_s
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 
-class ClueDetailScreen extends StatelessWidget {
+class ClueDetailScreen extends StatefulWidget {
   const ClueDetailScreen({super.key});
+
+  @override
+  State<ClueDetailScreen> createState() => _ClueDetailScreenState();
+}
+
+class _ClueDetailScreenState extends State<ClueDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final evidenceController = Get.find<EvidenceController>();
+    final arguments = Get.arguments as Map<String, dynamic>?;
+    final evidenceId = arguments?['evidenceId'];
+
+    if (evidenceId != null) {
+      evidenceController.getEvidenceById(evidenceId: evidenceId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,96 +51,139 @@ class ClueDetailScreen extends StatelessWidget {
 
     // Initialize clue detail controller
     final clueController = Get.find<ClueDetailController>();
+    final evidenceController = Get.find<EvidenceController>();
+    final gameController = Get.find<GameController>();
 
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Header
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Row(
-                  children: [
-                    Text(
-                      'New Clue'.tr,
-                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
-                    ),
-                    SizedBox(width: 20.w),
-                    Text(
-                      'Timer '.tr,
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 10.sp,
-                        color: MyColors.white.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    Obx(
-                      () => Text(
-                        timerController.timerText.value,
+      body: Obx(
+        () => GameBackground(
+          isPurchased: true,
+          imageUrl:
+              gameController.gameDetail.value?.coverImageUrl ??
+              gameController.gameDetail.value?.coverImage ??
+              "https://picsum.photos/200",
+          body: Column(
+            children: [
+              // Header
+              Padding(
+                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+                child: HomeHeader(
+                  onChromTap: () {},
+                  title: Row(
+                    children: [
+                      Text(
+                        evidenceController.evidenceDetail.value?.evidenceName ??
+                            gameController.gameDetail.value?.title ??
+                            'New Clue'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 5.h),
-
-            // Main Content
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Panel - Clue Image
-                    _buildClueImage(),
-
-                    SizedBox(width: 8.w),
-
-                    // Right Panel - Content Area
-                    Expanded(
-                      child: Column(
-                        children: [
-                          // Tab Bar
-                          Obx(() => _buildTabBar(clueController)),
-
-                          SizedBox(height: 10.h),
-
-                          // Content Area
-                          Expanded(
-                            child: Obx(() => _buildContentArea(clueController)),
-                          ),
-                        ],
+                      SizedBox(width: 20.w),
+                      Text(
+                        'Timer '.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                          color: MyColors.white.withValues(alpha: 0.5),
+                        ),
                       ),
-                    ),
-                  ],
+                      Obx(
+                        () => Text(
+                          timerController.timerText.value,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 10.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actionButtons: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                  ),
                 ),
               ),
-            ),
 
-            // Footer
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
-              child: GameFooter(onGameResultTap: () {}),
-            ),
-          ],
+              SizedBox(height: 5.h),
+
+              // Main Content
+              Expanded(
+                child: Obx(() {
+                  if (evidenceController.isLoading.value) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: MyColors.redButtonColor,
+                      ),
+                    );
+                  }
+
+                  if (evidenceController.evidenceDetail.value == null) {
+                    return Center(
+                      child: Text(
+                        'No evidence details available'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                          color: MyColors.white,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Panel - Clue Image
+                        _buildClueImage(
+                          evidenceController.evidenceDetail.value!,
+                        ),
+
+                        SizedBox(width: 8.w),
+
+                        // Right Panel - Content Area
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // Tab Bar
+                              _buildTabBar(clueController),
+
+                              SizedBox(height: 10.h),
+
+                              // Content Area
+                              Expanded(
+                                child: _buildContentArea(
+                                  clueController,
+                                  evidenceController,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+
+              // Footer
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 10.sp,
+                  right: 10.sp,
+                  bottom: 5.sp,
+                ),
+                child: GameFooter(onGameResultTap: () {}),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildClueImage() {
+  Widget _buildClueImage(evidence) {
     return Container(
       width: 0.2.sw,
       height: double.infinity,
@@ -129,7 +191,25 @@ class ClueDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.r)),
       ),
-      child: Image.asset(MyImages.suspect, fit: BoxFit.cover),
+      child: CachedNetworkImage(
+        imageUrl:
+            evidence.profileImageURL ??
+            evidence.profileImage ??
+            "https://picsum.photos/200",
+        fit: BoxFit.cover,
+        placeholder:
+            (context, url) => Container(
+              color: MyColors.darkBlueColor,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: MyColors.redButtonColor,
+                ),
+              ),
+            ),
+        errorWidget:
+            (context, url, error) =>
+                Image.asset(MyImages.suspect, fit: BoxFit.cover),
+      ),
     );
   }
 
@@ -137,66 +217,65 @@ class ClueDetailScreen extends StatelessWidget {
     return Row(
       children: [
         // Clue Information Tab
-        Expanded(
-          child: GestureDetector(
-            onTap: () => controller.setSelectedTab(0),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-              decoration: BoxDecoration(
-                color:
-                    controller.selectedTab.value == 0
-                        ? MyColors.redButtonColor
-                        : MyColors.black.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(100.r),
-                  bottomLeft: Radius.circular(100.r),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  'Clue Information'.tr,
-                  style: AppTextStyles.heading2().copyWith(
-                    fontSize: 7.sp,
-                    color:
-                        controller.selectedTab.value == 0
-                            ? MyColors.white
-                            : MyColors.white.withValues(alpha: 0.5),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Expanded(
+        //   child: GestureDetector(
+        //     onTap: () => controller.setSelectedTab(0),
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+        //       decoration: BoxDecoration(
+        //         color:
+        //             controller.selectedTab.value == 0
+        //                 ? MyColors.redButtonColor
+        //                 : MyColors.black.withValues(alpha: 0.2),
+        //         borderRadius: BorderRadius.only(
+        //           topLeft: Radius.circular(100.r),
+        //           bottomLeft: Radius.circular(100.r),
+        //         ),
+        //       ),
+        //       child: Center(
+        //         child: Text(
+        //           'Clue Information'.tr,
+        //           style: AppTextStyles.heading2().copyWith(
+        //             fontSize: 7.sp,
+        //             color:
+        //                 controller.selectedTab.value == 0
+        //                     ? MyColors.white
+        //                     : MyColors.white.withValues(alpha: 0.5),
+        //             fontWeight: FontWeight.w600,
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
 
         // Attachments Tab
-        Expanded(
-          child: GestureDetector(
-            onTap: () => controller.setSelectedTab(1),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-              decoration: BoxDecoration(
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+          decoration: BoxDecoration(
+            color:
+                // controller.selectedTab.value == 1
+                //     ?
+                MyColors.redButtonColor,
+            // : MyColors.black.withValues(alpha: 0.2)
+
+            // borderRadius: BorderRadius.only(
+            //   topRight: Radius.circular(100.r),
+            //   bottomRight: Radius.circular(100.r),
+            // ),
+            borderRadius: BorderRadius.circular(100.r),
+          ),
+          child: Center(
+            child: Text(
+              'Attachments'.tr,
+              style: AppTextStyles.heading2().copyWith(
+                fontSize: 7.sp,
                 color:
-                    controller.selectedTab.value == 1
-                        ? MyColors.redButtonColor
-                        : MyColors.black.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(100.r),
-                  bottomRight: Radius.circular(100.r),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  'Attachments'.tr,
-                  style: AppTextStyles.heading2().copyWith(
-                    fontSize: 7.sp,
-                    color:
-                        controller.selectedTab.value == 1
-                            ? MyColors.white
-                            : MyColors.white.withValues(alpha: 0.5),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                    // controller.selectedTab.value == 1
+                    //     ?
+                    MyColors.white,
+                // : MyColors.white.withValues(alpha: 0.5)
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -205,223 +284,76 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContentArea(ClueDetailController controller) {
-    if (controller.selectedTab.value == 0) {
-      return _buildClueInformation();
-    } else {
-      if (controller.selectedAttachmentType.value == null) {
-        return _buildAttachmentsGrid(controller);
-      } else if (controller.selectedAttachmentType.value == 'Videos') {
-        return _buildVideosList(controller);
-      } else if (controller.selectedAttachmentType.value == 'Images') {
-        return _buildImagesList(controller);
-      } else if (controller.selectedAttachmentType.value == 'Documents') {
-        return _buildDocumentsList(controller);
-      } else if (controller.selectedAttachmentType.value == 'Audio') {
-        return _buildAudioList(controller);
-      }
+  Widget _buildContentArea(
+    ClueDetailController controller,
+    EvidenceController evidenceController,
+  ) {
+    final evidence = evidenceController.evidenceDetail.value;
+    if (evidence == null) {
+      return Center(
+        child: Text(
+          'No evidence details'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.white,
+          ),
+        ),
+      );
     }
-    return _buildClueInformation();
+
+    if (controller.selectedAttachmentType.value == null) {
+      return _buildAttachmentsGrid(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Videos') {
+      return _buildVideosList(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Images') {
+      return _buildImagesList(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Documents') {
+      return _buildDocumentsList(controller, evidence);
+    } else if (controller.selectedAttachmentType.value == 'Audio') {
+      return _buildAudioList(controller, evidence);
+    }
+    return _buildAttachmentsGrid(controller, evidence);
   }
 
-  Widget _buildClueInformation() {
-    final scrollController = ScrollController();
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Scrollable content
-          Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Clue Name
-                    _buildInfoField(
-                      'Clue Name:',
-                      'Private information about the victim',
-                    ),
-
-                    SizedBox(height: 6.h),
-
-                    // Discovery Date
-                    _buildInfoField('Discovery Date:', '16ᵗʰ July 2025'),
-
-                    SizedBox(height: 12.h),
-
-                    // Description Paragraph
-                    Text(
-                      'The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships.',
-                      style: TextStyle(
-                        fontSize: 6.sp,
-                        color: MyColors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Custom Scrollbar
-          _buildCustomScrollbar(scrollController),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCustomScrollbar(ScrollController controller) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ListenableBuilder(
-          listenable: controller,
-          builder: (context, child) {
-            if (!controller.hasClients ||
-                !controller.position.hasContentDimensions) {
-              return SizedBox(width: 1.w);
-            }
-
-            try {
-              final scrollPosition = controller.position;
-              final maxScrollExtent = scrollPosition.maxScrollExtent;
-              final minScrollExtent = scrollPosition.minScrollExtent;
-              final scrollOffset = scrollPosition.pixels;
-
-              if (maxScrollExtent <= 0 ||
-                  !scrollPosition.hasContentDimensions) {
-                return SizedBox(width: 1.w);
-              }
-
-              final trackHeight = constraints.maxHeight;
-              if (trackHeight <= 0) {
-                return SizedBox(width: 1.w);
-              }
-
-              final thumbHeight = (trackHeight *
-                      trackHeight /
-                      (maxScrollExtent + trackHeight))
-                  .clamp(20.0, trackHeight);
-
-              final scrollRange = maxScrollExtent - minScrollExtent;
-              if (scrollRange <= 0) {
-                return SizedBox(width: 1.w);
-              }
-
-              final thumbOffset =
-                  ((scrollOffset - minScrollExtent) / scrollRange) *
-                  (trackHeight - thumbHeight);
-
-              return GestureDetector(
-                onPanUpdate: (details) {
-                  if (!controller.hasClients ||
-                      !controller.position.hasContentDimensions)
-                    return;
-                  try {
-                    final delta = details.delta.dy;
-                    final newOffset =
-                        (thumbOffset + delta) /
-                            (trackHeight - thumbHeight) *
-                            scrollRange +
-                        minScrollExtent;
-                    controller.jumpTo(
-                      newOffset.clamp(minScrollExtent, maxScrollExtent),
-                    );
-                  } catch (e) {
-                    // Ignore errors during pan update
-                  }
-                },
-                onTapDown: (details) {
-                  if (!controller.hasClients ||
-                      !controller.position.hasContentDimensions)
-                    return;
-                  try {
-                    final localY = details.localPosition.dy;
-                    final newOffset =
-                        (localY / trackHeight) * scrollRange + minScrollExtent;
-                    controller.jumpTo(
-                      newOffset.clamp(minScrollExtent, maxScrollExtent),
-                    );
-                  } catch (e) {
-                    // Ignore errors during tap down
-                  }
-                },
-                child: Container(
-                  width: 1.w,
-                  height: trackHeight,
-                  child: Stack(
-                    children: [
-                      // Track - white line showing full scrollable area
-                      Container(
-                        width: 1.w,
-                        height: trackHeight,
-                        color: Color(0xffD9D9D9).withValues(alpha: 0.1),
-                      ),
-                      // Thumb - shows current scroll position
-                      Positioned(
-                        top: thumbOffset.clamp(0.0, trackHeight - thumbHeight),
-                        child: Container(
-                          width: 1.w,
-                          height: thumbHeight,
-                          decoration: BoxDecoration(
-                            color: MyColors.redButtonColor,
-                            borderRadius: BorderRadius.circular(0.5.r),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } catch (e) {
-              return SizedBox(width: 1.w);
-            }
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildInfoField(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 0.16.sw,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 6.sp,
-              fontWeight: FontWeight.w500,
-              color: MyColors.white,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: 6.sp,
-              fontWeight: FontWeight.w700,
-              color: MyColors.white,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAttachmentsGrid(ClueDetailController controller) {
+  Widget _buildAttachmentsGrid(ClueDetailController controller, evidence) {
+    final attachments = evidence.attachments ?? [];
     final attachmentTypes = [
-      {'icon': MyIcons.videos, 'label': 'Videos', 'type': 'Videos'},
-      {'icon': MyIcons.gallery, 'label': 'Images', 'type': 'Images'},
-      {'icon': MyIcons.audios, 'label': 'Audio', 'type': 'Audio'},
-      {'icon': MyIcons.document, 'label': 'Documents', 'type': 'Documents'},
+      {
+        'icon': MyIcons.videos,
+        'label': 'Videos',
+        'type': 'Videos',
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'video')
+                .length,
+      },
+      {
+        'icon': MyIcons.gallery,
+        'label': 'Images',
+        'type': 'Images',
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'image')
+                .length,
+      },
+      {
+        'icon': MyIcons.audios,
+        'label': 'Audio',
+        'type': 'Audio',
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'audio')
+                .length,
+      },
+      {
+        'icon': MyIcons.document,
+        'label': 'Documents',
+        'type': 'Documents',
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'document')
+                .length,
+      },
     ];
 
     return Container(
@@ -436,6 +368,8 @@ class ClueDetailScreen extends StatelessWidget {
         itemCount: attachmentTypes.length,
         itemBuilder: (context, index) {
           final item = attachmentTypes[index];
+          final count = item['count'] as int;
+
           return GestureDetector(
             onTap: () {
               controller.setSelectedAttachmentType(item['type'] as String);
@@ -466,6 +400,16 @@ class ClueDetailScreen extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (count > 0) ...[
+                    SizedBox(height: 4.h),
+                    Text(
+                      '($count)',
+                      style: AppTextStyles.heading2().copyWith(
+                        fontSize: 6.sp,
+                        color: MyColors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -475,12 +419,11 @@ class ClueDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVideosList(ClueDetailController controller) {
-    final videos = [
-      'https://picsum.photos/300/200?random=1',
-      'https://picsum.photos/300/200?random=2',
-      'https://picsum.photos/300/200?random=3',
-    ];
+  Widget _buildVideosList(ClueDetailController controller, evidence) {
+    final videos =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'video')
+            .toList();
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -514,89 +457,101 @@ class ClueDetailScreen extends StatelessWidget {
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
 
-          // Video thumbnails
+          // Video thumbnails or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: videos.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to video player
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => VideoPlayerScreen(
-                              videoUrl:
-                                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                            ),
+            child: videos.isEmpty
+                ? Center(
+                    child: Text(
+                      'No videos available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.r),
-                          child: CachedNetworkImage(
-                            imageUrl: videos[index],
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => Container(
-                                  color: MyColors.darkBlueColor,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: MyColors.redButtonColor,
-                                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: videos.length,
+                    itemBuilder: (context, index) {
+                      final video = videos[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to video player
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => VideoPlayerScreen(
+                                    videoUrl: video.mediaUrl ?? '',
                                   ),
-                                ),
-                            errorWidget:
-                                (context, url, error) => Container(
-                                  color: MyColors.darkBlueColor,
-                                  child: Icon(
-                                    Icons.error,
-                                    color: MyColors.white,
-                                  ),
-                                ),
-                          ),
-                        ),
-                        // Play button overlay
-                        Positioned.fill(
-                          child: Center(
-                            child: Icon(
-                              Icons.play_arrow_outlined,
-                              color: MyColors.white.withValues(alpha: 0.5),
-                              size: 30.sp,
                             ),
+                          );
+                        },
+                        child: Container(
+                          width: 60.w,
+                          margin: EdgeInsets.only(right: 10.w),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8.r),
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      video.thumbnailUrl ??
+                                      video.mediaUrl ??
+                                      "https://picsum.photos/300/200",
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                  placeholder:
+                                      (context, url) => Container(
+                                        color: MyColors.darkBlueColor,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: MyColors.redButtonColor,
+                                          ),
+                                        ),
+                                      ),
+                                  errorWidget:
+                                      (context, url, error) => Container(
+                                        color: MyColors.darkBlueColor,
+                                        child: Icon(
+                                          Icons.error,
+                                          color: MyColors.white,
+                                        ),
+                                      ),
+                                ),
+                              ),
+                              // Play button overlay
+                              Positioned.fill(
+                                child: Center(
+                                  child: Icon(
+                                    Icons.play_arrow_outlined,
+                                    color: MyColors.white.withValues(alpha: 0.5),
+                                    size: 30.sp,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildImagesList(ClueDetailController controller) {
-    final images = [
-      'https://picsum.photos/300/200?random=4',
-      'https://picsum.photos/300/200?random=5',
-      'https://picsum.photos/300/200?random=6',
-    ];
+  Widget _buildImagesList(ClueDetailController controller, evidence) {
+    final images =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'image')
+            .toList();
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -629,64 +584,82 @@ class ClueDetailScreen extends StatelessWidget {
           SizedBox(height: 5.h),
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
-          // Image thumbnails
+          // Image thumbnails or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                ImagePreviewScreen(imageUrl: images[index]),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.r),
-                      child: CachedNetworkImage(
-                        imageUrl: images[index],
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        placeholder:
-                            (context, url) => Container(
-                              color: MyColors.darkBlueColor,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: MyColors.redButtonColor,
-                                ),
-                              ),
-                            ),
-                        errorWidget:
-                            (context, url, error) => Container(
-                              color: MyColors.darkBlueColor,
-                              child: Icon(Icons.error, color: MyColors.white),
-                            ),
+            child: images.isEmpty
+                ? Center(
+                    child: Text(
+                      'No images available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
                     ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: images.length,
+                    itemBuilder: (context, index) {
+                      final image = images[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => ImagePreviewScreen(
+                                    imageUrl: image.mediaUrl ?? '',
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 60.w,
+                          margin: EdgeInsets.only(right: 10.w),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  image.mediaUrl ?? "https://picsum.photos/300/200",
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                              placeholder:
+                                  (context, url) => Container(
+                                    color: MyColors.darkBlueColor,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyColors.redButtonColor,
+                                      ),
+                                    ),
+                                  ),
+                              errorWidget:
+                                  (context, url, error) => Container(
+                                    color: MyColors.darkBlueColor,
+                                    child: Icon(Icons.error, color: MyColors.white),
+                                  ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDocumentsList(ClueDetailController controller) {
+  Widget _buildDocumentsList(ClueDetailController controller, evidence) {
+    final documents =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'document')
+            .toList();
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -718,69 +691,88 @@ class ClueDetailScreen extends StatelessWidget {
           SizedBox(height: 5.h),
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
-          // Document button
+          // Document button or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => PDFViewerScreen(
-                              pdfUrl:
-                                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                            ),
+            child: documents.isEmpty
+                ? Center(
+                    child: Text(
+                      'No documents available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      color: MyColors.white,
-                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        gradient: RadialGradient(
-                          colors: [
-                            Colors.black.withValues(alpha: 0),
-                            Colors.black.withValues(alpha: 0.2),
-                          ],
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(MyIcons.file),
-                          SizedBox(height: 8.h),
-                          Text(
-                            'Document 1',
-                            style: AppTextStyles.heading2().copyWith(
-                              fontSize: 6.sp,
-                              color: MyColors.BlueColor,
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      final document = documents[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => PDFViewerScreen(
+                                    pdfUrl: document.mediaUrl ?? '',
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 60.w,
+                          margin: EdgeInsets.only(right: 10.w),
+                          decoration: BoxDecoration(
+                            color: MyColors.white,
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.r),
+                              gradient: RadialGradient(
+                                colors: [
+                                  Colors.black.withValues(alpha: 0),
+                                  Colors.black.withValues(alpha: 0.2),
+                                ],
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(MyIcons.file),
+                                SizedBox(height: 8.h),
+                                Text(
+                                  document.attachmentNameEn ??
+                                      'Document ${index + 1}',
+                                  style: AppTextStyles.heading2().copyWith(
+                                    fontSize: 6.sp,
+                                    color: MyColors.BlueColor,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAudioList(ClueDetailController controller) {
+  Widget _buildAudioList(ClueDetailController controller, evidence) {
+    final audios =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'audio')
+            .toList();
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -812,42 +804,246 @@ class ClueDetailScreen extends StatelessWidget {
           SizedBox(height: 5.h),
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
-          // Audio players
+          // Audio players or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return Container(
-                  width: 60.w,
-                  margin: EdgeInsets.only(right: 10.w),
-                  decoration: BoxDecoration(
-                    color: MyColors.white,
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      gradient: RadialGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: 0),
-                          Colors.black.withValues(alpha: 0.2),
-                        ],
+            child: audios.isEmpty
+                ? Center(
+                    child: Text(
+                      'No audio available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
                     ),
-                    child: AudioPlayerWidget(
-                      audioUrl:
-                          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                      title: 'Audio 1',
-                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: audios.length,
+                    itemBuilder: (context, index) {
+                      final audio = audios[index];
+                      return Container(
+                        width: 60.w,
+                        margin: EdgeInsets.only(right: 10.w),
+                        decoration: BoxDecoration(
+                          color: MyColors.white,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.black.withValues(alpha: 0),
+                                Colors.black.withValues(alpha: 0.2),
+                              ],
+                            ),
+                          ),
+                          child: AudioPlayerWidget(
+                            audioUrl: audio.mediaUrl ?? '',
+                            title:
+                                audio.attachmentNameEn ??
+                                '${'Audio'.tr} ${index + 1}',
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
     );
   }
+
+  // Widget _buildClueInformation() {
+  //   final scrollController = ScrollController();
+  //   return Container(
+  //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Scrollable content
+  //         Expanded(
+  //           child: SingleChildScrollView(
+  //             controller: scrollController,
+  //             child: Padding(
+  //               padding: EdgeInsets.only(right: 8.w),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   // Clue Name
+  //                   _buildInfoField(
+  //                     'Clue Name:',
+  //                     'Private information about the victim',
+  //                   ),
+
+  //                   SizedBox(height: 6.h),
+
+  //                   // Discovery Date
+  //                   _buildInfoField('Discovery Date:', '16ᵗʰ July 2025'),
+
+  //                   SizedBox(height: 12.h),
+
+  //                   // Description Paragraph
+  //                   Text(
+  //                     'The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships. The victim is raised in a family as a result of violence and may suffer from chronic health problems, illnesses, financial distress, and a weakened ability to establish healthy relationships.',
+  //                     style: TextStyle(
+  //                       fontSize: 6.sp,
+  //                       color: MyColors.white,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                     textAlign: TextAlign.left,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+
+  //         // Custom Scrollbar
+  //         _buildCustomScrollbar(scrollController),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildCustomScrollbar(ScrollController controller) {
+  //   return LayoutBuilder(
+  //     builder: (context, constraints) {
+  //       return ListenableBuilder(
+  //         listenable: controller,
+  //         builder: (context, child) {
+  //           if (!controller.hasClients ||
+  //               !controller.position.hasContentDimensions) {
+  //             return SizedBox(width: 1.w);
+  //           }
+
+  //           try {
+  //             final scrollPosition = controller.position;
+  //             final maxScrollExtent = scrollPosition.maxScrollExtent;
+  //             final minScrollExtent = scrollPosition.minScrollExtent;
+  //             final scrollOffset = scrollPosition.pixels;
+
+  //             if (maxScrollExtent <= 0 ||
+  //                 !scrollPosition.hasContentDimensions) {
+  //               return SizedBox(width: 1.w);
+  //             }
+
+  //             final trackHeight = constraints.maxHeight;
+  //             if (trackHeight <= 0) {
+  //               return SizedBox(width: 1.w);
+  //             }
+
+  //             final thumbHeight = (trackHeight *
+  //                     trackHeight /
+  //                     (maxScrollExtent + trackHeight))
+  //                 .clamp(20.0, trackHeight);
+
+  //             final scrollRange = maxScrollExtent - minScrollExtent;
+  //             if (scrollRange <= 0) {
+  //               return SizedBox(width: 1.w);
+  //             }
+
+  //             final thumbOffset =
+  //                 ((scrollOffset - minScrollExtent) / scrollRange) *
+  //                 (trackHeight - thumbHeight);
+
+  //             return GestureDetector(
+  //               onPanUpdate: (details) {
+  //                 if (!controller.hasClients ||
+  //                     !controller.position.hasContentDimensions)
+  //                   return;
+  //                 try {
+  //                   final delta = details.delta.dy;
+  //                   final newOffset =
+  //                       (thumbOffset + delta) /
+  //                           (trackHeight - thumbHeight) *
+  //                           scrollRange +
+  //                       minScrollExtent;
+  //                   controller.jumpTo(
+  //                     newOffset.clamp(minScrollExtent, maxScrollExtent),
+  //                   );
+  //                 } catch (e) {
+  //                   // Ignore errors during pan update
+  //                 }
+  //               },
+  //               onTapDown: (details) {
+  //                 if (!controller.hasClients ||
+  //                     !controller.position.hasContentDimensions)
+  //                   return;
+  //                 try {
+  //                   final localY = details.localPosition.dy;
+  //                   final newOffset =
+  //                       (localY / trackHeight) * scrollRange + minScrollExtent;
+  //                   controller.jumpTo(
+  //                     newOffset.clamp(minScrollExtent, maxScrollExtent),
+  //                   );
+  //                 } catch (e) {
+  //                   // Ignore errors during tap down
+  //                 }
+  //               },
+  //               child: Container(
+  //                 width: 1.w,
+  //                 height: trackHeight,
+  //                 child: Stack(
+  //                   children: [
+  //                     // Track - white line showing full scrollable area
+  //                     Container(
+  //                       width: 1.w,
+  //                       height: trackHeight,
+  //                       color: Color(0xffD9D9D9).withValues(alpha: 0.1),
+  //                     ),
+  //                     // Thumb - shows current scroll position
+  //                     Positioned(
+  //                       top: thumbOffset.clamp(0.0, trackHeight - thumbHeight),
+  //                       child: Container(
+  //                         width: 1.w,
+  //                         height: thumbHeight,
+  //                         decoration: BoxDecoration(
+  //                           color: MyColors.redButtonColor,
+  //                           borderRadius: BorderRadius.circular(0.5.r),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             );
+  //           } catch (e) {
+  //             return SizedBox(width: 1.w);
+  //           }
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
+  // Widget _buildInfoField(String label, String value) {
+  //   return Row(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       SizedBox(
+  //         width: 0.16.sw,
+  //         child: Text(
+  //           label,
+  //           style: TextStyle(
+  //             fontSize: 6.sp,
+  //             fontWeight: FontWeight.w500,
+  //             color: MyColors.white,
+  //           ),
+  //         ),
+  //       ),
+  //       Expanded(
+  //         child: Text(
+  //           value,
+  //           style: TextStyle(
+  //             fontSize: 6.sp,
+  //             fontWeight: FontWeight.w700,
+  //             color: MyColors.white,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

@@ -39,7 +39,7 @@ class AvailablePlayersSection extends StatelessWidget {
                   controller.availablePlayers.isEmpty
                       ? Center(
                         child: Text(
-                          'All players assigned',
+                          'All players assigned'.tr,
                           style: AppTextStyles.captionRegular12().copyWith(
                             color: MyColors.white.withValues(alpha: 0.4),
                             fontSize: 6.sp,
@@ -85,7 +85,7 @@ class AvailablePlayersSection extends StatelessWidget {
                   SvgPicture.asset(MyIcons.shuffle, width: 9.w, height: 9.w),
                   SizedBox(width: 4.w),
                   Text(
-                    'Automatic player transfer',
+                    'Automatic player transfer'.tr,
                     style: AppTextStyles.captionRegular12().copyWith(
                       color: MyColors.black,
                       fontSize: 6.sp,

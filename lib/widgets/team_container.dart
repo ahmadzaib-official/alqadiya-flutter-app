@@ -55,7 +55,7 @@ class TeamContainer extends StatelessWidget {
                       team.players.isEmpty
                           ? Center(
                             child: Text(
-                              'Drop players here',
+                              'Drop players here'.tr,
                               style: AppTextStyles.captionRegular12().copyWith(
                                 color: MyColors.white.withValues(alpha: 0.4),
                                 fontSize: 6.sp,

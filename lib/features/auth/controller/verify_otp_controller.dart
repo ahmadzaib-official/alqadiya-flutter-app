@@ -87,7 +87,7 @@ class VerificationController extends GetxController {
       // Error already shown by interceptor
       DebugPoint.log("Resend OTP error: $e");
     } catch (e) {
-      CustomSnackbar.showError('Error: ${e.toString()}');
+      CustomSnackbar.showError('${'Error:'.tr} ${e.toString()}');
       DebugPoint.log("Resend OTP error: $e");
     } finally {
       isResendingOtp.value = false;
@@ -122,9 +122,9 @@ class VerificationController extends GetxController {
         }
         return true;
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
-    } catch (e) {
+    } catch (_) {
       // Handle unexpected errors
     } finally {
       isVeifyOtp(false);
@@ -145,9 +145,9 @@ class VerificationController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       }
-    } on DioException catch (e) {
+    } on DioException {
       // Error already shown by interceptor
-    } catch (e) {
+    } catch (_) {
       // Handle unexpected errors
     } finally {
       isVeifyOtp(false);

@@ -21,9 +21,9 @@ class _TutorialScreenState extends State<TutorialScreen> {
   int currentTooltipIndex = 0;
 
   final List<String> tooltipTexts = [
-    'Time taken to play',
-    'Your Points here',
-    'Game status',
+    'Time taken to play'.tr,
+    'Your Points here'.tr,
+    'Game status'.tr,
   ];
 
   final List<Offset> tooltipPositions = [
@@ -82,7 +82,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
               child: AuthHeading(
                 screenHeight: screenHeight,
                 actionButtonIcon: MyImages.lock,
-                actionButtonText: 'Log in',
+                actionButtonText: 'Log in'.tr,
                 onTap: () {
                   tooltipControllers[currentTooltipIndex].hideTooltip();
                   Get.offNamedUntil(AppRoutes.sigin, (route) => false);
@@ -178,7 +178,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   child: Text(
-                                    'Got it',
+                                    'Got it'.tr,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14.sp,
@@ -202,7 +202,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
               child: CustomButton(
-                text: 'Got it',
+                text: 'Got it'.tr,
                 onPressed: () {
                   tooltipControllers[currentTooltipIndex].hideTooltip();
                   Get.offNamedUntil(AppRoutes.sigin, (route) => false);

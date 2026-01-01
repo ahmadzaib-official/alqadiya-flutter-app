@@ -75,7 +75,7 @@ class NotificationsListScreen extends StatelessWidget {
                         if (notificationsController.notifications.isEmpty) {
                           return Center(
                             child: Text(
-                              "No notifications",
+                              "No notifications".tr,
                               style: AppTextStyles.heading2().copyWith(
                                 fontSize: 12.sp,
                                 color: Colors.white,

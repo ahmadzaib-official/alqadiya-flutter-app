@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (_, child) {
         return GetMaterialApp(
-          title: 'Al Qadiya Game',
+          title: 'Al Qadiya',
           locale: locale,
           getPages: AppPages.pages,
           fallbackLocale: LocalizationService.fallbackLocale,
@@ -33,3 +33,17 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+/// live
+// 31277864
+// Qwerty@123
+
+// 87654321
+// Qwerty@123
+
+/// local
+// 1234569
+// Qwerty@123
+
+// 1234568
+// Qwerty@123
