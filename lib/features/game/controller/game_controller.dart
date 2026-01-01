@@ -6,6 +6,7 @@ import 'package:alqadiya_game/features/casestore/model/member_model.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class GameController extends GetxController {
@@ -180,10 +181,15 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final session = GameSessionModel.fromJson(response.data);
         gameSession(session);
-        Get.toNamed(
-          AppRoutes.startGameScreen,
-          arguments: {'sessionCode': session.sessionCode},
-        );
+        // Use post frame callback to ensure navigation happens safely
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<GameController>()) {
+            Get.toNamed(
+              AppRoutes.startGameScreen,
+              arguments: {'sessionCode': session.sessionCode},
+            );
+          }
+        });
       }
     } on DioException {
       // Error already shown by interceptor
@@ -209,11 +215,16 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         gameSession.value = gameSession.value?.copyWith(mode: mode);
 
-        if (mode == 'solo') {
-          Get.toNamed(AppRoutes.caseVideoScreen);
-        } else if (mode == 'team') {
-          Get.toNamed(AppRoutes.createTeamScreen);
-        }
+        // Use post frame callback to ensure navigation happens safely
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<GameController>()) {
+            if (mode == 'solo') {
+              Get.toNamed(AppRoutes.caseVideoScreen);
+            } else if (mode == 'team') {
+              Get.toNamed(AppRoutes.createTeamScreen);
+            }
+          }
+        });
       }
     } on DioException {
       // Error already shown by interceptor
@@ -250,7 +261,12 @@ class GameController extends GetxController {
         this.teams.assignAll(list.map((e) => TeamModel.fromJson(e)).toList());
         CustomSnackbar.showSuccess('Teams created successfully'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
-        Get.toNamed(AppRoutes.playerSelectionScreen);
+        // Use post frame callback to ensure navigation happens safely
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<GameController>()) {
+            Get.toNamed(AppRoutes.playerSelectionScreen);
+          }
+        });
       }
     } on DioException {
       // Error already shown by interceptor
@@ -311,10 +327,15 @@ class GameController extends GetxController {
         final firstTeamId = teams.isNotEmpty ? teams.first.id : null;
         final firstTeamName = teams.isNotEmpty ? teams.first.teamName : null;
         if (firstTeamId != null) {
-          Get.toNamed(
-            AppRoutes.chooseTeamLeaderScreen,
-            arguments: {'teamId': firstTeamId, 'teamName': firstTeamName},
-          );
+          // Use post frame callback to ensure navigation happens safely
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isRegistered<GameController>()) {
+              Get.toNamed(
+                AppRoutes.chooseTeamLeaderScreen,
+                arguments: {'teamId': firstTeamId, 'teamName': firstTeamName},
+              );
+            }
+          });
         }
       }
     } on DioException {
@@ -341,7 +362,12 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         CustomSnackbar.showSuccess('Team leader assigned successfully'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
-        Get.toNamed(AppRoutes.caseVideoScreen);
+        // Use post frame callback to ensure navigation happens safely
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<GameController>()) {
+            Get.toNamed(AppRoutes.caseVideoScreen);
+          }
+        });
       }
     } on DioException {
       // Error already shown by interceptor

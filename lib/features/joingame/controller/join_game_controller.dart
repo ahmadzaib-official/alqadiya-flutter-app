@@ -38,16 +38,23 @@ class JoinGameController extends GetxController {
             // Session is already updated by the API response
             // Fetch session details to get full session info
             if (session.id != null) {
-              await gameController.getGameSessionDetails(sessionId: session.id!);
+              await gameController.getGameSessionDetails(
+                sessionId: session.id!,
+              );
             }
           }
         }
-        
+
         isWaiting.value = true;
         CustomSnackbar.showSuccess('Joined game successfully'.tr);
 
         Future.delayed(const Duration(seconds: 3), () {
-          Get.toNamed(AppRoutes.caseVideoScreen);
+          // Use post frame callback to ensure navigation happens safely
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isRegistered<JoinGameController>()) {
+              Get.toNamed(AppRoutes.caseVideoScreen);
+            }
+          });
         });
       }
     } on DioException {

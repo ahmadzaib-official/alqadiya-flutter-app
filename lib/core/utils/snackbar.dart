@@ -13,28 +13,39 @@ class CustomSnackbar {
   }) {
     final context = Get.context;
 
-    if (context == null || !Get.isDialogOpen! && Get.context != null) {
-      Flushbar(
-        messageText: Row(
-          children: [
-            Expanded(
-              child: Text(
-                message,
-                style: TextStyle(color: Colors.white, fontSize: 8.sp),
-                textAlign: TextAlign.center,
-              ),
+    // Check if context is available and no dialog is open
+    if (context != null && (Get.isDialogOpen == null || !Get.isDialogOpen!)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Double-check context is still valid after frame callback
+        final currentContext = Get.context;
+        if (currentContext != null && 
+            (Get.isDialogOpen == null || !Get.isDialogOpen!)) {
+          Flushbar(
+            messageText: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    message,
+                    style: TextStyle(color: Colors.white, fontSize: 8.sp),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        backgroundColor: backgroundColor,
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-        borderRadius: BorderRadius.circular(8.r),
-        duration: duration,
-        flushbarPosition: FlushbarPosition.TOP,
-        animationDuration: const Duration(milliseconds: 600),
-        isDismissible: true,
-        dismissDirection: FlushbarDismissDirection.VERTICAL,
-      ).show(context!);
+            backgroundColor: backgroundColor,
+            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+            borderRadius: BorderRadius.circular(8.r),
+            duration: duration,
+            flushbarPosition: FlushbarPosition.TOP,
+            animationDuration: const Duration(milliseconds: 600),
+            isDismissible: true,
+            dismissDirection: FlushbarDismissDirection.VERTICAL,
+          ).show(currentContext);
+        }
+      });
     }
   }
 
