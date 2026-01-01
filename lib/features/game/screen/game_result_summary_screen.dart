@@ -568,12 +568,14 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     );
   }
 
+
+
   Widget _buildSoloPlayerResultCard(
     BuildContext context,
     Map<String, dynamic> result,
   ) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
       decoration: BoxDecoration(
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
@@ -583,14 +585,13 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
         children: [
           // Player Info Row
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Player Avatar
               Container(
                 width: 30.w,
                 height: 30.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(shape: BoxShape.circle),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
                   child: Container(
