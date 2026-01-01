@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (_, child) {
         return GetMaterialApp(
-          title: 'Al Qadiya Game',
+          title: 'Al Qadiya',
           locale: locale,
           getPages: AppPages.pages,
           fallbackLocale: LocalizationService.fallbackLocale,
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           theme: AppThemeInfo.themeData,
           debugShowCheckedModeBanner: false,
-          initialRoute: AppRoutes.sigin,
+          initialRoute: AppRoutes.scoreboardScreen,
         );
       },
     );

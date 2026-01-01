@@ -119,155 +119,296 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 20.sp),
                       child: Column(
                         children: [
-                          // Teams Row
+                          // Teams Row or Solo Player
                           Obx(
                             () {
-                              final teams = scoreboardController.teams;
-                              if (teams.isEmpty) {
-                                return Center(
-                                  child: Text(
-                                    'Loading scoreboard...'.tr,
-                                    style: AppTextStyles.heading1().copyWith(
-                                      fontSize: 8.sp,
-                                      color: MyColors.white.withValues(alpha: 0.5),
-                                    ),
-                                  ),
-                                );
-                              }
+                              final isSoloMode = gameController.gameSession.value?.mode == 'solo';
                               
-                              return Expanded(
-                                child: Row(
-                                  children: [
-                                    // Team 1
-                                    if (teams.length > 0)
+                              if (isSoloMode) {
+                                // Solo mode UI
+                                final soloPlayer = scoreboardController.soloPlayer;
+                                if (soloPlayer == null) {
+                                  return Center(
+                                    child: Text(
+                                      'Loading scoreboard...'.tr,
+                                      style: AppTextStyles.heading1().copyWith(
+                                        fontSize: 8.sp,
+                                        color: MyColors.white.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                
+                                return Expanded(
+                                  child: Row(
+                                    children: [
+                                      // Solo Player Card
                                       Expanded(
-                                        child: _buildTeamCard(
+                                        child: _buildSoloPlayerCard(
                                           context,
-                                          teams[0],
+                                          soloPlayer,
                                         ),
                                       ),
-                                    if (teams.length > 0) SizedBox(width: 10.w),
-                                    // Team 2
-                                    if (teams.length > 1)
+                                      SizedBox(width: 10.w),
+                                      
+                                      // Timer and Continue Button
                                       Expanded(
-                                        child: _buildTeamCard(
-                                          context,
-                                          teams[1],
-                                        ),
-                                      ),
-                                    if (teams.length <= 1) Expanded(child: SizedBox()),
-                                    if (teams.length > 1) SizedBox(width: 10.w),
-
-                                    Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 8.h,
-                                      horizontal: 6.w,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.black.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20.r),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // padding: EdgeInsets.only(left: 5.w),
+                                        child: Container(
                                           padding: EdgeInsets.symmetric(
-                                            vertical: 12.h,
+                                            vertical: 8.h,
+                                            horizontal: 6.w,
                                           ),
                                           decoration: BoxDecoration(
                                             color: MyColors.black.withValues(
                                               alpha: 0.2,
                                             ),
-                                            borderRadius: BorderRadius.circular(
-                                              80.r,
-                                            ),
+                                            borderRadius: BorderRadius.circular(20.r),
                                           ),
-                                          child: Row(
+                                          child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Text(
-                                                'Remaining time'.tr,
-                                                style: AppTextStyles.heading2()
-                                                    .copyWith(
-                                                      fontSize: 6.sp,
-                                                      color: MyColors.white
-                                                          .withValues(
-                                                            alpha: 0.5,
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: 12.h,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: MyColors.black.withValues(
+                                                    alpha: 0.2,
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(
+                                                    80.r,
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Remaining time'.tr,
+                                                      style: AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 6.sp,
+                                                            color: MyColors.white
+                                                                .withValues(
+                                                                  alpha: 0.5,
+                                                                ),
                                                           ),
                                                     ),
+                                                    Obx(
+                                                      () => Text(
+                                                        ' ${timerController.timerText.value}',
+                                                        style:
+                                                            AppTextStyles.heading1()
+                                                                .copyWith(
+                                                                  fontSize: 8.sp,
+                                                                  color:
+                                                                      MyColors.white,
+                                                                ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                              Obx(
-                                                () => Text(
-                                                  ' ${timerController.timerText.value}',
-                                                  style:
-                                                      AppTextStyles.heading1()
-                                                          .copyWith(
-                                                            fontSize: 8.sp,
-                                                            color:
-                                                                MyColors.white,
-                                                          ),
+                                              SizedBox(height: 20.h),
+
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // Continue playing action
+                                                  Get.toNamed(AppRoutes.gameScreen);
+                                                },
+                                                child: Container(
+                                                  width: 70.w,
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: 10.h,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: MyColors.greenColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(100.r),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Spacer(flex: 6),
+                                                      Text(
+                                                        'Continue playing'.tr,
+                                                        style:
+                                                            AppTextStyles.heading2()
+                                                                .copyWith(
+                                                                  fontSize: 6.sp,
+                                                                  color:
+                                                                      MyColors.white,
+                                                                ),
+                                                      ),
+                                                      Spacer(flex: 1),
+                                                      SvgPicture.asset(
+                                                        MyIcons.arrow_right,
+                                                        colorFilter: ColorFilter.mode(
+                                                          MyColors.darkGreenColor,
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                      ),
+                                                      Spacer(flex: 1),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                        SizedBox(height: 20.h),
-
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Continue playing action
-                                            Get.toNamed(AppRoutes.gameScreen);
-                                          },
-                                          child: Container(
-                                            width: 70.w,
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 10.h,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: MyColors.greenColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(100.r),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Spacer(flex: 6),
-                                                Text(
-                                                  'Continue playing'.tr,
-                                                  style:
-                                                      AppTextStyles.heading2()
-                                                          .copyWith(
-                                                            fontSize: 6.sp,
-                                                            color:
-                                                                MyColors.white,
-                                                          ),
-                                                ),
-                                                Spacer(flex: 1),
-                                                SvgPicture.asset(
-                                                  MyIcons.arrow_right,
-                                                  colorFilter: ColorFilter.mode(
-                                                    MyColors.darkGreenColor,
-                                                    BlendMode.srcIn,
-                                                  ),
-                                                ),
-                                                Spacer(flex: 1),
-                                              ],
-                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                // Team mode UI (existing)
+                                final teams = scoreboardController.teams;
+                                if (teams.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      'Loading scoreboard...'.tr,
+                                      style: AppTextStyles.heading1().copyWith(
+                                        fontSize: 8.sp,
+                                        color: MyColors.white.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                
+                                return Expanded(
+                                  child: Row(
+                                    children: [
+                                      // Team 1
+                                      if (teams.length > 0)
+                                        Expanded(
+                                          child: _buildTeamCard(
+                                            context,
+                                            teams[0],
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      if (teams.length > 0) SizedBox(width: 10.w),
+                                      // Team 2
+                                      if (teams.length > 1)
+                                        Expanded(
+                                          child: _buildTeamCard(
+                                            context,
+                                            teams[1],
+                                          ),
+                                        ),
+                                      if (teams.length <= 1) Expanded(child: SizedBox()),
+                                      if (teams.length > 1) SizedBox(width: 10.w),
+
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8.h,
+                                            horizontal: 6.w,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: MyColors.black.withValues(
+                                              alpha: 0.2,
+                                            ),
+                                            borderRadius: BorderRadius.circular(20.r),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: 12.h,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: MyColors.black.withValues(
+                                                    alpha: 0.2,
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(
+                                                    80.r,
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Remaining time'.tr,
+                                                      style: AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 6.sp,
+                                                            color: MyColors.white
+                                                                .withValues(
+                                                                  alpha: 0.5,
+                                                                ),
+                                                          ),
+                                                    ),
+                                                    Obx(
+                                                      () => Text(
+                                                        ' ${timerController.timerText.value}',
+                                                        style:
+                                                            AppTextStyles.heading1()
+                                                                .copyWith(
+                                                                  fontSize: 8.sp,
+                                                                  color:
+                                                                      MyColors.white,
+                                                                ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(height: 20.h),
+
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // Continue playing action
+                                                  Get.toNamed(AppRoutes.gameScreen);
+                                                },
+                                                child: Container(
+                                                  width: 70.w,
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: 10.h,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: MyColors.greenColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(100.r),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Spacer(flex: 6),
+                                                      Text(
+                                                        'Continue playing'.tr,
+                                                        style:
+                                                            AppTextStyles.heading2()
+                                                                .copyWith(
+                                                                  fontSize: 6.sp,
+                                                                  color:
+                                                                      MyColors.white,
+                                                                ),
+                                                      ),
+                                                      Spacer(flex: 1),
+                                                      SvgPicture.asset(
+                                                        MyIcons.arrow_right,
+                                                        colorFilter: ColorFilter.mode(
+                                                          MyColors.darkGreenColor,
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                      ),
+                                                      Spacer(flex: 1),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                  ],
-                                ),
-                              );
+                                );
+                              }
                             },
                           ),
                         ],
@@ -458,6 +599,141 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
                 Text(
                   'Team Score'.tr,
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 6.sp,
+                    color: MyColors.white.withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSoloPlayerCard(BuildContext context, Map<String, dynamic> player) {
+    final progressStart = player['progressStart'] as int;
+    final progressEnd = player['progressEnd'] as int;
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
+      decoration: BoxDecoration(
+        color: MyColors.black.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Player Name
+          Text(
+            player['name'] as String,
+            style: AppTextStyles.heading1().copyWith(
+              fontSize: 8.sp,
+              color: MyColors.white,
+            ),
+          ),
+
+          SizedBox(height: 10.h),
+
+          // Player Avatar
+          Expanded(
+            child: Center(
+              child: Stack(
+                children: [
+                  // Avatar
+                  Container(
+                    width: 50.w,
+                    height: 50.w,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50.r),
+                      child: (player['avatar'] as String).isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: player['avatar'] as String,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: MyColors.darkBlueColor,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      MyColors.greenColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: MyColors.darkBlueColor,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 50.sp,
+                                  color: MyColors.white.withValues(alpha: 0.5),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              color: MyColors.darkBlueColor,
+                              child: Icon(
+                                Icons.person,
+                                size: 50.sp,
+                                color: MyColors.white.withValues(alpha: 0.5),
+                              ),
+                            ),
+                    ),
+                  ),
+                  // Green checkmark overlay
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 15.w,
+                      height: 15.w,
+                      decoration: BoxDecoration(
+                        color: MyColors.greenColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        size: 10.sp,
+                        color: MyColors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Progress Indicator
+          TeamProgressIndicator(
+            currentQuestion: progressStart - progressEnd,
+            totalQuestions: progressStart,
+          ),
+
+          SizedBox(height: 10.h),
+
+          // Player Score
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 20.w),
+            decoration: BoxDecoration(
+              color: MyColors.black.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(80.r),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${player['score'] ?? 0}',
+                  style: AppTextStyles.heading1().copyWith(
+                    fontSize: 8.sp,
+                    color: MyColors.white,
+                  ),
+                ),
+                SizedBox(width: 10.h),
+
+                Text(
+                  'Score'.tr,
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 6.sp,
                     color: MyColors.white.withValues(alpha: 0.5),

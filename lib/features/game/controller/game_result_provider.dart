@@ -26,7 +26,9 @@ class GameResultController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
@@ -56,6 +58,25 @@ class GameResultController extends GetxController {
         'hintsUsed': team.hintsUsed ?? 0,
       };
     }).toList();
+  }
+
+  // Helper method for solo mode
+  Map<String, dynamic>? get soloPlayerResult {
+    if (gameResult.value?.players == null ||
+        gameResult.value!.players!.isEmpty) {
+      return null;
+    }
+    final player = gameResult.value!.players!.first;
+    return {
+      'name': player.userName ?? '',
+      'suspectName': player.suspectChosenName ?? '',
+      'suspectImage': '', // Image not in API response
+      'isCorrect': false, // Would need to check against correct suspect
+      'totalScore': player.totalScore ?? 0,
+      'timeTaken': player.timeTaken ?? '',
+      'accuracy': player.accuracy ?? 0,
+      'hintsUsed': player.hintsUsed ?? 0,
+    };
   }
 
   // Get winner team (for backward compatibility)
