@@ -1,6 +1,8 @@
 import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
+import 'package:alqadiya_game/features/game/model/scoreboard_model.dart';
+import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:get/get.dart';
 
 class TeamLeader {
@@ -18,11 +20,17 @@ class ChooseTeamLeaderController extends GetxController {
   // Observable for team leaders list
   final RxList<TeamLeader> teamLeaders = <TeamLeader>[].obs;
 
+  // Observable for team members (all team members for display)
+  final RxList<TeamLeader> teamMembers = <TeamLeader>[].obs;
+
   // Observable for loading state
-    final RxBool isLoading = false.obs;
+  final RxBool isLoading = false.obs;
+  
   // Team Name
   final RxString teamName = ''.obs;
   String teamId = '';
+  
+  final _repository = GameRepository();
 
   @override
   void onInit() {
@@ -87,21 +95,20 @@ class ChooseTeamLeaderController extends GetxController {
           teamName.value = team.teamName ?? 'Team';
         }
         
-        // Get team members - we need to check which players are assigned to this team
-        // Since the API response structure may vary, we'll use all session players
-        // In production, you'd filter by team assignments from the API response
-        List<TeamLeader> leaders = gameController.sessionPlayers
-            .map(
-              (member) => TeamLeader(
-                id: member.userId ?? member.id ?? '',
-                name: member.userName ?? 'Unknown',
-                imageUrl: "https://picsum.photos/200",
-              ),
-            )
-            .toList();
+        // Try to get team members from scoreboard API (includes team-player assignments)
+        List<TeamLeader> members = await _getTeamMembersFromScoreboard(sessionId);
         
-        if (leaders.isNotEmpty) {
-          teamLeaders.assignAll(leaders);
+        // If scoreboard doesn't have data, try to get from session details
+        if (members.isEmpty) {
+          members = await _getTeamMembersFromSessionDetails(gameController, sessionId);
+        }
+        
+        // Update team members list (for display)
+        teamMembers.assignAll(members);
+        
+        // Update team leaders list (for selection)
+        if (members.isNotEmpty) {
+          teamLeaders.assignAll(members);
         } else if (teamLeaders.isEmpty) {
           _initializeTeamLeaders();
         }
@@ -118,6 +125,54 @@ class ChooseTeamLeaderController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Get team members from scoreboard API
+  Future<List<TeamLeader>> _getTeamMembersFromScoreboard(String sessionId) async {
+    try {
+      final response = await _repository.getScoreboard(sessionId: sessionId);
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final scoreboard = ScoreboardModel.fromJson(response.data);
+        
+        if (scoreboard.teams != null) {
+          // Find the team in scoreboard
+          final teamScore = scoreboard.teams!.firstWhereOrNull(
+            (t) => t.teamId == teamId,
+          );
+          
+          if (teamScore != null && teamScore.players != null) {
+            return teamScore.players!.map((player) {
+              return TeamLeader(
+                id: player.userId ?? '',
+                name: player.userName ?? 'Unknown',
+                imageUrl: "https://picsum.photos/200",
+              );
+            }).toList();
+          }
+        }
+      }
+    } catch (e) {
+      // Scoreboard might not be available yet, that's okay
+    }
+    return [];
+  }
+
+  /// Get team members from session details (fallback)
+  Future<List<TeamLeader>> _getTeamMembersFromSessionDetails(
+    GameController gameController,
+    String sessionId,
+  ) async {
+    // Since the API response doesn't directly map players to teams,
+    // we'll use all session players as a fallback
+    // In a production environment, the API should include team assignments
+    return gameController.sessionPlayers.map((member) {
+      return TeamLeader(
+        id: member.userId ?? member.id ?? '',
+        name: member.userName ?? 'Unknown',
+        imageUrl: "https://picsum.photos/200",
+      );
+    }).toList();
   }
 
   /// Initialize team leaders with sample data (Fallback)
@@ -177,5 +232,10 @@ class ChooseTeamLeaderController extends GetxController {
   /// Reset selection
   void resetSelection() {
     selectedLeader.value = null;
+  }
+
+  /// Refresh team members
+  Future<void> refreshTeamMembers() async {
+    await fetchTeamMembers();
   }
 }
