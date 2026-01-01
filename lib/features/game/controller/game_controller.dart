@@ -292,18 +292,12 @@ class GameController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data;
-        // Use post frame callback to safely update state
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.isRegistered<GameController>()) {
-            try {
-              sessionPlayers.assignAll(
-                list.map((e) => MemberModel.fromJson(e)).toList(),
-              );
-            } catch (e) {
-              // Silently handle setState errors
-            }
-          }
-        });
+        // Update session players directly - this will trigger the ever() listener
+        // in PlayerSelectionController to sync the players automatically
+        final newPlayers = list.map((e) => MemberModel.fromJson(e)).toList();
+        sessionPlayers.assignAll(newPlayers);
+        // Force refresh to ensure listeners are triggered
+        sessionPlayers.refresh();
       }
     } on DioException {
       // Error already shown by interceptor (unless silent)

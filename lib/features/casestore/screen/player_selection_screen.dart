@@ -44,7 +44,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   void _startPolling() {
     // Cancel any existing timer first
     _pollingTimer?.cancel();
-    
+
     _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       // Check if widget is still mounted and not disposed before making API call
       if (_isDisposed || !mounted) {

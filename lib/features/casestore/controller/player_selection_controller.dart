@@ -148,7 +148,11 @@ class PlayerSelectionController extends GetxController {
   }
 
   void _syncPlayers(List<MemberModel> members) {
-    if (members.isEmpty) return;
+    if (members.isEmpty) {
+      // Clear available players if no members
+      availablePlayers.clear();
+      return;
+    }
 
     List<Player> players =
         members
@@ -176,7 +180,10 @@ class PlayerSelectionController extends GetxController {
       }
     }
 
+    // Update available players - this will trigger UI updates
     availablePlayers.assignAll(filteredPlayers);
+    // Force refresh to ensure UI updates
+    availablePlayers.refresh();
   }
 
   /// Initialize teams (Mock)
