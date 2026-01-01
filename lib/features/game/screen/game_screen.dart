@@ -542,15 +542,23 @@ class _GameScreenState extends State<GameScreen> {
         });
 
         // Handle hint button tap
+        final hintType = hint.hintType?.toLowerCase();
+        final mediaUrl = hint.mediaUrl ?? '';
+
         showDialog(
           context: context,
           barrierDismissible: true,
           builder:
               (_) => VideoEvidenceDialog(
-                videoUrl: hint.mediaUrl ?? '',
+                videoUrl: hintType == 'video' ? mediaUrl : null,
+                imageUrl: hintType == 'image' ? mediaUrl : null,
+                audioUrl: hintType == 'audio' ? mediaUrl : null,
+                documentUrl: hintType == 'document' ? mediaUrl : null,
+                hintType: hint.hintType,
                 title: hint.hintName ?? 'Hint'.tr,
                 onContinue: () {},
                 showHintText: hint.hintDescription != null,
+                hintPoints: hint.pointsCost ?? 2,
               ),
         );
       },
