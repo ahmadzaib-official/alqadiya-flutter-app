@@ -27,14 +27,13 @@ class ClueDetailScreen extends StatefulWidget {
 }
 
 class _ClueDetailScreenState extends State<ClueDetailScreen> {
-
   @override
   void initState() {
     super.initState();
     final evidenceController = Get.find<EvidenceController>();
     final arguments = Get.arguments as Map<String, dynamic>?;
     final evidenceId = arguments?['evidenceId'];
-    
+
     if (evidenceId != null) {
       evidenceController.getEvidenceById(evidenceId: evidenceId);
     }
@@ -60,9 +59,10 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
       body: Obx(
         () => GameBackground(
           isPurchased: true,
-          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
-                   gameController.gameDetail.value?.coverImage ?? 
-                   "https://picsum.photos/200",
+          imageUrl:
+              gameController.gameDetail.value?.coverImageUrl ??
+              gameController.gameDetail.value?.coverImage ??
+              "https://picsum.photos/200",
           body: Column(
             children: [
               // Header
@@ -73,10 +73,12 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                   title: Row(
                     children: [
                       Text(
-                        evidenceController.evidenceDetail.value?.evidenceName ?? 
-                        gameController.gameDetail.value?.title ?? 
-                        'New Clue'.tr,
-                        style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                        evidenceController.evidenceDetail.value?.evidenceName ??
+                            gameController.gameDetail.value?.title ??
+                            'New Clue'.tr,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 10.sp,
+                        ),
                       ),
                       SizedBox(width: 20.w),
                       Text(
@@ -115,7 +117,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                       ),
                     );
                   }
-                  
+
                   if (evidenceController.evidenceDetail.value == null) {
                     return Center(
                       child: Text(
@@ -127,14 +129,16 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                       ),
                     );
                   }
-                  
+
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.sp),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Left Panel - Clue Image
-                        _buildClueImage(evidenceController.evidenceDetail.value!),
+                        _buildClueImage(
+                          evidenceController.evidenceDetail.value!,
+                        ),
 
                         SizedBox(width: 8.w),
 
@@ -149,7 +153,10 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
 
                               // Content Area
                               Expanded(
-                                child: _buildContentArea(clueController, evidenceController),
+                                child: _buildContentArea(
+                                  clueController,
+                                  evidenceController,
+                                ),
                               ),
                             ],
                           ),
@@ -162,7 +169,11 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
 
               // Footer
               Padding(
-                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
+                padding: EdgeInsets.only(
+                  left: 10.sp,
+                  right: 10.sp,
+                  bottom: 5.sp,
+                ),
                 child: GameFooter(onGameResultTap: () {}),
               ),
             ],
@@ -181,22 +192,23 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.r)),
       ),
       child: CachedNetworkImage(
-        imageUrl: evidence.profileImageURL ?? 
-                 evidence.profileImage ?? 
-                 "https://picsum.photos/200",
+        imageUrl:
+            evidence.profileImageURL ??
+            evidence.profileImage ??
+            "https://picsum.photos/200",
         fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          color: MyColors.darkBlueColor,
-          child: Center(
-            child: CircularProgressIndicator(
-              color: MyColors.redButtonColor,
+        placeholder:
+            (context, url) => Container(
+              color: MyColors.darkBlueColor,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: MyColors.redButtonColor,
+                ),
+              ),
             ),
-          ),
-        ),
-        errorWidget: (context, url, error) => Image.asset(
-          MyImages.suspect,
-          fit: BoxFit.cover,
-        ),
+        errorWidget:
+            (context, url, error) =>
+                Image.asset(MyImages.suspect, fit: BoxFit.cover),
       ),
     );
   }
@@ -238,42 +250,44 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         // ),
 
         // Attachments Tab
-        Expanded(
-          // child: GestureDetector(
-          // onTap: () => controller.setSelectedTab(1),
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-            decoration: BoxDecoration(
-              color:
-                  controller.selectedTab.value == 1
-                      ? MyColors.redButtonColor
-                      : MyColors.black.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(100.r),
-                bottomRight: Radius.circular(100.r),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                'Attachments'.tr,
-                style: AppTextStyles.heading2().copyWith(
-                  fontSize: 7.sp,
-                  color:
-                      controller.selectedTab.value == 1
-                          ? MyColors.white
-                          : MyColors.white.withValues(alpha: 0.5),
-                  fontWeight: FontWeight.w600,
-                ),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+          decoration: BoxDecoration(
+            color:
+                // controller.selectedTab.value == 1
+                //     ?
+                MyColors.redButtonColor,
+            // : MyColors.black.withValues(alpha: 0.2)
+
+            // borderRadius: BorderRadius.only(
+            //   topRight: Radius.circular(100.r),
+            //   bottomRight: Radius.circular(100.r),
+            // ),
+            borderRadius: BorderRadius.circular(100.r),
+          ),
+          child: Center(
+            child: Text(
+              'Attachments'.tr,
+              style: AppTextStyles.heading2().copyWith(
+                fontSize: 7.sp,
+                color:
+                    // controller.selectedTab.value == 1
+                    //     ?
+                    MyColors.white,
+                // : MyColors.white.withValues(alpha: 0.5)
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          // ),
         ),
       ],
     );
   }
 
-  Widget _buildContentArea(ClueDetailController controller, EvidenceController evidenceController) {
+  Widget _buildContentArea(
+    ClueDetailController controller,
+    EvidenceController evidenceController,
+  ) {
     final evidence = evidenceController.evidenceDetail.value;
     if (evidence == null) {
       return Center(
@@ -286,7 +300,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         ),
       );
     }
-    
+
     if (controller.selectedAttachmentType.value == null) {
       return _buildAttachmentsGrid(controller, evidence);
     } else if (controller.selectedAttachmentType.value == 'Videos') {
@@ -308,25 +322,37 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         'icon': MyIcons.videos,
         'label': 'Videos',
         'type': 'Videos',
-        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'video').length,
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'video')
+                .length,
       },
       {
         'icon': MyIcons.gallery,
         'label': 'Images',
         'type': 'Images',
-        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'image').length,
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'image')
+                .length,
       },
       {
         'icon': MyIcons.audios,
         'label': 'Audio',
         'type': 'Audio',
-        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'audio').length,
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'audio')
+                .length,
       },
       {
         'icon': MyIcons.document,
         'label': 'Documents',
         'type': 'Documents',
-        'count': attachments.where((a) => a.attachmentType?.toLowerCase() == 'document').length,
+        'count':
+            attachments
+                .where((a) => a.attachmentType?.toLowerCase() == 'document')
+                .length,
       },
     ];
 
@@ -343,9 +369,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         itemBuilder: (context, index) {
           final item = attachmentTypes[index];
           final count = item['count'] as int;
-          if (count == 0) {
-            return SizedBox.shrink();
-          }
+
           return GestureDetector(
             onTap: () {
               controller.setSelectedAttachmentType(item['type'] as String);
@@ -396,10 +420,11 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
   }
 
   Widget _buildVideosList(ClueDetailController controller, evidence) {
-    final videos = (evidence.attachments ?? [])
-        .where((a) => a.attachmentType?.toLowerCase() == 'video')
-        .toList();
-    
+    final videos =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'video')
+            .toList();
+
     if (videos.isEmpty) {
       return Center(
         child: Text(
@@ -476,9 +501,10 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.r),
                           child: CachedNetworkImage(
-                            imageUrl: video.thumbnailUrl ?? 
-                                     video.mediaUrl ?? 
-                                     "https://picsum.photos/300/200",
+                            imageUrl:
+                                video.thumbnailUrl ??
+                                video.mediaUrl ??
+                                "https://picsum.photos/300/200",
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.cover,
@@ -524,10 +550,11 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
   }
 
   Widget _buildImagesList(ClueDetailController controller, evidence) {
-    final images = (evidence.attachments ?? [])
-        .where((a) => a.attachmentType?.toLowerCase() == 'image')
-        .toList();
-    
+    final images =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'image')
+            .toList();
+
     if (images.isEmpty) {
       return Center(
         child: Text(
@@ -585,8 +612,9 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                       context,
                       MaterialPageRoute(
                         builder:
-                            (context) =>
-                                ImagePreviewScreen(imageUrl: image.mediaUrl ?? ''),
+                            (context) => ImagePreviewScreen(
+                              imageUrl: image.mediaUrl ?? '',
+                            ),
                       ),
                     );
                   },
@@ -599,7 +627,8 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.r),
                       child: CachedNetworkImage(
-                        imageUrl: image.mediaUrl ?? "https://picsum.photos/300/200",
+                        imageUrl:
+                            image.mediaUrl ?? "https://picsum.photos/300/200",
                         width: double.infinity,
                         height: double.infinity,
                         fit: BoxFit.cover,
@@ -630,10 +659,11 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
   }
 
   Widget _buildDocumentsList(ClueDetailController controller, evidence) {
-    final documents = (evidence.attachments ?? [])
-        .where((a) => a.attachmentType?.toLowerCase() == 'document')
-        .toList();
-    
+    final documents =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'document')
+            .toList();
+
     if (documents.isEmpty) {
       return Center(
         child: Text(
@@ -645,7 +675,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         ),
       );
     }
-    
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -720,7 +750,8 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                           SvgPicture.asset(MyIcons.file),
                           SizedBox(height: 8.h),
                           Text(
-                            document.attachmentNameEn ?? 'Document ${index + 1}',
+                            document.attachmentNameEn ??
+                                'Document ${index + 1}',
                             style: AppTextStyles.heading2().copyWith(
                               fontSize: 6.sp,
                               color: MyColors.BlueColor,
@@ -743,10 +774,11 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
   }
 
   Widget _buildAudioList(ClueDetailController controller, evidence) {
-    final audios = (evidence.attachments ?? [])
-        .where((a) => a.attachmentType?.toLowerCase() == 'audio')
-        .toList();
-    
+    final audios =
+        (evidence.attachments ?? [])
+            .where((a) => a.attachmentType?.toLowerCase() == 'audio')
+            .toList();
+
     if (audios.isEmpty) {
       return Center(
         child: Text(
@@ -758,7 +790,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         ),
       );
     }
-    
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -817,7 +849,9 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                     ),
                     child: AudioPlayerWidget(
                       audioUrl: audio.mediaUrl ?? '',
-                      title: audio.attachmentNameEn ?? '${'Audio'.tr} ${index + 1}',
+                      title:
+                          audio.attachmentNameEn ??
+                          '${'Audio'.tr} ${index + 1}',
                     ),
                   ),
                 );
