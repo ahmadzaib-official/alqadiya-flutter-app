@@ -425,18 +425,6 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
             .where((a) => a.attachmentType?.toLowerCase() == 'video')
             .toList();
 
-    if (videos.isEmpty) {
-      return Center(
-        child: Text(
-          'No videos available'.tr,
-          style: AppTextStyles.heading1().copyWith(
-            fontSize: 8.sp,
-            color: MyColors.white,
-          ),
-        ),
-      );
-    }
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
       decoration: BoxDecoration(
@@ -469,80 +457,90 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
 
-          // Video thumbnails
+          // Video thumbnails or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: videos.length,
-              itemBuilder: (context, index) {
-                final video = videos[index];
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to video player
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => VideoPlayerScreen(
-                              videoUrl: video.mediaUrl ?? '',
-                            ),
+            child: videos.isEmpty
+                ? Center(
+                    child: Text(
+                      'No videos available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.r),
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                video.thumbnailUrl ??
-                                video.mediaUrl ??
-                                "https://picsum.photos/300/200",
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => Container(
-                                  color: MyColors.darkBlueColor,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: MyColors.redButtonColor,
-                                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: videos.length,
+                    itemBuilder: (context, index) {
+                      final video = videos[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to video player
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => VideoPlayerScreen(
+                                    videoUrl: video.mediaUrl ?? '',
                                   ),
-                                ),
-                            errorWidget:
-                                (context, url, error) => Container(
-                                  color: MyColors.darkBlueColor,
-                                  child: Icon(
-                                    Icons.error,
-                                    color: MyColors.white,
-                                  ),
-                                ),
-                          ),
-                        ),
-                        // Play button overlay
-                        Positioned.fill(
-                          child: Center(
-                            child: Icon(
-                              Icons.play_arrow_outlined,
-                              color: MyColors.white.withValues(alpha: 0.5),
-                              size: 30.sp,
                             ),
+                          );
+                        },
+                        child: Container(
+                          width: 60.w,
+                          margin: EdgeInsets.only(right: 10.w),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8.r),
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      video.thumbnailUrl ??
+                                      video.mediaUrl ??
+                                      "https://picsum.photos/300/200",
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                  placeholder:
+                                      (context, url) => Container(
+                                        color: MyColors.darkBlueColor,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: MyColors.redButtonColor,
+                                          ),
+                                        ),
+                                      ),
+                                  errorWidget:
+                                      (context, url, error) => Container(
+                                        color: MyColors.darkBlueColor,
+                                        child: Icon(
+                                          Icons.error,
+                                          color: MyColors.white,
+                                        ),
+                                      ),
+                                ),
+                              ),
+                              // Play button overlay
+                              Positioned.fill(
+                                child: Center(
+                                  child: Icon(
+                                    Icons.play_arrow_outlined,
+                                    color: MyColors.white.withValues(alpha: 0.5),
+                                    size: 30.sp,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
@@ -554,18 +552,6 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         (evidence.attachments ?? [])
             .where((a) => a.attachmentType?.toLowerCase() == 'image')
             .toList();
-
-    if (images.isEmpty) {
-      return Center(
-        child: Text(
-          'No images available'.tr,
-          style: AppTextStyles.heading1().copyWith(
-            fontSize: 8.sp,
-            color: MyColors.white,
-          ),
-        ),
-      );
-    }
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -598,60 +584,70 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
           SizedBox(height: 5.h),
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
-          // Image thumbnails
+          // Image thumbnails or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                final image = images[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ImagePreviewScreen(
-                              imageUrl: image.mediaUrl ?? '',
-                            ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.r),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            image.mediaUrl ?? "https://picsum.photos/300/200",
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        placeholder:
-                            (context, url) => Container(
-                              color: MyColors.darkBlueColor,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: MyColors.redButtonColor,
-                                ),
-                              ),
-                            ),
-                        errorWidget:
-                            (context, url, error) => Container(
-                              color: MyColors.darkBlueColor,
-                              child: Icon(Icons.error, color: MyColors.white),
-                            ),
+            child: images.isEmpty
+                ? Center(
+                    child: Text(
+                      'No images available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
                     ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: images.length,
+                    itemBuilder: (context, index) {
+                      final image = images[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => ImagePreviewScreen(
+                                    imageUrl: image.mediaUrl ?? '',
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 60.w,
+                          margin: EdgeInsets.only(right: 10.w),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  image.mediaUrl ?? "https://picsum.photos/300/200",
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                              placeholder:
+                                  (context, url) => Container(
+                                    color: MyColors.darkBlueColor,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: MyColors.redButtonColor,
+                                      ),
+                                    ),
+                                  ),
+                              errorWidget:
+                                  (context, url, error) => Container(
+                                    color: MyColors.darkBlueColor,
+                                    child: Icon(Icons.error, color: MyColors.white),
+                                  ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
@@ -663,18 +659,6 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         (evidence.attachments ?? [])
             .where((a) => a.attachmentType?.toLowerCase() == 'document')
             .toList();
-
-    if (documents.isEmpty) {
-      return Center(
-        child: Text(
-          'No documents available'.tr,
-          style: AppTextStyles.heading1().copyWith(
-            fontSize: 8.sp,
-            color: MyColors.white,
-          ),
-        ),
-      );
-    }
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -707,66 +691,76 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
           SizedBox(height: 5.h),
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
-          // Document button
+          // Document button or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: documents.length,
-              itemBuilder: (context, index) {
-                final document = documents[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => PDFViewerScreen(
-                              pdfUrl: document.mediaUrl ?? '',
-                            ),
+            child: documents.isEmpty
+                ? Center(
+                    child: Text(
+                      'No documents available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: 60.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(
-                      color: MyColors.white,
-                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        gradient: RadialGradient(
-                          colors: [
-                            Colors.black.withValues(alpha: 0),
-                            Colors.black.withValues(alpha: 0.2),
-                          ],
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(MyIcons.file),
-                          SizedBox(height: 8.h),
-                          Text(
-                            document.attachmentNameEn ??
-                                'Document ${index + 1}',
-                            style: AppTextStyles.heading2().copyWith(
-                              fontSize: 6.sp,
-                              color: MyColors.BlueColor,
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      final document = documents[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => PDFViewerScreen(
+                                    pdfUrl: document.mediaUrl ?? '',
+                                  ),
                             ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
+                        child: Container(
+                          width: 60.w,
+                          margin: EdgeInsets.only(right: 10.w),
+                          decoration: BoxDecoration(
+                            color: MyColors.white,
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
-                        ],
-                      ),
-                    ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.r),
+                              gradient: RadialGradient(
+                                colors: [
+                                  Colors.black.withValues(alpha: 0),
+                                  Colors.black.withValues(alpha: 0.2),
+                                ],
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(MyIcons.file),
+                                SizedBox(height: 8.h),
+                                Text(
+                                  document.attachmentNameEn ??
+                                      'Document ${index + 1}',
+                                  style: AppTextStyles.heading2().copyWith(
+                                    fontSize: 6.sp,
+                                    color: MyColors.BlueColor,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
@@ -778,18 +772,6 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         (evidence.attachments ?? [])
             .where((a) => a.attachmentType?.toLowerCase() == 'audio')
             .toList();
-
-    if (audios.isEmpty) {
-      return Center(
-        child: Text(
-          'No audio available'.tr,
-          style: AppTextStyles.heading1().copyWith(
-            fontSize: 8.sp,
-            color: MyColors.white,
-          ),
-        ),
-      );
-    }
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
@@ -822,41 +804,51 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
           SizedBox(height: 5.h),
           Divider(color: Colors.white.withValues(alpha: 0.1)),
           SizedBox(height: 5.h),
-          // Audio players
+          // Audio players or empty state
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              scrollDirection: Axis.horizontal,
-              itemCount: audios.length,
-              itemBuilder: (context, index) {
-                final audio = audios[index];
-                return Container(
-                  width: 60.w,
-                  margin: EdgeInsets.only(right: 10.w),
-                  decoration: BoxDecoration(
-                    color: MyColors.white,
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      gradient: RadialGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: 0),
-                          Colors.black.withValues(alpha: 0.2),
-                        ],
+            child: audios.isEmpty
+                ? Center(
+                    child: Text(
+                      'No audio available'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 8.sp,
+                        color: MyColors.white,
                       ),
                     ),
-                    child: AudioPlayerWidget(
-                      audioUrl: audio.mediaUrl ?? '',
-                      title:
-                          audio.attachmentNameEn ??
-                          '${'Audio'.tr} ${index + 1}',
-                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: audios.length,
+                    itemBuilder: (context, index) {
+                      final audio = audios[index];
+                      return Container(
+                        width: 60.w,
+                        margin: EdgeInsets.only(right: 10.w),
+                        decoration: BoxDecoration(
+                          color: MyColors.white,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.r),
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.black.withValues(alpha: 0),
+                                Colors.black.withValues(alpha: 0.2),
+                              ],
+                            ),
+                          ),
+                          child: AudioPlayerWidget(
+                            audioUrl: audio.mediaUrl ?? '',
+                            title:
+                                audio.attachmentNameEn ??
+                                '${'Audio'.tr} ${index + 1}',
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
