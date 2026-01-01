@@ -3,7 +3,6 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 class CustomIconTextButton extends StatelessWidget {
   const CustomIconTextButton({
@@ -18,6 +17,8 @@ class CustomIconTextButton extends StatelessWidget {
     this.width,
     this.buttonColor,
     this.forgroundColor,
+    this.scoreValue,
+    this.progressValue,
   });
 
   final String buttonText;
@@ -30,6 +31,8 @@ class CustomIconTextButton extends StatelessWidget {
   final Color? forgroundColor;
   final double? width;
   final VoidCallback onTap;
+  final int? scoreValue;
+  final double? progressValue;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -57,7 +60,7 @@ class CustomIconTextButton extends StatelessWidget {
             SizedBox(width: 2.w),
             if (isTextButton)
               Text(
-                '14'.tr,
+                scoreValue != null ? '$scoreValue' : '0',
                 style: AppTextStyles.heading1().copyWith(fontSize: 8.sp),
               ),
             if (isIconButton)
@@ -74,7 +77,7 @@ class CustomIconTextButton extends StatelessWidget {
               SizedBox(
                 width: 20.w,
                 child: LinearProgressIndicator(
-                  value: 0.7,
+                  value: progressValue ?? 0.0,
                   borderRadius: BorderRadius.circular(100.r),
                   color: MyColors.redButtonColor,
                 ),
