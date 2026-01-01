@@ -295,8 +295,12 @@ class GameController extends GetxController {
         // Update session players directly - this will trigger the ever() listener
         // in PlayerSelectionController to sync the players automatically
         final newPlayers = list.map((e) => MemberModel.fromJson(e)).toList();
-        sessionPlayers.assignAll(newPlayers);
-        // Force refresh to ensure listeners are triggered
+        
+        // Clear and rebuild to ensure observable triggers properly
+        // This is more reliable than assignAll() for triggering listeners
+        sessionPlayers.clear();
+        sessionPlayers.addAll(newPlayers);
+        // Force refresh to ensure all listeners are triggered
         sessionPlayers.refresh();
       }
     } on DioException {

@@ -107,8 +107,10 @@ class PlayerSelectionController extends GetxController {
     // Initial sync players
     _syncPlayers(gameController.sessionPlayers);
 
-    // Listen for updates
-    _playersWorker = ever(gameController.sessionPlayers, _syncPlayers);
+    // Listen for updates - watch the list length and content changes
+    _playersWorker = ever(gameController.sessionPlayers, (List<MemberModel> players) {
+      _syncPlayers(players);
+    });
   }
 
   void _syncTeams(List<TeamModel> apiTeams) {
@@ -147,10 +149,19 @@ class PlayerSelectionController extends GetxController {
     teams.assignAll(newTeams);
   }
 
+  /// Sync players from game controller (public method for manual triggering)
+  void syncPlayersFromGameController() {
+    final gameController = Get.find<GameController>();
+    _syncPlayers(gameController.sessionPlayers);
+  }
+
   void _syncPlayers(List<MemberModel> members) {
     if (members.isEmpty) {
       // Clear available players if no members
-      availablePlayers.clear();
+      if (availablePlayers.isNotEmpty) {
+        availablePlayers.clear();
+        availablePlayers.refresh();
+      }
       return;
     }
 
@@ -180,9 +191,10 @@ class PlayerSelectionController extends GetxController {
       }
     }
 
-    // Update available players - this will trigger UI updates
+    // Always update to ensure UI reflects latest state
+    // This handles cases where players join/leave or are reassigned
     availablePlayers.assignAll(filteredPlayers);
-    // Force refresh to ensure UI updates
+    // Force refresh to ensure UI updates immediately
     availablePlayers.refresh();
   }
 

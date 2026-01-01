@@ -45,7 +45,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
     // Cancel any existing timer first
     _pollingTimer?.cancel();
 
-    _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       // Check if widget is still mounted and not disposed before making API call
       if (_isDisposed || !mounted) {
         timer.cancel();
@@ -53,7 +53,13 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
         return;
       }
       // Make silent API call to avoid showing loading indicators
-      gameController.getSessionPlayers(silent: true);
+      await gameController.getSessionPlayers(silent: true);
+
+      // Manually trigger sync as backup to ensure UI updates
+      // This ensures players update even if the ever() listener doesn't trigger
+      if (mounted && !_isDisposed) {
+        controller.syncPlayersFromGameController();
+      }
     });
   }
 

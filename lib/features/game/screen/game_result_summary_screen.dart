@@ -419,7 +419,19 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     BuildContext context,
     Map<String, dynamic> result,
   ) {
-    final players = result['players'] as List<Map<String, dynamic>>;
+    // Safely cast players list - handle both List<dynamic> and List<Map<String, dynamic>>
+    final playersData = result['players'];
+    final List<Map<String, dynamic>> players =
+        playersData is List
+            ? playersData
+                .map(
+                  (item) =>
+                      item is Map<String, dynamic>
+                          ? item
+                          : Map<String, dynamic>.from(item as Map),
+                )
+                .toList()
+            : <Map<String, dynamic>>[];
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
