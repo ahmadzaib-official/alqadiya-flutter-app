@@ -123,48 +123,81 @@ class TransactionsListScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                // Price
-                Row(
-                  children: [
-                    Text(
-                      'Price '.tr,
-                      style: AppTextStyles.heading2().copyWith(
-                        fontSize: 7.sp,
-                        color: MyColors.white.withValues(alpha: 0.7),
+                if (transaction.type == 'game') ...[
+                  // Price
+                  Row(
+                    children: [
+                      Text(
+                        'Purchase '.tr,
+                        style: AppTextStyles.heading2().copyWith(
+                          fontSize: 7.sp,
+                          color: MyColors.white.withValues(alpha: 0.7),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 2.w),
+                      SizedBox(width: 2.w),
 
-                    SizedBox(
-                      height: 20.h,
-                      child: VerticalDivider(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        width: 1,
+                      SizedBox(
+                        height: 20.h,
+                        child: VerticalDivider(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 2.w),
+                      SizedBox(width: 2.w),
 
-                    Text(
-                      transaction.price.toString(),
-                      style: AppTextStyles.heading1().copyWith(
-                        fontSize: 7.sp,
-                        color: MyColors.white,
+                      Text(
+                        transaction.description.toString(),
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 7.sp,
+                          color: MyColors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      ' KD',
-                      style: AppTextStyles.heading2().copyWith(
-                        fontSize: 6.sp,
-                        color: MyColors.white,
+                    ],
+                  ),
+                ] else ...[
+                  // Price
+                  Row(
+                    children: [
+                      Text(
+                        'Price '.tr,
+                        style: AppTextStyles.heading2().copyWith(
+                          fontSize: 7.sp,
+                          color: MyColors.white.withValues(alpha: 0.7),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                      SizedBox(width: 2.w),
+
+                      SizedBox(
+                        height: 20.h,
+                        child: VerticalDivider(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          width: 1,
+                        ),
+                      ),
+                      SizedBox(width: 2.w),
+
+                      Text(
+                        transaction.price.toString(),
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 7.sp,
+                          color: MyColors.white,
+                        ),
+                      ),
+                      Text(
+                        ' KD',
+                        style: AppTextStyles.heading2().copyWith(
+                          fontSize: 6.sp,
+                          color: MyColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
 
-          Spacer(),
+          // Spacer(),
           // Plan and Points
           Row(
             mainAxisSize: MainAxisSize.min,
