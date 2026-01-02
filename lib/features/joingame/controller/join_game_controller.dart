@@ -62,7 +62,7 @@ class JoinGameController extends GetxController {
           }
 
           isWaiting.value = true;
-          CustomSnackbar.showSuccess('Joined game successfully'.tr);
+          // CustomSnackbar.showSuccess('Joined game successfully'.tr);
 
           // Start polling for session status
           if (_sessionId != null) {
@@ -71,7 +71,7 @@ class JoinGameController extends GetxController {
         } else {
           // Fallback: if sessionId not found, use old behavior
           isWaiting.value = true;
-          CustomSnackbar.showSuccess('Joined game successfully'.tr);
+          // CustomSnackbar.showSuccess('Joined game successfully'.tr);
 
           Future.delayed(const Duration(seconds: 3), () {
             // Use post frame callback to ensure navigation happens safely
