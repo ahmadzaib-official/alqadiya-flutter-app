@@ -602,6 +602,7 @@ class _GameScreenState extends State<GameScreen> {
         );
       },
       child: Container(
+        margin: EdgeInsets.only(left: 10.w),
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: MyColors.BlueColor,
