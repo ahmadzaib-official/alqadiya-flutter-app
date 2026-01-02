@@ -285,7 +285,7 @@ class _GameScreenState extends State<GameScreen> {
                     ],
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Get.offAllNamed(AppRoutes.homescreen),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),
@@ -417,7 +417,9 @@ class _GameScreenState extends State<GameScreen> {
                                     // Center: Stepper
                                     QuestionStepper(
                                       currentQuestion:
-                                          currentQuestionOrder ?? 1,
+                                          currentQuestionOrder != null
+                                              ? currentQuestionOrder! + 1
+                                              : 1,
                                       totalQuestions:
                                           totalQuestions > 0
                                               ? totalQuestions
