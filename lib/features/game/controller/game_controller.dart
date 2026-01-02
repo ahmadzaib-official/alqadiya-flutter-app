@@ -5,6 +5,7 @@ import 'package:alqadiya_game/features/game/model/game_session_model.dart';
 import 'package:alqadiya_game/features/casestore/model/member_model.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
+import 'package:alqadiya_game/features/casestore/controller/choose_team_leader_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -383,11 +384,75 @@ class GameController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         CustomSnackbar.showSuccess('Team leader assigned successfully'.tr);
+        
+        // Refresh session details to get updated team leader information
+        final sessionId = gameSession.value?.id;
+        if (sessionId != null) {
+          await getGameSessionDetails(sessionId: sessionId, silent: true);
+        }
+        
         await Future.delayed(const Duration(milliseconds: 500));
+        
+        // Sort teams by teamNumber to ensure proper order (team 1, then team 2)
+        final sortedTeams = List<TeamModel>.from(teams)
+          ..sort((a, b) => (a.teamNumber ?? 0).compareTo(b.teamNumber ?? 0));
+        
+        // Find the current team's index
+        final currentTeamIndex = sortedTeams.indexWhere((team) => team.id == teamId);
+        
+        // Find the next team that doesn't have a leader assigned
+        // Start searching from the team after the current one
+        TeamModel? nextTeamWithoutLeader;
+        for (int i = currentTeamIndex + 1; i < sortedTeams.length; i++) {
+          final team = sortedTeams[i];
+          if (team.leaderUserId == null || 
+              team.leaderUserId == '' || 
+              (team.leaderUserId is String && (team.leaderUserId as String).isEmpty)) {
+            nextTeamWithoutLeader = team;
+            break;
+          }
+        }
+        
+        // If no team found after current, check teams before current (shouldn't happen in normal flow)
+        if (nextTeamWithoutLeader == null) {
+          for (int i = 0; i < currentTeamIndex; i++) {
+            final team = sortedTeams[i];
+            if (team.leaderUserId == null || 
+                team.leaderUserId == '' || 
+                (team.leaderUserId is String && (team.leaderUserId as String).isEmpty)) {
+              nextTeamWithoutLeader = team;
+              break;
+            }
+          }
+        }
+        
         // Use post frame callback to ensure navigation happens safely
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (Get.isRegistered<GameController>()) {
-            Get.toNamed(AppRoutes.caseVideoScreen);
+            if (nextTeamWithoutLeader != null && nextTeamWithoutLeader.id != null) {
+              // Check if ChooseTeamLeaderController is already registered (same screen is open)
+              if (Get.isRegistered<ChooseTeamLeaderController>()) {
+                // Update the existing controller with the next team's information
+                // This will update the same screen for the next team
+                final chooseLeaderController = Get.find<ChooseTeamLeaderController>();
+                chooseLeaderController.updateTeamForNextSelection(
+                  newTeamId: nextTeamWithoutLeader.id!,
+                  newTeamName: nextTeamWithoutLeader.teamName ?? '',
+                );
+              } else {
+                // Controller not registered, navigate to the screen
+                Get.toNamed(
+                  AppRoutes.chooseTeamLeaderScreen,
+                  arguments: {
+                    'teamId': nextTeamWithoutLeader.id!,
+                    'teamName': nextTeamWithoutLeader.teamName,
+                  },
+                );
+              }
+            } else {
+              // All teams have leaders, proceed to case video screen
+              Get.toNamed(AppRoutes.caseVideoScreen);
+            }
           }
         });
       }

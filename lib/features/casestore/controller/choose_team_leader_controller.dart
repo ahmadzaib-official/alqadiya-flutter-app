@@ -25,17 +25,20 @@ class ChooseTeamLeaderController extends GetxController {
 
   // Observable for loading state
   final RxBool isLoading = false.obs;
-  
+
   // Team Name
   final RxString teamName = ''.obs;
   String teamId = '';
-  
+
   final _repository = GameRepository();
 
   @override
   void onInit() {
     super.onInit();
-    
+
+    // Reset selection when initializing for a new team
+    resetSelection();
+
     if (Get.arguments != null) {
       if (Get.arguments['teamId'] != null) {
         teamId = Get.arguments['teamId'];
@@ -43,19 +46,22 @@ class ChooseTeamLeaderController extends GetxController {
       if (Get.arguments['teamName'] != null) {
         teamName.value = Get.arguments['teamName'];
       }
-      if (Get.arguments['members'] != null && Get.arguments['members'] is List) {
+      if (Get.arguments['members'] != null &&
+          Get.arguments['members'] is List) {
         List<TeamLeader> leaders = [];
         for (var m in Get.arguments['members']) {
-          leaders.add(TeamLeader(
-            id: m['id'] ?? '',
-            name: m['name'] ?? 'Unknown',
-            imageUrl: m['imageUrl'] ?? "https://picsum.photos/200",
-          ));
+          leaders.add(
+            TeamLeader(
+              id: m['id'] ?? '',
+              name: m['name'] ?? 'Unknown',
+              imageUrl: m['imageUrl'] ?? "https://picsum.photos/200",
+            ),
+          );
         }
         teamLeaders.assignAll(leaders);
       }
     }
-    
+
     // Fetch team members from API
     fetchTeamMembers();
   }
@@ -71,10 +77,10 @@ class ChooseTeamLeaderController extends GetxController {
 
     isLoading.value = true;
     final gameController = Get.find<GameController>();
-    
+
     try {
       final sessionId = gameController.gameSession.value?.id;
-      
+
       if (sessionId == null) {
         if (teamLeaders.isEmpty) {
           _initializeTeamLeaders();
@@ -83,41 +89,47 @@ class ChooseTeamLeaderController extends GetxController {
       }
 
       // Get game session details to get teams and players with assignments
-      await gameController.getGameSessionDetails(sessionId: sessionId, silent: true);
-      
+      await gameController.getGameSessionDetails(
+        sessionId: sessionId,
+        silent: true,
+      );
+
       // Also fetch session players to ensure we have the latest player data
       await gameController.getSessionPlayers(silent: true);
-      
+
       // Find the team
       TeamModel? team = gameController.teams.firstWhereOrNull(
         (t) => t.id == teamId,
       );
-      
+
       if (team != null) {
         // Update team name if not set
         if (teamName.value.isEmpty) {
           teamName.value = team.teamName ?? 'Team';
         }
-        
+
         // Try to get team members from scoreboard API (includes team-player assignments)
-        List<TeamLeader> members = await _getTeamMembersFromScoreboard(sessionId);
-        
+        List<TeamLeader> members = await _getTeamMembersFromScoreboard(
+          sessionId,
+        );
+
         // If scoreboard doesn't have data, use all session players as fallback
         // This happens when teams are just assigned and scoreboard isn't ready yet
         if (members.isEmpty && gameController.sessionPlayers.isNotEmpty) {
           // Use all session players as team members (they should all be in the team after assignment)
-          members = gameController.sessionPlayers.map((member) {
-            return TeamLeader(
-              id: member.userId ?? member.id ?? '',
-              name: member.userName ?? 'Unknown',
-              imageUrl: "https://picsum.photos/200",
-            );
-          }).toList();
+          members =
+              gameController.sessionPlayers.map((member) {
+                return TeamLeader(
+                  id: member.userId ?? member.id ?? '',
+                  name: member.userName ?? 'Unknown',
+                  imageUrl: "https://picsum.photos/200",
+                );
+              }).toList();
         }
-        
+
         // Update team members list (for display)
         teamMembers.assignAll(members);
-        
+
         // Update team leaders list (for selection)
         if (members.isNotEmpty) {
           teamLeaders.assignAll(members);
@@ -127,13 +139,14 @@ class ChooseTeamLeaderController extends GetxController {
       } else {
         // Team not found, use all session players as fallback
         if (gameController.sessionPlayers.isNotEmpty) {
-          final members = gameController.sessionPlayers.map((member) {
-            return TeamLeader(
-              id: member.userId ?? member.id ?? '',
-              name: member.userName ?? 'Unknown',
-              imageUrl: "https://picsum.photos/200",
-            );
-          }).toList();
+          final members =
+              gameController.sessionPlayers.map((member) {
+                return TeamLeader(
+                  id: member.userId ?? member.id ?? '',
+                  name: member.userName ?? 'Unknown',
+                  imageUrl: "https://picsum.photos/200",
+                );
+              }).toList();
           teamMembers.assignAll(members);
           teamLeaders.assignAll(members);
         } else if (teamLeaders.isEmpty) {
@@ -144,20 +157,23 @@ class ChooseTeamLeaderController extends GetxController {
       // Only show error if we don't have any players at all
       // If we have session players, use them as fallback instead of showing error
       if (gameController.sessionPlayers.isEmpty) {
-        CustomSnackbar.showError("${'Failed to fetch team members:'.tr} ${e.toString()}");
+        CustomSnackbar.showError(
+          "${'Failed to fetch team members:'.tr} ${e.toString()}",
+        );
       } else {
         // Use session players as fallback
-        final members = gameController.sessionPlayers.map((member) {
-          return TeamLeader(
-            id: member.userId ?? member.id ?? '',
-            name: member.userName ?? 'Unknown',
-            imageUrl: "https://picsum.photos/200",
-          );
-        }).toList();
+        final members =
+            gameController.sessionPlayers.map((member) {
+              return TeamLeader(
+                id: member.userId ?? member.id ?? '',
+                name: member.userName ?? 'Unknown',
+                imageUrl: "https://picsum.photos/200",
+              );
+            }).toList();
         teamMembers.assignAll(members);
         teamLeaders.assignAll(members);
       }
-      
+
       if (teamLeaders.isEmpty) {
         _initializeTeamLeaders();
       }
@@ -167,19 +183,21 @@ class ChooseTeamLeaderController extends GetxController {
   }
 
   /// Get team members from scoreboard API
-  Future<List<TeamLeader>> _getTeamMembersFromScoreboard(String sessionId) async {
+  Future<List<TeamLeader>> _getTeamMembersFromScoreboard(
+    String sessionId,
+  ) async {
     try {
       final response = await _repository.getScoreboard(sessionId: sessionId);
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final scoreboard = ScoreboardModel.fromJson(response.data);
-        
+
         if (scoreboard.teams != null) {
           // Find the team in scoreboard
           final teamScore = scoreboard.teams!.firstWhereOrNull(
             (t) => t.teamId == teamId,
           );
-          
+
           if (teamScore != null && teamScore.players != null) {
             return teamScore.players!.map((player) {
               return TeamLeader(
@@ -238,14 +256,15 @@ class ChooseTeamLeaderController extends GetxController {
     isLoading.value = true;
     try {
       final gameController = Get.find<GameController>();
-      
+
       await gameController.assignTeamLeader(
         teamId: teamId,
         userId: selectedLeader.value!.id,
       );
-
     } catch (e) {
-      CustomSnackbar.showError("${'Failed to select leader:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Failed to select leader:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading.value = false;
     }
@@ -259,5 +278,31 @@ class ChooseTeamLeaderController extends GetxController {
   /// Refresh team members
   Future<void> refreshTeamMembers() async {
     await fetchTeamMembers();
+  }
+
+  /// Update team information for next team selection
+  /// This is called when moving to the next team without navigating away
+  Future<void> updateTeamForNextSelection({
+    required String newTeamId,
+    required String newTeamName,
+  }) async {
+    // Reset selection for the new team
+    resetSelection();
+
+    // Update team information
+    teamId = newTeamId;
+    teamName.value = newTeamName;
+
+    // Clear current team leaders and members
+    teamLeaders.clear();
+    teamMembers.clear();
+
+    // Set loading state while fetching
+    isLoading.value = true;
+
+    // Fetch members for the new team
+    await fetchTeamMembers();
+
+    // Loading state will be set to false in fetchTeamMembers
   }
 }
