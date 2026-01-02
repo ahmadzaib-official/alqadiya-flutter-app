@@ -23,6 +23,7 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
+import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 
 class GameScreen extends StatefulWidget {
   GameScreen({super.key});
@@ -81,11 +82,15 @@ class _GameScreenState extends State<GameScreen> {
 
     // Fetch questions for the game
     final gameController = Get.find<GameController>();
-    final gameId =
+    var gameId =
         gameController.gameDetail.value?.id ??
         gameController.gameSession.value?.gameId;
 
-    if (gameId != null) {
+    // If gameId is null but we have a sessionId, get gameId from session status API
+    // This happens when coming from join game screen
+    if (gameId == null && gameController.gameSession.value?.id != null) {
+      _getGameIdFromSessionStatus(gameController);
+    } else if (gameId != null) {
       // Fetch game details if not already loaded
       if (gameController.gameDetail.value?.id == null) {
         gameController.getGameDetail(gameId: gameId).then((_) {
@@ -108,6 +113,94 @@ class _GameScreenState extends State<GameScreen> {
 
     // Initialize question start time
     questionStartTime = DateTime.now();
+  }
+
+  Future<void> _getGameIdFromSessionStatus(
+    GameController gameController,
+  ) async {
+    final sessionId = gameController.gameSession.value?.id;
+    if (sessionId == null) {
+      // Fallback: start timer with default values if session ID not available
+      timerController.startTimer(gameId: null);
+      return;
+    }
+
+    try {
+      // Get game ID from session status API
+      final response = await GameRepository().getGameSessionStatus(
+        sessionId: sessionId,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data != null) {
+          // Extract gameId from response
+          // The response might have gameId directly or in a nested structure
+          String? gameId;
+
+          if (response.data['gameId'] != null) {
+            gameId = response.data['gameId'] as String?;
+          } else if (response.data['session'] != null &&
+              response.data['session']['gameId'] != null) {
+            gameId = response.data['session']['gameId'] as String?;
+          } else {
+            // Fallback: use gameId from gameSession if available
+            gameId = gameController.gameSession.value?.gameId;
+          }
+
+          if (gameId != null && gameId.isNotEmpty) {
+            // Fetch game details using the game ID from session status API
+            await gameController.getGameDetail(gameId: gameId);
+
+            // Start timer with duration from game details after loading
+            _startTimerFromGameDetails(gameController);
+
+            // Fetch questions
+            questionController.getQuestionsByGame(
+              gameId: gameId,
+              language: 'en',
+            );
+          } else {
+            // Fallback: try to get gameId from session details API
+            await _getGameIdFromSessionDetails(gameController, sessionId);
+          }
+        } else {
+          // Fallback: try to get gameId from session details API
+          await _getGameIdFromSessionDetails(gameController, sessionId);
+        }
+      } else {
+        // Fallback: try to get gameId from session details API
+        await _getGameIdFromSessionDetails(gameController, sessionId);
+      }
+    } catch (e) {
+      // Fallback: try to get gameId from session details API
+      await _getGameIdFromSessionDetails(gameController, sessionId);
+    }
+  }
+
+  Future<void> _getGameIdFromSessionDetails(
+    GameController gameController,
+    String sessionId,
+  ) async {
+    try {
+      // Try to get gameId from session details API
+      await gameController.getGameSessionDetails(sessionId: sessionId);
+
+      // After fetching session details, check if gameId is now available
+      final gameId = gameController.gameSession.value?.gameId;
+
+      if (gameId != null && gameId.isNotEmpty) {
+        // Fetch game details using the game ID
+        await gameController.getGameDetail(gameId: gameId);
+        _startTimerFromGameDetails(gameController);
+        questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+      } else {
+        // Final fallback: start timer with default values
+        timerController.startTimer(gameId: null);
+      }
+    } catch (e) {
+      // Final fallback: start timer with default values
+      timerController.startTimer(gameId: null);
+    }
   }
 
   void _startTimerFromGameDetails(GameController gameController) {
