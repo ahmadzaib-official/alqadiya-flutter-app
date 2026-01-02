@@ -236,6 +236,28 @@ class GameController extends GetxController {
     }
   }
 
+  // Update Game Session Status
+  Future<void> updateSessionStatus({required String status}) async {
+    final sessionId = gameSession.value?.id;
+    if (sessionId == null) return;
+
+    try {
+      final response = await GameRepository().updateGameSessionStatus(
+        sessionId: sessionId,
+        status: status,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        gameSession.value = gameSession.value?.copyWith(status: status);
+      }
+    } on DioException {
+      // Error already shown by interceptor
+    } catch (e) {
+      // Don't show error for status update failures, just log silently
+      // The game can still proceed even if status update fails
+    }
+  }
+
   // Create Teams
   Future<void> createTeams({
     required String firstTeamName,
@@ -426,35 +448,49 @@ class GameController extends GetxController {
           }
         }
         
-        // Use post frame callback to ensure navigation happens safely
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.isRegistered<GameController>()) {
-            if (nextTeamWithoutLeader != null && nextTeamWithoutLeader.id != null) {
-              // Check if ChooseTeamLeaderController is already registered (same screen is open)
-              if (Get.isRegistered<ChooseTeamLeaderController>()) {
-                // Update the existing controller with the next team's information
-                // This will update the same screen for the next team
-                final chooseLeaderController = Get.find<ChooseTeamLeaderController>();
-                chooseLeaderController.updateTeamForNextSelection(
-                  newTeamId: nextTeamWithoutLeader.id!,
-                  newTeamName: nextTeamWithoutLeader.teamName ?? '',
-                );
-              } else {
-                // Controller not registered, navigate to the screen
-                Get.toNamed(
-                  AppRoutes.chooseTeamLeaderScreen,
-                  arguments: {
-                    'teamId': nextTeamWithoutLeader.id!,
-                    'teamName': nextTeamWithoutLeader.teamName,
-                  },
-                );
-              }
-            } else {
-              // All teams have leaders, proceed to case video screen
+        // Check if all teams have leaders
+        if (nextTeamWithoutLeader == null || nextTeamWithoutLeader.id == null) {
+          // All teams have leaders, update session status to "started" and proceed to case video screen
+          await updateSessionStatus(status: 'started');
+          
+          // Use post frame callback to ensure navigation happens safely
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isRegistered<GameController>()) {
               Get.toNamed(AppRoutes.caseVideoScreen);
             }
+          });
+        } else {
+          // Store the next team info in local variables to avoid null issues in callback
+          final nextTeamId = nextTeamWithoutLeader.id;
+          final nextTeamName = nextTeamWithoutLeader.teamName;
+          
+          if (nextTeamId != null) {
+            // Use post frame callback to ensure navigation happens safely
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (Get.isRegistered<GameController>()) {
+                // Check if ChooseTeamLeaderController is already registered (same screen is open)
+                if (Get.isRegistered<ChooseTeamLeaderController>()) {
+                  // Update the existing controller with the next team's information
+                  // This will update the same screen for the next team
+                  final chooseLeaderController = Get.find<ChooseTeamLeaderController>();
+                  chooseLeaderController.updateTeamForNextSelection(
+                    newTeamId: nextTeamId,
+                    newTeamName: nextTeamName ?? '',
+                  );
+                } else {
+                  // Controller not registered, navigate to the screen
+                  Get.toNamed(
+                    AppRoutes.chooseTeamLeaderScreen,
+                    arguments: {
+                      'teamId': nextTeamId,
+                      'teamName': nextTeamName,
+                    },
+                  );
+                }
+              }
+            });
           }
-        });
+        }
       }
     } on DioException {
       // Error already shown by interceptor

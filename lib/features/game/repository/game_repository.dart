@@ -136,6 +136,20 @@ class GameRepository extends GetxService {
     return response;
   }
 
+  // Update Game Session Status API
+  Future<Response<dynamic>> updateGameSessionStatus({
+    required String sessionId,
+    required String status,
+  }) async {
+    final String url = ServerConfig.createGameSession;
+    var response = await _dioHelper.patch(
+      url: "$url/$sessionId",
+      requestBody: {"status": status},
+      isAuthRequired: true,
+    );
+    return response;
+  }
+
   // Get Session Players API
   Future<Response<dynamic>> getSessionPlayers({
     required String sessionId,
