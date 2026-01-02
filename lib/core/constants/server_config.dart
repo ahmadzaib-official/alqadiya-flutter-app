@@ -1,6 +1,6 @@
 class ServerConfig {
-  static const baseUrl = "http://51.112.131.120/api/";
-  // static const baseUrl = "http://192.168.1.13:4000/";
+  // static const baseUrl = "http://51.112.131.120/api/";
+  static const baseUrl = "http://192.168.1.13:4000/";
   // Below are the all api that are use in our system
   static const login = "${baseUrl}auth/signIn";
   static const register = "${baseUrl}auth/signUp";
@@ -69,6 +69,8 @@ class ServerConfig {
       "${baseUrl}game-sessions/$sessionId/scoreboard";
   static String getGameSessionResult(String sessionId) =>
       "${baseUrl}game-sessions/$sessionId/result";
+  static String getGameSessionStatus(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/status";
 
   // User Balance
   static const userBalance = "${baseUrl}games/balance";

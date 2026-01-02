@@ -228,4 +228,13 @@ class GameRepository extends GetxService {
     var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
+
+  // Get Game Session Status API
+  Future<Response<dynamic>> getGameSessionStatus({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getGameSessionStatus(sessionId);
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
+    return response;
+  }
 }
