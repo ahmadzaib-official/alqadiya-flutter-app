@@ -451,7 +451,7 @@ class GameController extends GetxController {
         // Check if all teams have leaders
         if (nextTeamWithoutLeader == null || nextTeamWithoutLeader.id == null) {
           // All teams have leaders, update session status to "started" and proceed to case video screen
-          await updateSessionStatus(status: 'started');
+          await updateSessionStatus(status: 'in_progress');
           
           // Use post frame callback to ensure navigation happens safely
           WidgetsBinding.instance.addPostFrameCallback((_) {
