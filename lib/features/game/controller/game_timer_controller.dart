@@ -8,6 +8,9 @@ class GameTimerController extends GetxController {
   final RxString timerText = '21:30'.obs;
   Timer? _timer;
   bool _isRunning = false;
+  
+  // Track current game ID to detect new games
+  String? _currentGameId;
 
   // Initial timer values (can be configured)
   int _initialMinutes = 21;
@@ -26,17 +29,40 @@ class GameTimerController extends GetxController {
 
   /// Start the timer countdown
   /// This should be called when entering the game screen
-  void startTimer({int? initialMinutes, int? initialSeconds}) {
-    if (_isRunning) {
-      return; // Timer already running
+  /// [gameId] is used to detect if it's a new game and reset the timer
+  void startTimer({int? initialMinutes, int? initialSeconds, String? gameId}) {
+    // If it's a new game (different gameId), reset the timer
+    if (gameId != null && gameId != _currentGameId) {
+      _currentGameId = gameId;
+      // Force reset for new game
+      stopTimer();
+      if (initialMinutes != null) _initialMinutes = initialMinutes;
+      if (initialSeconds != null) _initialSeconds = initialSeconds;
+      timerText.value = _formatTime(_initialMinutes, _initialSeconds);
+    } else if (_isRunning) {
+      // Timer already running for the same game, don't restart
+      return;
+    } else if (gameId != null && gameId == _currentGameId && !_isRunning) {
+      // Same game, timer paused - resume from current time instead of resetting
+      resumeTimer();
+      return;
+    }
+
+    // Update game ID if provided
+    if (gameId != null) {
+      _currentGameId = gameId;
     }
 
     // Allow custom initial values
     if (initialMinutes != null) _initialMinutes = initialMinutes;
     if (initialSeconds != null) _initialSeconds = initialSeconds;
 
-    // Reset to initial values
-    timerText.value = _formatTime(_initialMinutes, _initialSeconds);
+    // Reset to initial values if not already set above (for first start or when gameId is null)
+    // Note: For new games, this was already set above, so we skip here
+    if (_currentGameId == null || gameId == null) {
+      timerText.value = _formatTime(_initialMinutes, _initialSeconds);
+    }
+    
     _isRunning = true;
 
     // Cancel any existing timer
@@ -72,10 +98,11 @@ class GameTimerController extends GetxController {
   }
 
   /// Reset timer to initial values
-  void resetTimer({int? initialMinutes, int? initialSeconds}) {
+  void resetTimer({int? initialMinutes, int? initialSeconds, String? gameId}) {
     stopTimer();
     if (initialMinutes != null) _initialMinutes = initialMinutes;
     if (initialSeconds != null) _initialSeconds = initialSeconds;
+    if (gameId != null) _currentGameId = gameId;
     timerText.value = _formatTime(_initialMinutes, _initialSeconds);
   }
 

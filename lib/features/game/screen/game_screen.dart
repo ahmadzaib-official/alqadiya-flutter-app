@@ -90,10 +90,12 @@ class _GameScreenState extends State<GameScreen> {
       if (gameController.gameDetail.value?.id == null) {
         gameController.getGameDetail(gameId: gameId).then((_) {
           // Start timer with duration from game details after loading
+          // Timer controller will detect if it's a new game and reset, or resume if same game
           _startTimerFromGameDetails(gameController);
         });
       } else {
         // Game details already loaded, start timer immediately
+        // Timer controller will detect if it's a new game and reset, or resume if same game
         _startTimerFromGameDetails(gameController);
       }
 
@@ -101,7 +103,7 @@ class _GameScreenState extends State<GameScreen> {
       questionController.getQuestionsByGame(gameId: gameId, language: 'en');
     } else {
       // Fallback: start timer with default values if game details not available
-      timerController.startTimer();
+      timerController.startTimer(gameId: null);
     }
 
     // Initialize question start time
@@ -111,6 +113,9 @@ class _GameScreenState extends State<GameScreen> {
   void _startTimerFromGameDetails(GameController gameController) {
     // Get timer duration from game details
     final estimatedDuration = gameController.gameDetail.value.estimatedDuration;
+    final gameId =
+        gameController.gameDetail.value?.id ??
+        gameController.gameSession.value?.gameId;
 
     if (estimatedDuration != null && estimatedDuration > 0) {
       // estimatedDuration is in minutes, convert to minutes:seconds
@@ -119,10 +124,11 @@ class _GameScreenState extends State<GameScreen> {
       timerController.startTimer(
         initialMinutes: minutes,
         initialSeconds: seconds,
+        gameId: gameId,
       );
     } else {
       // Fallback to default if duration not available
-      timerController.startTimer();
+      timerController.startTimer(gameId: gameId);
     }
   }
 
@@ -225,6 +231,10 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    // Pause the timer when leaving the game screen
+    if (Get.isRegistered<GameTimerController>()) {
+      timerController.pauseTimer();
+    }
     // Don't dispose the controller here as it needs to persist across screens
     // It will be disposed when the game ends or user navigates away from game flow
     super.dispose();
