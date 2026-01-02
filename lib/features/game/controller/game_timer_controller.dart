@@ -8,7 +8,7 @@ class GameTimerController extends GetxController {
   final RxString timerText = '21:30'.obs;
   Timer? _timer;
   bool _isRunning = false;
-  
+
   // Track current game ID to detect new games
   String? _currentGameId;
 
@@ -62,7 +62,7 @@ class GameTimerController extends GetxController {
     if (_currentGameId == null || gameId == null) {
       timerText.value = _formatTime(_initialMinutes, _initialSeconds);
     }
-    
+
     _isRunning = true;
 
     // Cancel any existing timer
@@ -116,18 +116,18 @@ class GameTimerController extends GetxController {
   /// Resume the timer from current time
   void resumeTimer() {
     if (_isRunning) return;
-    
+
     // Parse current time from timerText
     final parts = timerText.value.split(':');
     int minutes = int.parse(parts[0]);
     int seconds = int.parse(parts[1]);
-    
+
     // Don't resume if timer is already at zero
     if (minutes == 0 && seconds == 0) return;
-    
+
     _isRunning = true;
     _timer?.cancel();
-    
+
     // Start timer from current time
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final parts = timerText.value.split(':');
