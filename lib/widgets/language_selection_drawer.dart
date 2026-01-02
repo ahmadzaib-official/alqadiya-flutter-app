@@ -28,6 +28,7 @@ class LanguageSelectionDrawer extends StatelessWidget {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       barrierDismissible: true,
+      useSafeArea: false,
       builder:
           (context) => Material(
             type: MaterialType.transparency,
@@ -281,9 +282,6 @@ class _LanguageDrawerDialogState extends State<_LanguageDrawerDialog>
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenHeight = mediaQuery.size.height;
-
     return Stack(
       children: [
         // Backdrop
@@ -296,14 +294,16 @@ class _LanguageDrawerDialogState extends State<_LanguageDrawerDialog>
           ),
         ),
         // Drawer positioned on the right, flush with screen edge
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: SizedBox(
-              height: screenHeight,
+        // Using MediaQuery.removePadding to ignore safe area insets on the right
+        MediaQuery.removePadding(
+          context: context,
+          removeRight: true,
+          child: Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: SlideTransition(
+              position: _slideAnimation,
               child: LanguageSelectionDrawer(
                 currentLanguage: widget.currentLanguage,
                 onEnglishSelected: () {
