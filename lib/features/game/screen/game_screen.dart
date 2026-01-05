@@ -231,10 +231,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   int get totalQuestions => questionController.questions.length;
-  int get correctAnswers =>
-      questionController.questions
-          .where((q) => answerController.lastAnswer.value?.isCorrect == true)
-          .length;
+  int get correctAnswers => footerController.correctAnswers;
 
   QuestionModel? get currentQuestion {
     if (currentQuestionOrder == null) return null;
@@ -547,8 +544,7 @@ class _GameScreenState extends State<GameScreen> {
                                     ),
                                     Obx(
                                       () => Text(
-                                        '${answerController.lastAnswer.value?.isCorrect == true ? correctAnswers : correctAnswers}'
-                                            .tr,
+                                        '${footerController.correctAnswers}',
                                         style: AppTextStyles.heading1()
                                             .copyWith(
                                               fontSize: 7.sp,

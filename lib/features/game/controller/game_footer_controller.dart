@@ -98,6 +98,11 @@ class GameFooterController extends GetxController {
   // Get current progress as a fraction (0.0 to 1.0)
   double get progress => progressPercentage.value;
 
+  // Get count of correct answers
+  int get correctAnswers => _submittedAnswers
+      .where((answer) => answer.isCorrect == true)
+      .length;
+
   // Get score from scoreboard if available (for team mode)
   int? getScoreFromScoreboard() {
     try {
