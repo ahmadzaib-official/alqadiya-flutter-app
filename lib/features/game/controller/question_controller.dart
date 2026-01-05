@@ -17,6 +17,12 @@ class QuestionController extends GetxController {
   int limit = 10;
   var hasMore = true.obs;
   String? currentGameId;
+  
+  // Flag to toggle between order-based and index-based navigation
+  // false = use index-based (default) - questions shown by array index (0, 1, 2, ...)
+  // true = use order-based - questions shown by order field from API
+  // To change: questionController.useOrderBasedNavigation.value = true/false;
+  var useOrderBasedNavigation = false.obs;
 
   // Get Questions by Game ID
   Future<void> getQuestionsByGame({
@@ -51,8 +57,10 @@ class QuestionController extends GetxController {
             .map((e) => QuestionModel.fromJson(e))
             .toList();
 
-        // Sort by order
-        tempQuestions.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+        // Sort by order only if using order-based navigation
+        if (useOrderBasedNavigation.value) {
+          tempQuestions.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+        }
 
         if (isLoadMore) {
           questions.addAll(tempQuestions);
@@ -107,9 +115,17 @@ class QuestionController extends GetxController {
     }
   }
 
-  // Get question by order
+  // Get question by order (for order-based navigation)
   QuestionModel? getQuestionByOrder(int order) {
     return questions.firstWhereOrNull((q) => q.order == order);
+  }
+
+  // Get question by index (for index-based navigation)
+  QuestionModel? getQuestionByIndex(int index) {
+    if (index >= 0 && index < questions.length) {
+      return questions[index];
+    }
+    return null;
   }
 
   // Get next question

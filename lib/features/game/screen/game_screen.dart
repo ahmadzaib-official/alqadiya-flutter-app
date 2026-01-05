@@ -40,7 +40,7 @@ class _GameScreenState extends State<GameScreen> {
       Get.find<UserAnswerController>();
   late final GameFooterController footerController;
 
-  int? currentQuestionOrder;
+  int? currentQuestionIndex;
   var selectedAnswerIndex = Rx<int?>(null);
   bool hintUsed = false;
   DateTime? questionStartTime;
@@ -57,7 +57,7 @@ class _GameScreenState extends State<GameScreen> {
     answerController.reset();
 
     // Reset local state variables
-    currentQuestionOrder = null;
+    currentQuestionIndex = null;
     selectedAnswerIndex.value = null;
     hintUsed = false;
     questionStartTime = null;
@@ -79,21 +79,14 @@ class _GameScreenState extends State<GameScreen> {
     // Listen to questions changes to set the first question when loaded
     ever(questionController.questions, (questions) {
       if (questions.isNotEmpty && currentQuestion == null) {
-        // Find the first question (minimum order)
-        final sortedQuestions = List<QuestionModel>.from(questions)
-          ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
-
-        final firstQuestion = sortedQuestions.firstOrNull;
-        if (firstQuestion != null && firstQuestion.order != null) {
-          // Set to the first question's order
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && currentQuestion == null) {
-              setState(() {
-                currentQuestionOrder = firstQuestion.order;
-              });
-            }
-          });
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && currentQuestion == null) {
+            setState(() {
+              // Use index-based navigation by default (index 0)
+              currentQuestionIndex = 0;
+            });
+          }
+        });
       }
     });
 
@@ -251,15 +244,22 @@ class _GameScreenState extends State<GameScreen> {
   int get correctAnswers => footerController.correctAnswers;
 
   QuestionModel? get currentQuestion {
-    if (currentQuestionOrder == null) return null;
-    return questionController.questions.firstWhereOrNull(
-      (q) => q.order == currentQuestionOrder,
-    );
+    if (currentQuestionIndex == null) return null;
+
+    // Use index-based navigation by default
+    if (!questionController.useOrderBasedNavigation.value) {
+      return questionController.getQuestionByIndex(currentQuestionIndex!);
+    } else {
+      // Fallback to order-based if flag is true
+      return questionController.questions.firstWhereOrNull(
+        (q) => q.order == currentQuestionIndex,
+      );
+    }
   }
 
-  void _loadQuestion(int order) {
+  void _loadQuestion(int index) {
     setState(() {
-      currentQuestionOrder = order;
+      currentQuestionIndex = index;
       selectedAnswerIndex.value = null;
       hintUsed = false;
       questionStartTime = DateTime.now();
@@ -335,9 +335,9 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _nextQuestion() {
-    if (currentQuestionOrder != null &&
-        currentQuestionOrder! < totalQuestions) {
-      _loadQuestion(currentQuestionOrder! + 1);
+    if (currentQuestionIndex != null &&
+        currentQuestionIndex! < totalQuestions - 1) {
+      _loadQuestion(currentQuestionIndex! + 1);
     }
   }
 
@@ -539,8 +539,8 @@ class _GameScreenState extends State<GameScreen> {
                                     // Center: Stepper
                                     QuestionStepper(
                                       currentQuestion:
-                                          currentQuestionOrder != null
-                                              ? currentQuestionOrder! + 1
+                                          currentQuestionIndex != null
+                                              ? currentQuestionIndex! + 1
                                               : 1,
                                       totalQuestions:
                                           totalQuestions > 0
@@ -589,9 +589,7 @@ class _GameScreenState extends State<GameScreen> {
                                 final questions = questionController.questions;
                                 final isLoading =
                                     questionController.isLoading.value;
-                                final question = questions.firstWhereOrNull(
-                                  (q) => q.order == currentQuestionOrder,
-                                );
+                                final question = currentQuestion;
                                 if (question == null) {
                                   if (isLoading && questions.isEmpty) {
                                     return Center(
@@ -757,9 +755,7 @@ class _GameScreenState extends State<GameScreen> {
     UserAnswerModel? lastAnswer,
     int? selectedIndex,
   ) {
-    final question = questions.firstWhereOrNull(
-      (q) => q.order == currentQuestionOrder,
-    );
+    final question = currentQuestion;
     if (question == null ||
         question.answers == null ||
         question.answers!.isEmpty) {
@@ -928,8 +924,8 @@ class _GameScreenState extends State<GameScreen> {
                         _submitAnswer();
                       } else {
                         // Answer already submitted - move to next question or result
-                        if (currentQuestionOrder != null &&
-                            currentQuestionOrder! < totalQuestions) {
+                        if (currentQuestionIndex != null &&
+                            currentQuestionIndex! < totalQuestions - 1) {
                           _nextQuestion();
                         } else {
                           // Last question already answered - navigate to result
