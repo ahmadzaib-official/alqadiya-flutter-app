@@ -43,7 +43,7 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
 
   Future<void> _loadCutscenes() async {
     final gameId =
-        gameController.gameDetail.value?.id ??
+        gameController.gameDetail.value.id ??
         gameController.gameSession.value?.gameId;
 
     if (gameId != null && gameId.isNotEmpty) {

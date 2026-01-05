@@ -38,8 +38,8 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
       body: Obx(
         () => GameBackground(
           isPurchased: true,
-          imageUrl: gameController.gameDetail.value?.coverImageUrl ?? 
-                   gameController.gameDetail.value?.coverImage ?? 
+          imageUrl: gameController.gameDetail.value.coverImageUrl ?? 
+                   gameController.gameDetail.value.coverImage ?? 
                    "https://picsum.photos/200",
           body: Column(
             children: [
@@ -51,7 +51,7 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                   title: Row(
                     children: [
                       Text(
-                        gameController.gameDetail.value?.title ?? 'Who did it?'.tr,
+                        gameController.gameDetail.value.title ?? 'Who did it?'.tr,
                         style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                       ),
                     SizedBox(width: 5.w),

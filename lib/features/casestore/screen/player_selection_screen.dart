@@ -79,8 +79,8 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
         () => GameBackground(
           isPurchased: true,
           imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
+              gameController.gameDetail.value.coverImageUrl ??
+              gameController.gameDetail.value.coverImage ??
               "https://picsum.photos/200",
           body: Column(
             children: [
@@ -92,7 +92,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   title: Row(
                     children: [
                       Text(
-                        gameController.gameDetail.value?.title ??
+                        gameController.gameDetail.value.title ??
                             'Who did it?'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,

@@ -41,7 +41,7 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
     // Fetch suspects from API
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final gameId =
-          gameController.gameDetail.value?.id ??
+          gameController.gameDetail.value.id ??
           gameController.gameSession.value?.gameId;
       if (gameId != null && gameId.isNotEmpty) {
         suspectController.getSuspectsByGame(gameId: gameId);
@@ -57,8 +57,8 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
         () => GameBackground(
           isPurchased: true,
           imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
+              gameController.gameDetail.value.coverImageUrl ??
+              gameController.gameDetail.value.coverImage ??
               "https://picsum.photos/200",
           body: Column(
             children: [
@@ -70,7 +70,7 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
                   title: Row(
                     children: [
                       Text(
-                        gameController.gameDetail.value?.title ??
+                        gameController.gameDetail.value.title ??
                             'List of suspects'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,

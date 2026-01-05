@@ -60,8 +60,8 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
         () => GameBackground(
           isPurchased: true,
           imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
+              gameController.gameDetail.value.coverImageUrl ??
+              gameController.gameDetail.value.coverImage ??
               "https://picsum.photos/200",
           body: Column(
             children: [
@@ -74,7 +74,7 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                     children: [
                       Text(
                         evidenceController.evidenceDetail.value?.evidenceName ??
-                            gameController.gameDetail.value?.title ??
+                            gameController.gameDetail.value.title ??
                             'New Clue'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,

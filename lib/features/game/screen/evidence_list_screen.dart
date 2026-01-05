@@ -31,7 +31,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
 
     // Fetch evidences if gameId is available
     final gameId =
-        gameController.gameDetail.value?.id ??
+        gameController.gameDetail.value.id ??
         gameController.gameSession.value?.gameId;
     if (gameId != null) {
       evidenceController.getEvidencesByGame(gameId: gameId);
@@ -57,8 +57,8 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
         () => GameBackground(
           isPurchased: true,
           imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
+              gameController.gameDetail.value.coverImageUrl ??
+              gameController.gameDetail.value.coverImage ??
               "https://picsum.photos/200",
           body: Column(
             children: [
@@ -70,7 +70,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                   title: Row(
                     children: [
                       Text(
-                        gameController.gameDetail.value?.title ??
+                        gameController.gameDetail.value.title ??
                             'List of evidence'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,

@@ -34,8 +34,8 @@ class _StartGameScreenState extends State<StartGameScreen> {
         () => GameBackground(
           isPurchased: true,
           imageUrl:
-              controller.gameDetail.value?.coverImageUrl ??
-              controller.gameDetail.value?.coverImage ??
+              controller.gameDetail.value.coverImageUrl ??
+              controller.gameDetail.value.coverImage ??
               "https://picsum.photos/200",
           body: Column(
             children: [
@@ -47,7 +47,7 @@ class _StartGameScreenState extends State<StartGameScreen> {
                   title: Row(
                     children: [
                       Text(
-                        controller.gameDetail.value?.title ?? 'Who did it?'.tr,
+                        controller.gameDetail.value.title ?? 'Who did it?'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,
                         ),

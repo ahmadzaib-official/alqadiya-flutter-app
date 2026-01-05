@@ -81,9 +81,14 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     // Fetch questions for the game
-    final gameController = Get.find<GameController>();
+    final gameController;
+    if (!Get.isRegistered<GameController>()) {
+      gameController = Get.put(GameController(), permanent: true);
+    } else {
+      gameController = Get.find<GameController>();
+    }
     var gameId =
-        gameController.gameDetail.value?.id ??
+        gameController.gameDetail.value.id ??
         gameController.gameSession.value?.gameId;
 
     // If gameId is null but we have a sessionId, get gameId from session status API
@@ -92,7 +97,7 @@ class _GameScreenState extends State<GameScreen> {
       _getGameIdFromSessionStatus(gameController);
     } else if (gameId != null) {
       // Fetch game details if not already loaded
-      if (gameController.gameDetail.value?.id == null) {
+      if (gameController.gameDetail.value.id == null) {
         gameController.getGameDetail(gameId: gameId).then((_) {
           // Start timer with duration from game details after loading
           // Timer controller will detect if it's a new game and reset, or resume if same game
@@ -207,7 +212,7 @@ class _GameScreenState extends State<GameScreen> {
     // Get timer duration from game details
     final estimatedDuration = gameController.gameDetail.value.estimatedDuration;
     final gameId =
-        gameController.gameDetail.value?.id ??
+        gameController.gameDetail.value.id ??
         gameController.gameSession.value?.gameId;
 
     if (estimatedDuration != null && estimatedDuration > 0) {
@@ -262,7 +267,7 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
 
-    final selectedAnswer = question.answers?[selectedAnswerIndex.value!];
+    final selectedAnswer = question.answers[selectedAnswerIndex.value!];
     if (selectedAnswer == null || selectedAnswer.id == null) {
       CustomSnackbar.showError('Invalid answer selected'.tr);
       return;
@@ -343,8 +348,8 @@ class _GameScreenState extends State<GameScreen> {
         () => GameBackground(
           isPurchased: true,
           imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
+              gameController.gameDetail.value.coverImageUrl ??
+              gameController.gameDetail.value.coverImage ??
               "https://picsum.photos/200",
           body: Column(
             children: [
@@ -363,7 +368,7 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       ),
                       Text(
-                        gameController.gameDetail.value?.title ??
+                        gameController.gameDetail.value.title ??
                             'Who did it?'.tr,
                         style: AppTextStyles.heading1().copyWith(
                           fontSize: 10.sp,
@@ -662,7 +667,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildHintButton(QuestionModel question) {
-    final hint = question.hints?.firstOrNull;
+    final hint = question.hints.firstOrNull;
     final pointsCost = hint?.pointsCost ?? 0;
 
     return GestureDetector(
@@ -756,7 +761,7 @@ class _GameScreenState extends State<GameScreen> {
       );
     }
 
-    final answers = question.answers!;
+    final answers = question.answers;
     // Check if the answer belongs to the current question
     final isAnswerSubmitted =
         lastAnswer != null && lastAnswer.questionId == question.id;
