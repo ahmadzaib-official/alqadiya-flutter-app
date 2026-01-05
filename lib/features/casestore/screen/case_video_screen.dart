@@ -89,7 +89,8 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
       _playCutscene(cutsceneController.cutscenes[_currentCutsceneIndex]);
     } else {
       // No more cutscenes, navigate to game screen
-      Get.offAndToNamed(AppRoutes.gameScreen);
+      // Use Get.toNamed instead of Get.offAndToNamed to preserve GameController
+      Get.toNamed(AppRoutes.gameScreen);
     }
   }
 
@@ -269,7 +270,8 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
                           cutsceneController.cutscenes.length - 1) {
                         _playNextCutscene();
                       } else {
-                        Get.offAndToNamed(AppRoutes.gameScreen);
+                        // Use Get.toNamed instead of Get.offAndToNamed to preserve GameController
+                        Get.toNamed(AppRoutes.gameScreen);
                       }
                     },
                     buttonText: 'Skip'.tr,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
+import 'package:alqadiya_game/features/game/model/game_session_model.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,14 @@ class JoinGameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Ensure GameController is initialized
+        GameController gameController;
+        if (!Get.isRegistered<GameController>()) {
+          gameController = Get.put(GameController(), permanent: true);
+        } else {
+          gameController = Get.find<GameController>();
+        }
+
         // Extract sessionId from response
         if (response.data != null && 
             response.data['player'] != null && 
@@ -48,17 +57,34 @@ class JoinGameController extends GetxController {
           
           // Update game session if response contains session data
           if (response.data['session'] != null) {
-            final gameController = Get.find<GameController>();
-            final session = gameController.gameSession.value;
-            if (session != null) {
-              // Session is already updated by the API response
-              // Fetch session details to get full session info
+            try {
+              // Parse and set the session from response
+              final sessionData = response.data['session'];
+              final session = GameSessionModel.fromJson(sessionData);
+              gameController.gameSession.value = session;
+              
+              // Fetch full session details to get complete info (players, teams, etc.)
               if (session.id != null) {
                 await gameController.getGameSessionDetails(
                   sessionId: session.id!,
+                  silent: true, // Silent to avoid showing errors during join flow
+                );
+              }
+            } catch (e) {
+              // If parsing fails, try to fetch session details using sessionId
+              if (_sessionId != null) {
+                await gameController.getGameSessionDetails(
+                  sessionId: _sessionId!,
+                  silent: true,
                 );
               }
             }
+          } else if (_sessionId != null) {
+            // If session data not in response but we have sessionId, fetch it
+            await gameController.getGameSessionDetails(
+              sessionId: _sessionId!,
+              silent: true,
+            );
           }
 
           isWaiting.value = true;
@@ -100,6 +126,14 @@ class JoinGameController extends GetxController {
     // Stop any existing polling
     _stopPolling();
     
+    // Ensure GameController is initialized
+    GameController gameController;
+    if (!Get.isRegistered<GameController>()) {
+      gameController = Get.put(GameController(), permanent: true);
+    } else {
+      gameController = Get.find<GameController>();
+    }
+    
     // Start polling every 2 seconds
     _statusPollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (!Get.isRegistered<JoinGameController>()) {
@@ -116,9 +150,37 @@ class JoinGameController extends GetxController {
           if (response.data != null) {
             final status = response.data['status'] as String?;
             
+            // Update GameController with session data from status response
+            try {
+              if (response.data['session'] != null) {
+                final sessionData = response.data['session'];
+                final session = GameSessionModel.fromJson(sessionData);
+                gameController.gameSession.value = session;
+              } else if (response.data['gameId'] != null) {
+                // If session data not available but gameId is, update session with gameId
+                final currentSession = gameController.gameSession.value;
+                if (currentSession != null && currentSession.id == sessionId) {
+                  gameController.gameSession.value = currentSession.copyWith(
+                    gameId: response.data['gameId'] as String?,
+                  );
+                }
+              }
+            } catch (e) {
+              // Silently handle parsing errors, continue with existing session data
+            }
+            
             if (status == 'in_progress') {
               // Stop polling
               _stopPolling();
+              
+              // Ensure session data is up to date before navigation
+              if (gameController.gameSession.value?.id == null) {
+                // Fetch full session details if not already set
+                await gameController.getGameSessionDetails(
+                  sessionId: sessionId,
+                  silent: true,
+                );
+              }
               
               // Navigate to video screen
               WidgetsBinding.instance.addPostFrameCallback((_) {
