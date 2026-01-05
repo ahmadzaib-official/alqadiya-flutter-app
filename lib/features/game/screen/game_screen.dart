@@ -987,6 +987,7 @@ class _GameScreenState extends State<GameScreen> {
                         if (lastAnswer.isCorrect == true)
                           SvgPicture.asset(
                             MyIcons.circle_check_outline,
+                            height: 18.h,
                             colorFilter: ColorFilter.mode(
                               Colors.white,
                               BlendMode.srcIn,
@@ -995,6 +996,7 @@ class _GameScreenState extends State<GameScreen> {
                         else
                           SvgPicture.asset(
                             MyIcons.close,
+                            height: 18.h,
                             colorFilter: ColorFilter.mode(
                               Colors.white,
                               BlendMode.srcIn,
