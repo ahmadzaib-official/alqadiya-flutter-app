@@ -50,6 +50,20 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Reset all controllers and local state when entering game screen
+    // This ensures fresh state when coming back to the game screen
+    questionController.reset();
+    answerController.reset();
+
+    // Reset local state variables
+    currentQuestionOrder = null;
+    selectedAnswerIndex.value = null;
+    hintUsed = false;
+    questionStartTime = null;
+    lastSubmittedAnswer = null;
+    _isNavigatingToResult = false;
+
     // Initialize timer controller (permanent to persist across navigation)
     timerController = Get.put(GameTimerController(), permanent: true);
 
@@ -58,6 +72,9 @@ class _GameScreenState extends State<GameScreen> {
       Get.put(GameFooterController(), permanent: true);
     }
     footerController = Get.find<GameFooterController>();
+
+    // Reset footer controller data
+    footerController.reset();
 
     // Listen to questions changes to set the first question when loaded
     ever(questionController.questions, (questions) {

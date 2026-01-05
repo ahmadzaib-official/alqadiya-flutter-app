@@ -119,5 +119,16 @@ class QuestionController extends GetxController {
     final index = sorted.indexWhere((q) => (q.order ?? 0) > currentOrder);
     return index != -1 ? sorted[index] : null;
   }
+
+  // Reset all question data
+  void reset() {
+    questions.clear();
+    currentQuestion.value = null;
+    isLoading.value = false;
+    isMoreLoading.value = false;
+    currentPage = 1;
+    hasMore.value = true;
+    currentGameId = null;
+  }
 }
 
