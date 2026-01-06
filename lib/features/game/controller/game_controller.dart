@@ -164,6 +164,13 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final tempGameDetail = GameModel.fromJson(response.data);
         gameDetail(tempGameDetail);
+
+        // Refresh the games list to reflect the purchase status in case store
+        await getGamesList();
+
+        // Refresh the game detail to reflect the purchase status in detail screen
+        await getGameDetail(gameId: gameId);
+
         return true;
       }
       return false;
