@@ -95,7 +95,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                     ],
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),

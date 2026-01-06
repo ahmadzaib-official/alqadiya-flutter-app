@@ -67,7 +67,7 @@ class AddCaseController extends GetxController {
   void enterGame() {
     resetSuccessState();
     // Add navigation logic here if needed
-    Get.back();
+    if (Get.context != null) Navigator.pop(Get.context!);
   }
 
   @override

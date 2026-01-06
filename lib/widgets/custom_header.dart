@@ -26,7 +26,7 @@ class CustomHeader extends StatelessWidget {
         showLogoOnLeft
             ? Image(image: AssetImage(MyImages.appicon), height: 60.h)
             : GestureDetector(
-              onTap: onBack ?? () => Get.back(),
+              onTap: onBack ?? () => Navigator.pop(context),
               child: SvgPicture.asset(
                 MyIcons.arrowback,
                 height: 24.h,
@@ -35,7 +35,7 @@ class CustomHeader extends StatelessWidget {
             ),
         showLogoOnLeft
             ? GestureDetector(
-              onTap: onBack ?? () => Get.back(),
+              onTap: onBack ?? () => Navigator.pop(context),
               child: SvgPicture.asset(
                 MyIcons.arrowback,
                 height: 24.h,

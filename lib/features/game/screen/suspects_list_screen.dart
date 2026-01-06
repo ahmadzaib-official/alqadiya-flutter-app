@@ -95,7 +95,7 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
                     ],
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),

@@ -111,7 +111,7 @@ class SignInController extends GetxController {
           }
         }
 
-        Get.back(); // Close progress dialog
+        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
         Get.find<Preferences>().remove(AppStrings.isGuest);
         // await SystemChrome.setPreferredOrientations([
         //   DeviceOrientation.landscapeLeft,
@@ -123,7 +123,7 @@ class SignInController extends GetxController {
         clearField();
       }
     } catch (e) {
-      Get.back(); // Close progress dialog
+      if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
       CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
     } finally {
       isSignIn(false);
@@ -137,7 +137,7 @@ class SignInController extends GetxController {
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        Get.back();
+        if (Get.context != null) Navigator.pop(Get.context!);
         return; // User canceled the sign-in
       }
 
@@ -175,7 +175,9 @@ class SignInController extends GetxController {
       DebugPoint.log(e);
     } finally {
       isLoading.value = false;
-      if (Get.isDialogOpen!) Get.back(); // Close dialog if still open
+      if (Get.isDialogOpen! && Get.context != null) {
+        Navigator.pop(Get.context!); // Close dialog if still open
+      }
     }
   }
 
@@ -209,11 +211,11 @@ class SignInController extends GetxController {
           );
         }
 
-        Get.back(); // Close progress dialogs
+        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialogs
         Get.offAllNamed(AppRoutes.homescreen);
       }
     } catch (e) {
-      Get.back(); // Close progress dialog
+      if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
     }
   }
 
@@ -308,7 +310,7 @@ class SignInController extends GetxController {
       };
       final response = await ApiFetch().resetPassword(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.back(); // Close progress dialog
+        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
         Get.toNamed(
           AppRoutes.verifcationSussesfulscreen,
           arguments: {

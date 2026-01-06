@@ -53,7 +53,7 @@ class JoinGameScreen extends StatelessWidget {
                         SizedBox(width: 5.w),
 
                         GestureDetector(
-                          onTap: () => Get.back(),
+                          onTap: () => Navigator.pop(context),
                           child: SvgPicture.asset(MyIcons.arrowbackrounded),
                         ),
                       ],
@@ -214,7 +214,7 @@ class JoinGameScreen extends StatelessWidget {
                                       SizedBox(height: 20.h),
                                       GestureDetector(
                                         onTap: () {
-                                          Get.back();
+                                          Navigator.pop(context);
                                         },
                                         child: Container(
                                           height: 80.h,

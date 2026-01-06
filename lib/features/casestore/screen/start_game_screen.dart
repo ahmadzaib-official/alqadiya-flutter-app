@@ -70,7 +70,7 @@ class _StartGameScreenState extends State<StartGameScreen> {
                     ],
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),

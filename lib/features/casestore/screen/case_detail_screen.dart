@@ -56,7 +56,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),

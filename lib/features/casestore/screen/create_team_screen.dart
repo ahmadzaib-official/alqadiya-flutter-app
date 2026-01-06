@@ -72,7 +72,7 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                   ],
                 ),
                 actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
+                  onTap: () => Navigator.pop(context),
                   child: SvgPicture.asset(MyIcons.arrowbackrounded),
                 ),
               ),

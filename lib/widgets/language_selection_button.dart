@@ -83,11 +83,11 @@ class LanguageSelectionButton extends StatelessWidget {
       LanguageSelectionBottomSheet.show(
         currentLanguage: currentLanguageName,
         onEnglishSelected: () async {
-          Get.back();
+          Navigator.pop(context);
           await LocalizationService().changeLocale('en');
         },
         onArabicSelected: () async {
-          Get.back();
+          Navigator.pop(context);
           await LocalizationService().changeLocale('ar');
         },
       );

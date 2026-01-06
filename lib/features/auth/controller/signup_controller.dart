@@ -142,7 +142,7 @@ class SignupController extends GetxController {
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        Get.back();
+        if (Get.context != null) Navigator.pop(Get.context!);
         return; // User canceled the sign-in
       }
 
@@ -183,7 +183,9 @@ class SignupController extends GetxController {
       DebugPoint.log(e);
     } finally {
       isGoogle.value = false;
-      if (Get.isDialogOpen!) Get.back(); // Close dialog if still open
+      if (Get.isDialogOpen! && Get.context != null) {
+        Navigator.pop(Get.context!); // Close dialog if still open
+      }
     }
   }
 
@@ -223,12 +225,12 @@ class SignupController extends GetxController {
           await Get.find<Preferences>().setBool(AppStrings.isFirstRegister, true);
         }
 
-        Get.back(); // Close progress dialog
+        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
         Get.offAllNamed(AppRoutes.homescreen);
       }
     } catch (e) {
       DebugPoint.log("Apple Sign In Error: $e");
-      Get.back(); // Close progress dialog
+      if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
       // CustomSnackbar.showError("Apple Sign up failed: ${e.toString()}");
     }
   }

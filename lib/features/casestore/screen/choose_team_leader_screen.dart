@@ -64,7 +64,7 @@ class ChooseTeamLeaderScreen extends StatelessWidget {
                     ],
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),

@@ -186,7 +186,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                         ),
                         SizedBox(width: 5.w),
                         GestureDetector(
-                          onTap: () => Get.back(),
+                          onTap: () => Navigator.pop(context),
                           child: SvgPicture.asset(MyIcons.arrowbackrounded),
                         ),
                       ],

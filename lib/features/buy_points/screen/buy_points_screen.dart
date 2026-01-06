@@ -36,7 +36,7 @@ class BuyPointsScreen extends StatelessWidget {
                 children: [
                   // Back arrow
                   GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                   // Title
