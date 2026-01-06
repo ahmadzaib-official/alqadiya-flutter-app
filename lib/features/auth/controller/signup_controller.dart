@@ -151,10 +151,8 @@ class SignupController extends GetxController {
       }
 
       // Prepare the exact payload your backend expects
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
       final body = {
-        "idToken": googleAuth.idToken,
+        "googleId": googleUser.id,
         "fullName": googleUser.displayName ?? "",
         "email": googleUser.email,
         "authProvider": "google",
@@ -211,7 +209,7 @@ class SignupController extends GetxController {
       DebugPoint.log('-------${credential.givenName}');
 
       final body = {
-        "idToken": credential.identityToken,
+        "appleId": credential.userIdentifier,
         "fullName":
             '${credential.givenName ?? ""} ${credential.familyName ?? ""}',
         "email": credential.email ?? "",
