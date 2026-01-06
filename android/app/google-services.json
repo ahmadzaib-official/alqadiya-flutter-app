@@ -12,7 +12,28 @@
           "package_name": "com.vga.alqadiya"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "843907454182-aauq7g7dlckplrg36et20mm2604m7k4f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vga.alqadiya",
+            "certificate_hash": "cd8f8b3938696240a68bf745a0e6c234b6e9b5e9"
+          }
+        },
+        {
+          "client_id": "843907454182-outq50d7q1dimqvetvbhgpl02dlkivsi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vga.alqadiya",
+            "certificate_hash": "8dbdfb5c52634fa75eb6ebf7e0e7637699c891c4"
+          }
+        },
+        {
+          "client_id": "843907454182-ev03tc82bdqick4m6aaf7avgq1eq5ikh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBApBSyIt0RJGb26EBOrG08Dnn72HAAK5g"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "843907454182-ev03tc82bdqick4m6aaf7avgq1eq5ikh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "843907454182-khc6d09q45pc6ircfqhdlj5lm921tet7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vga.alqadiya"
+              }
+            }
+          ]
         }
       }
     }
