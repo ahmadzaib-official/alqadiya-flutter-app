@@ -407,7 +407,12 @@ class _GameScreenState extends State<GameScreen> {
                     ],
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.offAllNamed(AppRoutes.homescreen),
+                    onTap:
+                        () =>
+                            () => Get.offNamedUntil(
+                              AppRoutes.homescreen,
+                              (route) => false,
+                            ),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),

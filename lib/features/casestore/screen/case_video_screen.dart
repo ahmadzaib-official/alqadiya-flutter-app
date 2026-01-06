@@ -235,7 +235,7 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
               showDivider: false,
               onChromTap: () {},
               actionButtons: GestureDetector(
-                onTap: () => Get.back(),
+                onTap: () => Get.offAndToNamed(AppRoutes.homescreen),
                 child: SvgPicture.asset(MyIcons.arrowbackrounded),
               ),
             ),

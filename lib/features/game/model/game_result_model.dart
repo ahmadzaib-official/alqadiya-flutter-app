@@ -24,16 +24,18 @@ class GameResultModel {
       sessionId: json["sessionId"],
       caseName: json["caseName"],
       gameDisplayId: json["gameDisplayId"],
-      teams: json["teams"] != null
-          ? (json["teams"] as List)
-              .map((e) => TeamResult.fromJson(e))
-              .toList()
-          : null,
-      players: json["players"] != null
-          ? (json["players"] as List)
-              .map((e) => PlayerResult.fromJson(e))
-              .toList()
-          : null,
+      teams:
+          json["teams"] != null
+              ? (json["teams"] as List)
+                  .map((e) => TeamResult.fromJson(e))
+                  .toList()
+              : null,
+      players:
+          json["players"] != null
+              ? (json["players"] as List)
+                  .map((e) => PlayerResult.fromJson(e))
+                  .toList()
+              : null,
       winnerTeamId: json["winnerTeamId"],
       winnerTeamName: json["winnerTeamName"],
       completedAt: DateTime.tryParse(json["completedAt"] ?? ""),
@@ -155,8 +157,3 @@ class PlayerResult {
     "totalQuestions": totalQuestions,
   };
 }
-
-
-
-
-

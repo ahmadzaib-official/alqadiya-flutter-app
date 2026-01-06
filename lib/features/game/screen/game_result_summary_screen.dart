@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -22,6 +24,8 @@ class GameResultSummaryScreen extends StatefulWidget {
 }
 
 class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
+  Timer? _pollingTimer;
+
   @override
   void initState() {
     super.initState();
@@ -30,8 +34,20 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     final sessionId = gameController.gameSession.value?.id;
 
     if (sessionId != null) {
-      gameResultController.getGameResult(sessionId: sessionId);
+      // Initial API call (with loading state)
+      gameResultController.getGameResult(sessionId: sessionId, silent: false);
+
+      // Set up polling timer to call API every 2 seconds (silent updates)
+      _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+        gameResultController.getGameResult(sessionId: sessionId, silent: true);
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -56,7 +72,11 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                   style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                 ),
                 actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
+                  onTap:
+                      () => Get.offNamedUntil(
+                        AppRoutes.homescreen,
+                        (route) => false,
+                      ),
                   child: SvgPicture.asset(MyIcons.arrowbackrounded),
                 ),
               ),
@@ -464,28 +484,52 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                 height: 15.w,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
+                                  color: MyColors.darkBlueColor,
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50.r),
-                                  child: CachedNetworkImage(
-                                    imageUrl: player['avatar'] as String,
-                                    fit: BoxFit.cover,
-                                    placeholder:
-                                        (context, url) => Container(
-                                          color: MyColors.darkBlueColor,
-                                        ),
-                                    errorWidget:
-                                        (context, url, error) => Container(
-                                          color: MyColors.darkBlueColor,
-                                          child: Icon(
-                                            Icons.person,
-                                            size: 12.sp,
-                                            color: MyColors.white.withValues(
-                                              alpha: 0.5,
+                                  child:
+                                      (player['avatar'] as String? ?? '')
+                                              .isNotEmpty
+                                          ? CachedNetworkImage(
+                                            imageUrl:
+                                                player['avatar'] as String,
+                                            fit: BoxFit.cover,
+                                            placeholder:
+                                                (context, url) => Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
+                                            errorWidget:
+                                                (
+                                                  context,
+                                                  url,
+                                                  error,
+                                                ) => Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
+                                          )
+                                          : Container(
+                                            color: MyColors.darkBlueColor,
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 12.sp,
+                                              color: MyColors.white.withValues(
+                                                alpha: 0.5,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                  ),
                                 ),
                               ),
                               // Green checkmark - only on rightmost member
@@ -661,7 +705,10 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
               Container(
                 width: 30.w,
                 height: 30.w,
-                decoration: BoxDecoration(shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: MyColors.darkBlueColor,
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
                   child: Container(
