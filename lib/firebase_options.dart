@@ -50,19 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBApBSyIt0RJGb26EBOrG08Dnn72HAAK5g',
-    appId: '1:843907454182:android:4c33b4083145e96b62d727',
-    messagingSenderId: '843907454182',
-    projectId: 'alqadiya-3bb79',
-    storageBucket: 'alqadiya-3bb79.firebasestorage.app',
+    apiKey: 'AIzaSyBLxyFWGnLTSzXFz_NF5_qiRrzy1l01Bdk',
+    appId: '1:1017677830312:android:0af5d681407128f3a34a9d',
+    messagingSenderId: '1017677830312',
+    projectId: 'alqadiya-bb7f8',
+    storageBucket: 'alqadiya-bb7f8.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAbZPpAQ8lfvI9jsfzMZ5mnTozDiUprZvM',
-    appId: '1:843907454182:ios:ed4f04af6fa9ddae62d727',
-    messagingSenderId: '843907454182',
-    projectId: 'alqadiya-3bb79',
-    storageBucket: 'alqadiya-3bb79.firebasestorage.app',
+    apiKey: 'AIzaSyD0mYadQBxfW-kAnPI5bLMNiMqw0U53gYI',
+    appId: '1:1017677830312:ios:9dfb1ba6b60ed2f8a34a9d',
+    messagingSenderId: '1017677830312',
+    projectId: 'alqadiya-bb7f8',
+    storageBucket: 'alqadiya-bb7f8.firebasestorage.app',
+    androidClientId: '1017677830312-lgtb1nf2gd3r6c22i9de30co8r374c4t.apps.googleusercontent.com',
+    iosClientId: '1017677830312-0ffv8e53ndkg0sjhogbnb31uruver6os.apps.googleusercontent.com',
     iosBundleId: 'com.vga.alqadiya',
   );
 }
