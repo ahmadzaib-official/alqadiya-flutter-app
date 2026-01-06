@@ -21,7 +21,7 @@ class StartPlayButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: buttonHeight ?? 45.h,
-        width: buttonWidth ,
+        width: buttonWidth,
         padding: EdgeInsets.symmetric(vertical: 10.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),

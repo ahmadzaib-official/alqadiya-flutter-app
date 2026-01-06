@@ -104,7 +104,9 @@ class ApiFetch extends GetxService {
   }
 
   // Get photo upload link
-  Future<Response<dynamic>> getPhotoUploadLink({required String fileType}) async {
+  Future<Response<dynamic>> getPhotoUploadLink({
+    required String fileType,
+  }) async {
     final String url = '${ServerConfig.uploadPhotoLink}?linkType=photo';
     var response = await _dioHelper.post(
       url: url,

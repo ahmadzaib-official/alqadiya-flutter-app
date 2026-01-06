@@ -322,7 +322,8 @@ class SignupScreen extends StatelessWidget with Validators {
                                       await controller.signUp();
                                     } else {
                                       Toaster.showToast(
-                                        'Please accept the terms and conditions'.tr,
+                                        'Please accept the terms and conditions'
+                                            .tr,
                                       );
                                     }
                                   }

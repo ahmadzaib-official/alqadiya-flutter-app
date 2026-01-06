@@ -494,7 +494,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                       players.asMap().entries.map((entry) {
                         final index = entry.key;
                         final player = entry.value;
-                        final isLast = index == players.length - 1;
+                        final isLeader = player['isLeader'] as bool? ?? false;
                         return Positioned(
                           left: index * (15.w - 8.w),
                           child: Stack(
@@ -552,8 +552,8 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                           ),
                                 ),
                               ),
-                              // Green checkmark - only on rightmost member
-                              if (isLast)
+                              // Green checkmark - only on leader
+                              if (isLeader)
                                 Positioned(
                                   top: -2,
                                   right: -2,

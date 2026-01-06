@@ -55,9 +55,3 @@ class UserAnswerModel {
     "updatedAt": updatedAt?.toIso8601String(),
   };
 }
-
-
-
-
-
-

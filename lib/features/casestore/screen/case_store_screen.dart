@@ -46,7 +46,8 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final preferences = Get.find<Preferences>();
-      final hasShownTip = preferences.getBool(AppStrings.hasShownCategoryTip) ?? false;
+      final hasShownTip =
+          preferences.getBool(AppStrings.hasShownCategoryTip) ?? false;
 
       if (!hasShownTip) {
         tooltipController.showTooltip();

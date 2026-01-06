@@ -7,10 +7,7 @@ class PaymentRepository {
 
   Future<Response<dynamic>> getPaymentMethods() async {
     final String url = ServerConfig.paymentMethods;
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 
@@ -21,10 +18,7 @@ class PaymentRepository {
     final String url = ServerConfig.purchasePoints;
     var response = await _dioHelper.post(
       url: url,
-      requestBody: {
-        "packageId": packageId,
-        "paymentMethodId": paymentMethodId,
-      },
+      requestBody: {"packageId": packageId, "paymentMethodId": paymentMethodId},
       isAuthRequired: true,
     );
     return response;

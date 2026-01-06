@@ -47,7 +47,6 @@ class OnboardingController extends GetxController {
     super.onInit();
     pageController = PageController(initialPage: 0, viewportFraction: 1.0);
     // startAutoSlide();
- 
   }
 
   @override

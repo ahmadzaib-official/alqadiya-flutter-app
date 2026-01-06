@@ -13,10 +13,12 @@ class NotificationResponse {
 
   factory NotificationResponse.fromJson(Map<String, dynamic> json) {
     return NotificationResponse(
-      data: json['data'] != null
-          ? List<NotificationMessage>.from(
-              json['data'].map((x) => NotificationMessage.fromJson(x)))
-          : null,
+      data:
+          json['data'] != null
+              ? List<NotificationMessage>.from(
+                json['data'].map((x) => NotificationMessage.fromJson(x)),
+              )
+              : null,
       total: json['total'] ?? 0,
       page: json['page'] ?? 1,
       limit: json['limit'] ?? 10,
@@ -72,9 +74,10 @@ class NotificationMessage {
       messageBody: json['messageBody']?.toString(),
       inAppMessageTitle: json['inAppMessageTitle']?.toString(),
       inAppMessageBody: json['inAppMessageBody']?.toString(),
-      additionalData: json['additionalData'] != null
-          ? AdditionalData.fromJson(json['additionalData'])
-          : null,
+      additionalData:
+          json['additionalData'] != null
+              ? AdditionalData.fromJson(json['additionalData'])
+              : null,
       state: json['state']?.toString() ?? 'not_opened',
       notificationType: json['notificationType']?.toString() ?? 'general',
       createdAt: json['createdAt']?.toString(),
@@ -125,7 +128,7 @@ class NotificationMessage {
       case 'LOYALTY_POINTS':
         return 'Profile';
       default:
-        return  'Other';
+        return 'Other';
     }
   }
 }
@@ -135,11 +138,7 @@ class AdditionalData {
   final String? userContext;
   final String? action;
 
-  AdditionalData({
-    this.bookingId,
-    this.userContext,
-    this.action,
-  });
+  AdditionalData({this.bookingId, this.userContext, this.action});
 
   factory AdditionalData.fromJson(Map<String, dynamic> json) {
     return AdditionalData(

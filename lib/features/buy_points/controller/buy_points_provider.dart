@@ -24,7 +24,7 @@ class BuyPointsController extends GetxController {
           (response.data as List)
               .map((e) => PackageModel.fromJson(e as Map<String, dynamic>))
               .toList(),
-         );
+        );
       }
     } on DioException catch (e) {
       // Error already shown by interceptor

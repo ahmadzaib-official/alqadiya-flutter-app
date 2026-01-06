@@ -14,10 +14,7 @@ class QuestionRepository extends GetxService {
     int limit = 10,
   }) async {
     final String url = ServerConfig.getQuestionsByGame(gameId);
-    final Map<String, dynamic> queryParams = {
-      'page': page,
-      'limit': limit,
-    };
+    final Map<String, dynamic> queryParams = {'page': page, 'limit': limit};
     if (language != null) {
       queryParams['language'] = language;
     }
@@ -47,9 +44,3 @@ class QuestionRepository extends GetxService {
     return response;
   }
 }
-
-
-
-
-
-

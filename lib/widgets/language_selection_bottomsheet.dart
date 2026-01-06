@@ -34,23 +34,24 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
       isDismissible: true,
       enableDrag: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20.r),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final screenHeight = Get.height;
-    
+
     // Calculate responsive height based on orientation
-    final height = isLandscape 
-        ? screenHeight * 0.5  // Taller in landscape
-        : screenHeight * 0.35; // Original height in portrait
-    
+    final height =
+        isLandscape
+            ? screenHeight *
+                0.5 // Taller in landscape
+            : screenHeight * 0.35; // Original height in portrait
+
     return Container(
       height: height,
       constraints: BoxConstraints(
@@ -145,8 +146,9 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -157,14 +159,16 @@ class LanguageSelectionBottomSheet extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected 
-                ? MyColors.redButtonColor 
-                : MyColors.white.withValues(alpha: 0.2),
+            color:
+                isSelected
+                    ? MyColors.redButtonColor
+                    : MyColors.white.withValues(alpha: 0.2),
             width: 1.2.w,
           ),
-          color: isSelected
-              ? MyColors.redButtonColor.withValues(alpha: 0.2)
-              : MyColors.black.withValues(alpha: 0.2),
+          color:
+              isSelected
+                  ? MyColors.redButtonColor.withValues(alpha: 0.2)
+                  : MyColors.black.withValues(alpha: 0.2),
         ),
         child: Row(
           children: [

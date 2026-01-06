@@ -6,18 +6,18 @@ import 'package:get/get.dart';
 
 class QuestionController extends GetxController {
   final _repository = QuestionRepository();
-  
+
   RxList<QuestionModel> questions = <QuestionModel>[].obs;
   Rx<QuestionModel?> currentQuestion = Rx<QuestionModel?>(null);
   var isLoading = false.obs;
   var isMoreLoading = false.obs;
-  
+
   // Pagination variables
   int currentPage = 1;
   int limit = 10;
   var hasMore = true.obs;
   String? currentGameId;
-  
+
   // Flag to toggle between order-based and index-based navigation
   // false = use index-based (default) - questions shown by array index (0, 1, 2, ...)
   // true = use order-based - questions shown by order field from API
@@ -50,12 +50,12 @@ class QuestionController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final List<dynamic> list = response.data is List
-            ? response.data
-            : (response.data['data'] ?? []);
-        final tempQuestions = list
-            .map((e) => QuestionModel.fromJson(e))
-            .toList();
+        final List<dynamic> list =
+            response.data is List
+                ? response.data
+                : (response.data['data'] ?? []);
+        final tempQuestions =
+            list.map((e) => QuestionModel.fromJson(e)).toList();
 
         // Sort by order only if using order-based navigation
         if (useOrderBasedNavigation.value) {
@@ -78,7 +78,9 @@ class QuestionController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       if (isLoadMore) {
         isMoreLoading(false);
@@ -109,7 +111,9 @@ class QuestionController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
@@ -130,8 +134,9 @@ class QuestionController extends GetxController {
 
   // Get next question
   QuestionModel? getNextQuestion(int currentOrder) {
-    final sorted = questions.toList()
-      ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+    final sorted =
+        questions.toList()
+          ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
     final index = sorted.indexWhere((q) => (q.order ?? 0) > currentOrder);
     return index != -1 ? sorted[index] : null;
   }
@@ -147,4 +152,3 @@ class QuestionController extends GetxController {
     currentGameId = null;
   }
 }
-

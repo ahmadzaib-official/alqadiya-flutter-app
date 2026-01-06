@@ -173,7 +173,8 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                     SizedBox(height: 10.h),
 
                                     Text(
-                                      'Share this code with friends to join.'.tr,
+                                      'Share this code with friends to join.'
+                                          .tr,
                                       style: AppTextStyles.captionRegular12()
                                           .copyWith(
                                             color: MyColors.white,

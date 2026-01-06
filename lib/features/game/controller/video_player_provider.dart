@@ -82,7 +82,8 @@ class VideoPlayerStateController extends GetxController {
       isVideoPlaying.value = _videoController!.value.isPlaying;
     } on TimeoutException {
       isVideoLoading.value = false;
-      errorMessage.value = 'Video loading timeout. Please check your connection.';
+      errorMessage.value =
+          'Video loading timeout. Please check your connection.';
       await _disposeController();
     } catch (e) {
       String errorMsg = 'Failed to load video';

@@ -6,12 +6,12 @@ import 'package:get/get.dart';
 
 class SuspectController extends GetxController {
   final _repository = SuspectRepository();
-  
+
   RxList<SuspectModel> suspects = <SuspectModel>[].obs;
   Rx<SuspectModel?> suspectDetail = Rx<SuspectModel?>(null);
   var isLoading = false.obs;
   var isMoreLoading = false.obs;
-  
+
   // Pagination variables
   int currentPage = 1;
   int limit = 10;
@@ -43,9 +43,7 @@ class SuspectController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data['data'] ?? [];
-        final tempSuspects = list
-            .map((e) => SuspectModel.fromJson(e))
-            .toList();
+        final tempSuspects = list.map((e) => SuspectModel.fromJson(e)).toList();
 
         if (isLoadMore) {
           suspects.addAll(tempSuspects);
@@ -63,7 +61,9 @@ class SuspectController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       if (isLoadMore) {
         isMoreLoading(false);
@@ -74,9 +74,7 @@ class SuspectController extends GetxController {
   }
 
   // Get Suspect by ID
-  Future<void> getSuspectById({
-    required String suspectId,
-  }) async {
+  Future<void> getSuspectById({required String suspectId}) async {
     try {
       isLoading(true);
       suspectDetail(null);
@@ -90,10 +88,11 @@ class SuspectController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
   }
 }
-

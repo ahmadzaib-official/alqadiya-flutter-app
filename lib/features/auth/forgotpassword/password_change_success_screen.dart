@@ -61,7 +61,7 @@
 //                         textAlign: TextAlign.center,
 //                       ),
 //                       AppSizedBoxes.largeSizedBox,
-                     
+
 //                       CustomButton(
 //                           isLoading: false,
 //                           text: 'Log in to the app'.tr,

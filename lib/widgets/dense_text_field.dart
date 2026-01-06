@@ -35,7 +35,7 @@ class DenseTextField extends StatelessWidget {
           Text(
             label!,
             style: AppTextStyles.captionRegular10().copyWith(
-fontSize: 8.sp,
+              fontSize: 8.sp,
               color: MyColors.white,
             ),
           ),
@@ -46,10 +46,7 @@ fontSize: 8.sp,
           height: 55.h,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4.r),
-            border: Border.all(
-              color: MyColors.redButtonColor,
-              width: 1.w,
-            ),
+            border: Border.all(color: MyColors.redButtonColor, width: 1.w),
             color: MyColors.redButtonColor.withValues(alpha: 0.1),
           ),
           child: TextField(
@@ -81,4 +78,3 @@ fontSize: 8.sp,
     );
   }
 }
-

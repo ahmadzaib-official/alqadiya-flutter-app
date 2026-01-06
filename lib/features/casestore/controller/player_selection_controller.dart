@@ -54,7 +54,7 @@ class PlayerSelectionController extends GetxController {
 
   // Track dragged player
   final Rx<Player?> draggedPlayer = Rx<Player?>(null);
-  
+
   // Workers for cleanup
   Worker? _teamsWorker;
   Worker? _playersWorker;
@@ -108,7 +108,9 @@ class PlayerSelectionController extends GetxController {
     _syncPlayers(gameController.sessionPlayers);
 
     // Listen for updates - watch the list length and content changes
-    _playersWorker = ever(gameController.sessionPlayers, (List<MemberModel> players) {
+    _playersWorker = ever(gameController.sessionPlayers, (
+      List<MemberModel> players,
+    ) {
       _syncPlayers(players);
     });
   }

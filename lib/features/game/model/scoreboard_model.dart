@@ -18,16 +18,18 @@ class ScoreboardModel {
       sessionId: json["sessionId"],
       caseName: json["caseName"],
       remainingTime: json["remainingTime"],
-      teams: json["teams"] != null
-          ? (json["teams"] as List)
-              .map((e) => TeamScore.fromJson(e))
-              .toList()
-          : null,
-      players: json["players"] != null
-          ? (json["players"] as List)
-              .map((e) => PlayerScore.fromJson(e))
-              .toList()
-          : null,
+      teams:
+          json["teams"] != null
+              ? (json["teams"] as List)
+                  .map((e) => TeamScore.fromJson(e))
+                  .toList()
+              : null,
+      players:
+          json["players"] != null
+              ? (json["players"] as List)
+                  .map((e) => PlayerScore.fromJson(e))
+                  .toList()
+              : null,
     );
   }
 
@@ -61,11 +63,12 @@ class TeamScore {
       teamName: json["teamName"],
       teamNumber: json["teamNumber"],
       teamScore: json["teamScore"] ?? 0,
-      players: json["players"] != null
-          ? (json["players"] as List)
-              .map((e) => PlayerScore.fromJson(e))
-              .toList()
-          : null,
+      players:
+          json["players"] != null
+              ? (json["players"] as List)
+                  .map((e) => PlayerScore.fromJson(e))
+                  .toList()
+              : null,
     );
   }
 
@@ -79,11 +82,7 @@ class TeamScore {
 }
 
 class PlayerScore {
-  PlayerScore({
-    this.userId,
-    this.userName,
-    this.individualScore,
-  });
+  PlayerScore({this.userId, this.userName, this.individualScore});
 
   final String? userId;
   final String? userName;
@@ -103,9 +102,3 @@ class PlayerScore {
     "individualScore": individualScore,
   };
 }
-
-
-
-
-
-

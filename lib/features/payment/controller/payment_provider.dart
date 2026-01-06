@@ -42,10 +42,11 @@ class PaymentController extends GetxController {
     isLoading(true);
     try {
       final response = await _repository.getPaymentMethods();
-        if(response.statusCode==200||response.statusCode==201){
-
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final methods =
-             (response.data as List).map((e) => PaymentMethodModel.fromJson(e)).toList();
+            (response.data as List)
+                .map((e) => PaymentMethodModel.fromJson(e))
+                .toList();
         paymentMethods.assignAll(methods);
 
         // Auto-select first method or logic to select 'myatoorah' if needed
@@ -99,8 +100,7 @@ class PaymentController extends GetxController {
         paymentMethodId: selectedPaymentMethod.value!.id!,
       );
 
-       if(response.statusCode==200||response.statusCode==201){
-
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Navigate even if response structure isn't perfect for now, usually checks strictly
         // Assuming success if no exception thrown, or check response status map
 

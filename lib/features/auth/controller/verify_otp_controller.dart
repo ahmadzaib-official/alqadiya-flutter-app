@@ -105,7 +105,8 @@ class VerificationController extends GetxController {
       final response = await ApiFetch().verifyOtp(body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data['userId'] != null && response.data['accessToken'] != null) {
+        if (response.data['userId'] != null &&
+            response.data['accessToken'] != null) {
           await Get.find<Preferences>().setString(
             AppStrings.userId,
             response.data['userId'],

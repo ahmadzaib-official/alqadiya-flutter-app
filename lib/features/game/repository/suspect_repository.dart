@@ -15,30 +15,16 @@ class SuspectRepository extends GetxService {
     final String url = ServerConfig.getSuspectsByGame(gameId);
     var response = await _dioHelper.get(
       url: url,
-      queryParameters: {
-        'page': page,
-        'limit': limit,
-      },
+      queryParameters: {'page': page, 'limit': limit},
       isAuthRequired: true,
     );
     return response;
   }
 
   // Get Suspect by ID
-  Future<Response<dynamic>> getSuspectById({
-    required String suspectId,
-  }) async {
+  Future<Response<dynamic>> getSuspectById({required String suspectId}) async {
     final String url = ServerConfig.getSuspectById(suspectId);
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 }
-
-
-
-
-
-

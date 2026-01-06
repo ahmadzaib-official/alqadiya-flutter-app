@@ -19,7 +19,7 @@ class LanguageChangeScreen extends StatelessWidget {
     final controller = Get.put(ChangeLanguageController());
 
     return Scaffold(
-      appBar: CustomAppBar( showBackButton: true),
+      appBar: CustomAppBar(showBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(

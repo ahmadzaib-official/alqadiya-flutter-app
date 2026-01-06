@@ -167,7 +167,7 @@ class GameController extends GetxController {
 
         // Refresh the game detail to reflect the purchase status in detail screen
         await getGameDetail(gameId: gameId);
-        
+
         // Refresh the games list to reflect the purchase status in case store
         await getGamesList();
         return true;

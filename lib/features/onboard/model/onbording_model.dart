@@ -4,7 +4,6 @@ class OnboardingModel {
   final String description;
 
   OnboardingModel({
-
     required this.image1,
     required this.title,
     required this.description,

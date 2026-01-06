@@ -63,8 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1017677830312',
     projectId: 'alqadiya-bb7f8',
     storageBucket: 'alqadiya-bb7f8.firebasestorage.app',
-    androidClientId: '1017677830312-lgtb1nf2gd3r6c22i9de30co8r374c4t.apps.googleusercontent.com',
-    iosClientId: '1017677830312-0ffv8e53ndkg0sjhogbnb31uruver6os.apps.googleusercontent.com',
+    androidClientId:
+        '1017677830312-lgtb1nf2gd3r6c22i9de30co8r374c4t.apps.googleusercontent.com',
+    iosClientId:
+        '1017677830312-0ffv8e53ndkg0sjhogbnb31uruver6os.apps.googleusercontent.com',
     iosBundleId: 'com.vga.alqadiya',
   );
 }

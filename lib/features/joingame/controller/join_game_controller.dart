@@ -12,7 +12,7 @@ class JoinGameController extends GetxController {
   final TextEditingController teamCodeController = TextEditingController();
   final RxBool isLoading = false.obs;
   final RxBool isWaiting = false.obs;
-  
+
   Timer? _statusPollingTimer;
   String? _sessionId;
 
@@ -50,11 +50,11 @@ class JoinGameController extends GetxController {
         }
 
         // Extract sessionId from response
-        if (response.data != null && 
-            response.data['player'] != null && 
+        if (response.data != null &&
+            response.data['player'] != null &&
             response.data['player']['sessionId'] != null) {
           _sessionId = response.data['player']['sessionId'] as String;
-          
+
           // Update game session if response contains session data
           if (response.data['session'] != null) {
             try {
@@ -62,12 +62,13 @@ class JoinGameController extends GetxController {
               final sessionData = response.data['session'];
               final session = GameSessionModel.fromJson(sessionData);
               gameController.gameSession.value = session;
-              
+
               // Fetch full session details to get complete info (players, teams, etc.)
               if (session.id != null) {
                 await gameController.getGameSessionDetails(
                   sessionId: session.id!,
-                  silent: true, // Silent to avoid showing errors during join flow
+                  silent:
+                      true, // Silent to avoid showing errors during join flow
                 );
               }
             } catch (e) {
@@ -125,7 +126,7 @@ class JoinGameController extends GetxController {
   void _startStatusPolling(String sessionId) {
     // Stop any existing polling
     _stopPolling();
-    
+
     // Ensure GameController is initialized
     GameController gameController;
     if (!Get.isRegistered<GameController>()) {
@@ -133,9 +134,11 @@ class JoinGameController extends GetxController {
     } else {
       gameController = Get.find<GameController>();
     }
-    
+
     // Start polling every 2 seconds
-    _statusPollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+    _statusPollingTimer = Timer.periodic(const Duration(seconds: 2), (
+      timer,
+    ) async {
       if (!Get.isRegistered<JoinGameController>()) {
         timer.cancel();
         return;
@@ -149,7 +152,7 @@ class JoinGameController extends GetxController {
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (response.data != null) {
             final status = response.data['status'] as String?;
-            
+
             // Update GameController with session data from status response
             try {
               if (response.data['session'] != null) {
@@ -168,11 +171,11 @@ class JoinGameController extends GetxController {
             } catch (e) {
               // Silently handle parsing errors, continue with existing session data
             }
-            
+
             if (status == 'in_progress') {
               // Stop polling
               _stopPolling();
-              
+
               // Ensure session data is up to date before navigation
               if (gameController.gameSession.value?.id == null) {
                 // Fetch full session details if not already set
@@ -181,7 +184,7 @@ class JoinGameController extends GetxController {
                   silent: true,
                 );
               }
-              
+
               // Navigate to video screen
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (Get.isRegistered<JoinGameController>()) {
