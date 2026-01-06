@@ -173,7 +173,7 @@ class PlayerSelectionController extends GetxController {
               (m) => Player(
                 id: m.userId ?? m.id ?? '',
                 name: m.userName ?? 'Unknown',
-                imageUrl: "https://picsum.photos/200",
+                imageUrl: m.userPhotoURL ?? '',
               ),
             )
             .toList();
