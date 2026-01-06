@@ -27,7 +27,11 @@ class SignInController extends GetxController {
   final phorgetPhoneNumberController = TextEditingController();
   final newPassword = TextEditingController();
   final confirmPassword = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId:
+        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
+  );
 
   Future<void> enableLandscapeMode() async {
     await SystemChrome.setPreferredOrientations([
@@ -111,7 +115,8 @@ class SignInController extends GetxController {
           }
         }
 
-        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialog
         Get.find<Preferences>().remove(AppStrings.isGuest);
         // await SystemChrome.setPreferredOrientations([
         //   DeviceOrientation.landscapeLeft,
@@ -123,7 +128,8 @@ class SignInController extends GetxController {
         clearField();
       }
     } catch (e) {
-      if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
+      if (Get.context != null)
+        Navigator.pop(Get.context!); // Close progress dialog
       CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
     } finally {
       isSignIn(false);
@@ -211,11 +217,13 @@ class SignInController extends GetxController {
           );
         }
 
-        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialogs
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialogs
         Get.offAllNamed(AppRoutes.homescreen);
       }
     } catch (e) {
-      if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
+      if (Get.context != null)
+        Navigator.pop(Get.context!); // Close progress dialog
     }
   }
 
@@ -310,7 +318,8 @@ class SignInController extends GetxController {
       };
       final response = await ApiFetch().resetPassword(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialog
         Get.toNamed(
           AppRoutes.verifcationSussesfulscreen,
           arguments: {

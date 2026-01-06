@@ -24,7 +24,11 @@ class SignupController extends GetxController {
   var otpCode = 0.obs;
   var isEye = false.obs;
   var isEyeConfirm = false.obs;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId:
+        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
+  );
   @override
   void onClose() {
     fullNameController.dispose();
@@ -156,7 +160,8 @@ class SignupController extends GetxController {
       DebugPoint.log("Google Sign In Body: $body");
       final response = await ApiFetch().signUp(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data['userId'] != null && response.data['accessToken'] != null) {
+        if (response.data['userId'] != null &&
+            response.data['accessToken'] != null) {
           // Store tokens securely
           await Get.find<Preferences>().setString(
             AppStrings.userId,
@@ -214,7 +219,8 @@ class SignupController extends GetxController {
       final response = await ApiFetch().signUp(body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data['userId'] != null && response.data['accessToken'] != null) {
+        if (response.data['userId'] != null &&
+            response.data['accessToken'] != null) {
           String userId = response.data['userId'];
           String assesToken = response.data['accessToken'];
           await Get.find<Preferences>().setString(AppStrings.userId, userId);
@@ -222,15 +228,20 @@ class SignupController extends GetxController {
             AppStrings.accessToken,
             assesToken,
           );
-          await Get.find<Preferences>().setBool(AppStrings.isFirstRegister, true);
+          await Get.find<Preferences>().setBool(
+            AppStrings.isFirstRegister,
+            true,
+          );
         }
 
-        if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialog
         Get.offAllNamed(AppRoutes.homescreen);
       }
     } catch (e) {
       DebugPoint.log("Apple Sign In Error: $e");
-      if (Get.context != null) Navigator.pop(Get.context!); // Close progress dialog
+      if (Get.context != null)
+        Navigator.pop(Get.context!); // Close progress dialog
       // CustomSnackbar.showError("Apple Sign up failed: ${e.toString()}");
     }
   }
