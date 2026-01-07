@@ -217,8 +217,14 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
                                         GestureDetector(
                                           onTap: () {
-                                            // Continue playing action
-                                            Get.toNamed(AppRoutes.gameScreen);
+                                            // Continue playing action - use post frame callback to avoid setState during build
+                                            // WidgetsBinding.instance
+                                            //     .addPostFrameCallback((_) {
+                                            //       Get.toNamed(
+                                            //         AppRoutes.gameScreen,
+                                            //       );
+                                            //     });
+                                            Navigator.pop(context);
                                           },
                                           child: Container(
                                             width: 70.w,
@@ -359,8 +365,15 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
                                         GestureDetector(
                                           onTap: () {
-                                            // Continue playing action
-                                            Get.toNamed(AppRoutes.gameScreen);
+                                            Navigator.pop(context);
+
+                                            // Continue playing action - use post frame callback to avoid setState during build
+                                            // WidgetsBinding.instance
+                                            //     .addPostFrameCallback((_) {
+                                            //       Get.toNamed(
+                                            //         AppRoutes.gameScreen,
+                                            //       );
+                                            //     });
                                           },
                                           child: Container(
                                             width: 70.w,
