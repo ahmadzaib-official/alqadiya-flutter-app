@@ -54,7 +54,7 @@ class ChooseTeamLeaderController extends GetxController {
             TeamLeader(
               id: m['id'] ?? '',
               name: m['name'] ?? 'Unknown',
-              imageUrl: m['imageUrl'] ?? "https://picsum.photos/200",
+              imageUrl: m['userPhotoURL'] ?? "https://picsum.photos/200",
             ),
           );
         }
@@ -122,7 +122,7 @@ class ChooseTeamLeaderController extends GetxController {
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
                   name: member.userName ?? 'Unknown',
-                  imageUrl: member.userPhotoURL ?? "https://picsum.photos/200",
+                  imageUrl: member.userPhotoURL ?? "",
                 );
               }).toList();
         }
@@ -144,7 +144,7 @@ class ChooseTeamLeaderController extends GetxController {
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
                   name: member.userName ?? 'Unknown',
-                  imageUrl: member.userPhotoURL ?? "https://picsum.photos/200",
+                  imageUrl: member.userPhotoURL ?? "",
                 );
               }).toList();
           teamMembers.assignAll(members);
@@ -167,7 +167,7 @@ class ChooseTeamLeaderController extends GetxController {
               return TeamLeader(
                 id: member.userId ?? member.id ?? '',
                 name: member.userName ?? 'Unknown',
-                imageUrl: member.userPhotoURL ?? "https://picsum.photos/200",
+                imageUrl: member.userPhotoURL ?? "",
               );
             }).toList();
         teamMembers.assignAll(members);
@@ -203,13 +203,13 @@ class ChooseTeamLeaderController extends GetxController {
             return teamScore.players!.map((player) {
               // Find member in session players to get image URL
               final member = gameController.sessionPlayers.firstWhereOrNull(
-                (m) => m.userId == player.userId,
+                (m) => m.userId == player.userId || m.id == player.userId,
               );
 
               return TeamLeader(
                 id: player.userId ?? '',
                 name: player.userName ?? 'Unknown',
-                imageUrl: member?.userPhotoURL ?? "https://picsum.photos/200",
+                imageUrl: member?.userPhotoURL ?? "",
               );
             }).toList();
           }
