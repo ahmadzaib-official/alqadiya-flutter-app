@@ -68,10 +68,7 @@ class ScoreboardController extends GetxController {
   // Check if team mode
   bool get isTeamMode {
     final sessionMode = scoreboard.value?.sessionMode;
-    print('DEBUG: sessionMode from API = $sessionMode');
-    final result = sessionMode == 'team';
-    print('DEBUG: isTeamMode result = $result');
-    return result;
+    return sessionMode == 'team';
   }
 
   // Get remaining time
