@@ -726,7 +726,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           // Progress Indicator
           TeamProgressIndicator(
             currentQuestion: player.questionsAnswered ?? 0,
-            totalQuestions: player.questionsAnswered ?? 0,
+            totalQuestions: scoreboardController.totalQuestions,
           ),
 
           SizedBox(height: 10.h),
