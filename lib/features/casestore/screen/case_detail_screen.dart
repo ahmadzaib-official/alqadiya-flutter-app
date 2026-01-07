@@ -107,9 +107,12 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                                   .value
                                                   .coverImageUrl ??
                                               '',
-                                          width: isPurchased ? 0.2.sw : 0.18.sw,
+                                          width:
+                                              //  isPurchased ? 0.2.sw :
+                                              0.18.sw,
                                           height:
-                                              isPurchased ? 0.45.sh : 0.65.sh,
+                                              // isPurchased ? 0.45.sh :
+                                              0.65.sh,
                                           fit: BoxFit.cover,
                                           placeholder:
                                               (context, url) =>
@@ -122,13 +125,15 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                                         .withValues(alpha: 0.1),
                                                     child: Container(
                                                       width:
-                                                          isPurchased
-                                                              ? 0.2.sw
-                                                              : 0.18.sw,
+                                                          // isPurchased
+                                                          //     ? 0.2.sw
+                                                          //     :
+                                                          0.18.sw,
                                                       height:
-                                                          isPurchased
-                                                              ? 0.45.sh
-                                                              : 0.65.sh,
+                                                          // isPurchased
+                                                          //     ? 0.45.sh
+                                                          //     :
+                                                          0.65.sh,
                                                       color: Colors.grey,
                                                     ),
                                                   ),
@@ -138,13 +143,15 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                               (context, url, error) =>
                                                   Container(
                                                     width:
-                                                        isPurchased
-                                                            ? 0.2.sw
-                                                            : 0.18.sw,
+                                                        // isPurchased
+                                                        //     ? 0.2.sw
+                                                        //     :
+                                                             0.18.sw,
                                                     height:
-                                                        isPurchased
-                                                            ? 0.45.sh
-                                                            : 0.65.sh,
+                                                        // isPurchased
+                                                        //     ? 0.45.sh
+                                                        //     : 
+                                                            0.65.sh,
                                                     color: Colors.grey.shade200,
                                                     alignment: Alignment.center,
                                                     child: const Icon(
@@ -166,23 +173,23 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         ),
                                     ],
                                   ),
-                                  if (isPurchased && gameId.isNotEmpty) ...[
-                                    SizedBox(height: 8.h),
-                                    CopyCodeButton(code: gameId),
+                                  // if (isPurchased && gameId.isNotEmpty) ...[
+                                  //   SizedBox(height: 8.h),
+                                  //   CopyCodeButton(code: gameId),
 
-                                    SizedBox(height: 10.h),
+                                  //   SizedBox(height: 10.h),
 
-                                    Text(
-                                      'Share this code with friends to join.'
-                                          .tr,
-                                      style: AppTextStyles.captionRegular12()
-                                          .copyWith(
-                                            color: MyColors.white,
-                                            height: 1.5,
-                                            fontSize: 5.sp,
-                                          ),
-                                    ),
-                                  ],
+                                  //   Text(
+                                  //     'Share this code with friends to join.'
+                                  //         .tr,
+                                  //     style: AppTextStyles.captionRegular12()
+                                  //         .copyWith(
+                                  //           color: MyColors.white,
+                                  //           height: 1.5,
+                                  //           fontSize: 5.sp,
+                                  //         ),
+                                  //   ),
+                                  // ],
                                 ],
                               ),
                               SizedBox(width: 12.w),
