@@ -155,9 +155,7 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
   void _replayVideo() {
     if (_player == null || !_player!.isInitialized) return;
     _player!.controller.seekTo(Duration.zero);
-    if (!_player!.controller.value.isPlaying) {
-      _player!.controller.play();
-    }
+    _player!.controller.play();
     setState(() {
       _showControls = true;
     });

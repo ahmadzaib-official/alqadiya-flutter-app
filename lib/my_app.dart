@@ -27,23 +27,23 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           theme: AppThemeInfo.themeData,
           debugShowCheckedModeBanner: false,
-          initialRoute: AppRoutes.sigin,
+          initialRoute: AppRoutes.splash,
         );
       },
     );
   }
 }
 
-/// live
+// live
 // 31277864
 // Qwerty@123
 
 // 87654321
 // Qwerty@123
 
-/// local
-/// 0000000
-//  Qwerty@123
+// local
+// 0000000
+// Qwerty@123
 
 // 1234569
 // Qwerty@123
