@@ -24,6 +24,8 @@ class CaseDetailScreen extends StatefulWidget {
 class _CaseDetailScreenState extends State<CaseDetailScreen> {
   final gameId = Get.arguments['gameId'] ?? '';
   final GameController controller = Get.find<GameController>();
+  bool isStartingGame = false;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,7 +63,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                 ),
               ),
               // Body
-              if (controller.isLoading.value ||
+              if ((controller.isLoading.value && !isStartingGame) ||
                   (controller.gameDetail.value.id != null &&
                       controller.gameDetail.value.id != this.gameId)) ...[
                 Padding(
@@ -145,12 +147,12 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                                         // isPurchased
                                                         //     ? 0.2.sw
                                                         //     :
-                                                             0.18.sw,
+                                                        0.18.sw,
                                                     height:
                                                         // isPurchased
                                                         //     ? 0.45.sh
-                                                        //     : 
-                                                            0.65.sh,
+                                                        //     :
+                                                        0.65.sh,
                                                     color: Colors.grey.shade200,
                                                     alignment: Alignment.center,
                                                     child: const Icon(
@@ -293,12 +295,31 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         if (isPurchased) ...[
                                           StartPlayButton(
                                             buttonWidth: 50.w,
-                                            buttonText: 'Start Play'.tr,
-                                            onTap: () {
-                                              controller.createGameSession(
-                                                gameId: gameId,
-                                              );
-                                            },
+                                            buttonText:
+                                                isStartingGame
+                                                    ? 'Starting...'.tr
+                                                    : 'Start Play'.tr,
+                                            onTap:
+                                                isStartingGame
+                                                    ? () {}
+                                                    : () async {
+                                                      setState(() {
+                                                        isStartingGame = true;
+                                                      });
+
+                                                      await controller
+                                                          .createGameSession(
+                                                            gameId: gameId,
+                                                          );
+
+                                                      // Reset state after navigation
+                                                      if (mounted) {
+                                                        setState(() {
+                                                          isStartingGame =
+                                                              false;
+                                                        });
+                                                      }
+                                                    },
                                           ),
                                         ] else ...[
                                           GestureDetector(
