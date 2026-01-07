@@ -4,6 +4,7 @@ import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/buy_points/controller/buy_points_provider.dart';
 import 'package:alqadiya_game/features/buy_points/model/package_model.dart';
+import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/localization_footer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -53,13 +54,17 @@ class BuyPointsScreen extends StatelessWidget {
                       SizedBox(width: 5.w),
 
                       // Avatar
-                      CircleAvatar(
-                        backgroundColor: MyColors.redButtonColor,
-                        backgroundImage: CachedNetworkImageProvider(
-                          "https://picsum.photos/200",
-                        ),
-                        radius: 9.sp,
-                      ),
+                      Obx(() {
+                        final user = Get.find<UserController>().user.value;
+                        return CircleAvatar(
+                          backgroundColor: MyColors.redButtonColor,
+                          backgroundImage: CachedNetworkImageProvider(
+                            user!.photoUrl ??
+                                "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
+                          ),
+                          radius: 9.sp,
+                        );
+                      }),
                     ],
                   ),
                 ],
