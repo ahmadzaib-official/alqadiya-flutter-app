@@ -4,6 +4,7 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/change_language/controller/language_controller.dart';
 import 'package:alqadiya_game/features/settings/controller/settings_provider.dart';
@@ -449,6 +450,7 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             Spacer(),
+
             // Delete account
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
@@ -475,6 +477,46 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+            SizedBox(width: 10.w),
+
+            // Logout
+            GestureDetector(
+              onTap: () async {
+                await Get.find<Preferences>().clear();
+                Get.offAllNamed(AppRoutes.sigin);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: MyColors.black.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(100.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.logout,
+                      color: MyColors.white.withValues(alpha: 0.5),
+                      size: 10.w,
+                    ),
+                    SizedBox(width: 3.w),
+                    Text(
+                      'Logout'.tr,
+                      style: AppTextStyles.heading2().copyWith(
+                        fontSize: 7.sp,
+                        color: MyColors.white.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
