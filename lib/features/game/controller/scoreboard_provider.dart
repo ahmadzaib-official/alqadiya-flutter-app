@@ -65,7 +65,8 @@ class ScoreboardController extends GetxController {
             (team.players ?? []).map((player) {
               return {
                 'name': player.userName ?? '',
-                'avatar': '', // Avatar not in API response
+                'avatar':
+                    player.userPhotoUrl ?? '', // Avatar not in API response
               };
             }).toList(),
         'progressStart': 24, // Default values for progress
@@ -76,11 +77,11 @@ class ScoreboardController extends GetxController {
 
   // Helper method for solo mode
   Map<String, dynamic>? get soloPlayer {
-    if (scoreboard.value?.players == null ||
-        scoreboard.value!.players!.isEmpty) {
+    if (scoreboard.value?.teams?.firstOrNull?.players == null ||
+        scoreboard.value!.teams!.firstOrNull!.players!.isEmpty) {
       return null;
     }
-    final player = scoreboard.value!.players!.first;
+    final player = scoreboard.value!.teams!.firstOrNull!.players!.first;
     return {
       'name': player.userName ?? '',
       'score': player.individualScore ?? 0,
