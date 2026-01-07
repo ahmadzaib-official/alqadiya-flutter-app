@@ -710,7 +710,7 @@ class SettingsScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 10.h),
                           // Name Field
                           DenseTextField(
                             label: 'Full Name'.tr,
@@ -723,39 +723,39 @@ class SettingsScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 12.h),
                           // Phone Number Field
-                          DenseTextField(
-                            label: 'Phone Number'.tr,
-                            controller: phoneController,
-                            hintText: 'Enter your number'.tr,
-                            keyboardType: TextInputType.phone,
-                            labelFontSize: 9,
-                            textFontSize: 10,
-                            hintFontSize: 9,
-                            width: 150.w,
-                          ),
-                          SizedBox(height: 12.h),
-                          // Email Field
-                          DenseTextField(
-                            label: 'Email'.tr,
-                            controller: emailController,
-                            hintText: 'Enter email'.tr,
-                            keyboardType: TextInputType.emailAddress,
-                            textFontSize: 10,
-                            hintFontSize: 9,
-                            width: 150.w,
-                          ),
-                          SizedBox(height: 20.h),
+                          // DenseTextField(
+                          //   label: 'Phone Number'.tr,
+                          //   controller: phoneController,
+                          //   hintText: 'Enter your number'.tr,
+                          //   keyboardType: TextInputType.phone,
+                          //   labelFontSize: 9,
+                          //   textFontSize: 10,
+                          //   hintFontSize: 9,
+                          //   width: 150.w,
+                          // ),
+                          // SizedBox(height: 12.h),
+                          // // Email Field
+                          // DenseTextField(
+                          //   label: 'Email'.tr,
+                          //   controller: emailController,
+                          //   hintText: 'Enter email'.tr,
+                          //   keyboardType: TextInputType.emailAddress,
+                          //   textFontSize: 10,
+                          //   hintFontSize: 9,
+                          //   width: 150.w,
+                          // ),
+                          // SizedBox(height: 20.h),
                           // Points balance section
-                          Obx(
-                            () => Text(
-                              '${'My points balance'.tr} ${controller.user.value?.pointsBalance ?? 0}',
-                              style: AppTextStyles.heading2().copyWith(
-                                fontSize: 9.sp,
-                                color: MyColors.white.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 25.h),
+                          // Obx(
+                          //   () => Text(
+                          //     '${'My points balance'.tr} ${controller.user.value?.pointsBalance ?? 0}',
+                          //     style: AppTextStyles.heading2().copyWith(
+                          //       fontSize: 9.sp,
+                          //       color: MyColors.white.withValues(alpha: 0.8),
+                          //     ),
+                          //   ),
+                          // ),
+                          SizedBox(height: 20.h),
                           // Buttons
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
