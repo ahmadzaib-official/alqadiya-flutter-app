@@ -163,7 +163,20 @@ class SigninScreen extends StatelessWidget with Validators {
                                     isLoading: controller.isSignIn.value,
                                     text: 'Log In'.tr,
                                     onPressed: () async {
-                                      if (formKey.currentState!.validate()) {
+                                      bool isValid =
+                                          formKey.currentState!.validate();
+                                      bool isPasswordEmpty =
+                                          controller.passwordController.text
+                                              .trim()
+                                              .isEmpty;
+                                      bool isPhoneEmpty =
+                                          controller.phoneNumberController.text
+                                              .trim()
+                                              .isEmpty;
+
+                                      if (isValid &&
+                                          !isPasswordEmpty &&
+                                          !isPhoneEmpty) {
                                         await controller.signIn();
                                       }
                                     },
