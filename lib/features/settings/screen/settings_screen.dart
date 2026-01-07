@@ -4,13 +4,13 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:alqadiya_game/core/utils/responsive.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/change_language/controller/language_controller.dart';
 import 'package:alqadiya_game/features/settings/controller/settings_provider.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/dense_text_field.dart';
+import 'package:alqadiya_game/widgets/language_selection_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -112,11 +112,19 @@ class SettingsScreen extends StatelessWidget {
             // Avatar
             CircleAvatar(
               radius: 15.w,
-              backgroundImage: CachedNetworkImageProvider(
-                controller.user.value?.photoUrl ??
-                    "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
-              ),
-              // child: SvgPicture.asset(MyIcons.camera),
+              backgroundColor: MyColors.redButtonColor.withValues(alpha: 0.2),
+              backgroundImage:
+                  (controller.user.value?.photoUrl != null &&
+                          controller.user.value!.photoUrl!.isNotEmpty)
+                      ? CachedNetworkImageProvider(
+                        controller.user.value!.photoUrl!,
+                      )
+                      : null,
+              child:
+                  (controller.user.value?.photoUrl == null ||
+                          controller.user.value!.photoUrl!.isEmpty)
+                      ? Icon(Icons.person, size: 20.sp, color: MyColors.white)
+                      : null,
             ),
             SizedBox(height: 15.h),
             // User Information
@@ -237,49 +245,24 @@ class SettingsScreen extends StatelessWidget {
           ),
           SizedBox(height: 20.h),
           // Language Selector
-          GestureDetector(
-            onTap: () => _showLanguageSelector(context, languageController),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100.r),
-                    color: MyColors.black.withValues(alpha: 0.2),
-                  ),
-                  child: Row(
-                    children: [
-                      Obx(
-                        () => SvgPicture.asset(
-                          languageController.selectedLanguage.value.image ??
-                              MyIcons.ukFlag,
-                        ),
-                      ),
-                      SizedBox(width: 3.w),
-                      Obx(
-                        () => Text(
-                          languageController.selectedLanguage.value.title ??
-                              'English',
-                          style: AppTextStyles.heading2().copyWith(
-                            fontSize: 7.sp,
-                            color: MyColors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              LanguageSelectionButton(
+                height: 50.h,
+                width: 50.w,
+                color: MyColors.black.withValues(alpha: 0.2),
+                textFontSize: 6.sp,
+              ),
+              SizedBox(width: 10.w),
+              Text(
+                'Language'.tr,
+                style: AppTextStyles.heading2().copyWith(
+                  fontSize: 7.sp,
+                  color: MyColors.white.withValues(alpha: 0.7),
                 ),
-                SizedBox(width: 10.w),
-                Text(
-                  'Language'.tr,
-                  style: AppTextStyles.heading2().copyWith(
-                    fontSize: 7.sp,
-                    color: MyColors.white.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
           SizedBox(height: 15.h),
           // Terms and Privacy Policy button
@@ -497,107 +480,6 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  void _showLanguageSelector(
-    BuildContext context,
-    ChangeLanguageController languageController,
-  ) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => Dialog(
-            backgroundColor: MyColors.backgroundColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(20.sp),
-
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(MyImages.gamebackground),
-                  fit: BoxFit.cover,
-                ),
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Select Language'.tr,
-                    style: AppTextStyles.heading1().copyWith(
-                      fontSize: 10.sp,
-                      color: MyColors.white,
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  ...languageController.languageList.map((language) {
-                    return Obx(
-                      () => GestureDetector(
-                        onTap: () async {
-                          await languageController.changeLanguage(language);
-                          if (Navigator.of(context).canPop()) {
-                            Navigator.of(context).pop();
-                          }
-                          // Restart app to apply language change
-                          Future.delayed(const Duration(milliseconds: 100), () {
-                            Get.offAllNamed(AppRoutes.homescreen);
-                          });
-                        },
-                        child: Container(
-                          width: Responsive.width(40, context),
-                          margin: EdgeInsets.only(bottom: 10.h),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 15.w,
-                            vertical: 12.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                languageController
-                                            .selectedLanguage
-                                            .value
-                                            .slug ==
-                                        language.slug
-                                    ? MyColors.greenColor.withValues(alpha: 0.3)
-                                    : MyColors.black.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(10.r),
-                            border: Border.all(
-                              color:
-                                  languageController
-                                              .selectedLanguage
-                                              .value
-                                              .slug ==
-                                          language.slug
-                                      ? MyColors.greenColor
-                                      : Colors.transparent,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(
-                                language.image ?? MyIcons.ukFlag,
-                                width: 23,
-                              ),
-                              SizedBox(width: 10.w),
-                              Text(
-                                language.title ?? '',
-                                style: AppTextStyles.heading2().copyWith(
-                                  fontSize: 8.sp,
-                                  color: MyColors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ],
-              ),
-            ),
-          ),
     );
   }
 
