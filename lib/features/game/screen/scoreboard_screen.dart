@@ -474,7 +474,10 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           Expanded(
             child: Center(
               child: SizedBox(
-                width: players.length * 22.w + 5.w,
+                width:
+                    players.length > 1
+                        ? (players.length - 1) * 22.w + 25.w
+                        : 25.w,
                 child: Stack(
                   children:
                       players.asMap().entries.map((entry) {
@@ -482,7 +485,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                         final player = entry.value;
                         final isLastPlayer =
                             players.firstOrNull?.isLeader ?? false;
-                        // Overlap by 50% of avatar width
+                        // Overlap by positioning each avatar 22.w apart
                         final overlapOffset = index * 22.w;
 
                         return Positioned(
