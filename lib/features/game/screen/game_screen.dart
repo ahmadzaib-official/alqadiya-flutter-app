@@ -382,7 +382,7 @@ class _GameScreenState extends State<GameScreen> {
             actions: [
               CustomButton(
                 width: 40.w,
-                height: 35.h,
+                height: 40.h,
                 text: 'No'.tr,
                 borderRadius: 100.r,
                 backgroundColor: MyColors.white.withValues(alpha: 0.1),
@@ -392,7 +392,7 @@ class _GameScreenState extends State<GameScreen> {
               SizedBox(width: 4.w),
               CustomButton(
                 width: 40.w,
-                height: 35.h,
+                height: 40.h,
                 text: 'Yes'.tr,
                 borderRadius: 100.r,
                 backgroundColor: MyColors.redButtonColor,
