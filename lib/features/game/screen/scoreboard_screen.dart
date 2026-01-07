@@ -6,6 +6,7 @@ import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/features/game/controller/scoreboard_provider.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
+import 'package:alqadiya_game/features/game/model/scoreboard_model.dart';
 import 'package:alqadiya_game/features/game/widget/team_progress_indicator.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
@@ -433,10 +434,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
     );
   }
 
-  Widget _buildTeamCard(BuildContext context, Map<String, dynamic> team) {
-    final players = team['players'] as List<Map<String, dynamic>>;
-    final progressStart = team['progressStart'] as int;
-    final progressEnd = team['progressEnd'] as int;
+  Widget _buildTeamCard(BuildContext context, Team team) {
+    final players = team.players;
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
@@ -449,7 +448,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         children: [
           // Team Name
           Text(
-            team['name'] as String,
+            team.teamName ?? "",
             style: AppTextStyles.heading1().copyWith(
               fontSize: 8.sp,
               color: MyColors.white,
@@ -468,7 +467,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                       players.asMap().entries.map((entry) {
                         final index = entry.key;
                         final player = entry.value;
-                        final isLastPlayer = index == players.length - 1;
+                        final isLastPlayer =
+                            players.firstOrNull?.isLeader ?? false;
                         // Overlap by 50% of avatar width
                         final overlapOffset = index * 22.w;
 
@@ -486,11 +486,11 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(50.r),
                                       child:
-                                          (player['avatar'] as String)
+                                          (player.userPhotoUrl as String)
                                                   .isNotEmpty
                                               ? CachedNetworkImage(
                                                 imageUrl:
-                                                    player['avatar'] as String,
+                                                    player.userPhotoUrl ?? "",
                                                 fit: BoxFit.cover,
                                                 placeholder:
                                                     (context, url) => Container(
@@ -564,7 +564,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                               SizedBox(height: 5.h),
                               // Player name
                               Text(
-                                player['name'] as String,
+                                player.userName ?? "",
                                 style: AppTextStyles.bodyTextMedium16()
                                     .copyWith(
                                       fontSize: 5.sp,
@@ -584,8 +584,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
           // Progress Indicator
           TeamProgressIndicator(
-            currentQuestion: progressStart - progressEnd,
-            totalQuestions: progressStart,
+            currentQuestion: team.questionsAnswered ?? 0,
+            totalQuestions: team.totalQuestions ?? 0,
           ),
 
           SizedBox(height: 10.h),
@@ -602,7 +602,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${team['score'] ?? 0}',
+                  '${team.teamScore ?? 0}',
                   style: AppTextStyles.heading1().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
@@ -625,12 +625,9 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
     );
   }
 
-  Widget _buildSoloPlayerCard(
-    BuildContext context,
-    Map<String, dynamic> player,
-  ) {
-    final progressStart = player['progressStart'] as int;
-    final progressEnd = player['progressEnd'] as int;
+  Widget _buildSoloPlayerCard(BuildContext context, Player player) {
+    //   final progressStart = player.progressStart;
+    //   final progressEnd = player.progressEnd;
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
@@ -643,7 +640,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         children: [
           // Player Name
           Text(
-            player['name'] as String,
+            player.userName ?? "",
             style: AppTextStyles.heading1().copyWith(
               fontSize: 8.sp,
               color: MyColors.white,
@@ -664,9 +661,9 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50.r),
                       child:
-                          (player['avatar'] as String).isNotEmpty
+                          (player.userPhotoUrl as String).isNotEmpty
                               ? CachedNetworkImage(
-                                imageUrl: player['avatar'] as String,
+                                imageUrl: player.userPhotoUrl as String,
                                 fit: BoxFit.cover,
                                 placeholder:
                                     (context, url) => Container(
@@ -728,8 +725,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
           // Progress Indicator
           TeamProgressIndicator(
-            currentQuestion: progressStart - progressEnd,
-            totalQuestions: progressStart,
+            currentQuestion: player.questionsAnswered ?? 0,
+            totalQuestions: player.questionsAnswered ?? 0,
           ),
 
           SizedBox(height: 10.h),
@@ -746,7 +743,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${player['score'] ?? 0}',
+                  '${player.individualScore ?? 0}',
                   style: AppTextStyles.heading1().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
