@@ -122,7 +122,7 @@ class ChooseTeamLeaderController extends GetxController {
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
                   name: member.userName ?? 'Unknown',
-                  imageUrl: "https://picsum.photos/200",
+                  imageUrl: member.userPhotoURL ?? "https://picsum.photos/200",
                 );
               }).toList();
         }
@@ -144,7 +144,7 @@ class ChooseTeamLeaderController extends GetxController {
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
                   name: member.userName ?? 'Unknown',
-                  imageUrl: "https://picsum.photos/200",
+                  imageUrl: member.userPhotoURL ?? "https://picsum.photos/200",
                 );
               }).toList();
           teamMembers.assignAll(members);
@@ -167,7 +167,7 @@ class ChooseTeamLeaderController extends GetxController {
               return TeamLeader(
                 id: member.userId ?? member.id ?? '',
                 name: member.userName ?? 'Unknown',
-                imageUrl: "https://picsum.photos/200",
+                imageUrl: member.userPhotoURL ?? "https://picsum.photos/200",
               );
             }).toList();
         teamMembers.assignAll(members);
@@ -199,11 +199,17 @@ class ChooseTeamLeaderController extends GetxController {
           );
 
           if (teamScore != null && teamScore.players != null) {
+            final gameController = Get.find<GameController>();
             return teamScore.players!.map((player) {
+              // Find member in session players to get image URL
+              final member = gameController.sessionPlayers.firstWhereOrNull(
+                (m) => m.userId == player.userId,
+              );
+
               return TeamLeader(
                 id: player.userId ?? '',
                 name: player.userName ?? 'Unknown',
-                imageUrl: "https://picsum.photos/200",
+                imageUrl: member?.userPhotoURL ?? "https://picsum.photos/200",
               );
             }).toList();
           }
