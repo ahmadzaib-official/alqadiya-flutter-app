@@ -209,40 +209,60 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                     ),
                                     SizedBox(height: 16.h),
                                     // Share result button
-                                    GestureDetector(
-                                      onTap: _shareResult,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 12.h,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: MyColors.redButtonColor,
-                                          borderRadius: BorderRadius.circular(
-                                            100.r,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Share result'.tr,
-                                              style: AppTextStyles.heading2()
-                                                  .copyWith(
-                                                    fontSize: 6.sp,
-                                                    color: MyColors.white,
-                                                  ),
+                                    // Share result button
+                                    Builder(
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            final box =
+                                                context.findRenderObject()
+                                                    as RenderBox?;
+                                            if (box != null) {
+                                              _shareResult(
+                                                sharePositionOrigin:
+                                                    box.localToGlobal(
+                                                      Offset.zero,
+                                                    ) &
+                                                    box.size,
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
                                             ),
-                                            SizedBox(width: 8.w),
+                                            decoration: BoxDecoration(
+                                              color: MyColors.redButtonColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(100.r),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Share result'.tr,
+                                                  style:
+                                                      AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 6.sp,
+                                                            color:
+                                                                MyColors.white,
+                                                          ),
+                                                ),
+                                                SizedBox(width: 8.w),
 
-                                            Icon(
-                                              Icons.share,
-                                              size: 14.sp,
-                                              color: MyColors.brightRedColor,
+                                                Icon(
+                                                  Icons.share,
+                                                  size: 14.sp,
+                                                  color:
+                                                      MyColors.brightRedColor,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                     SizedBox(height: 16.h),
 
@@ -373,40 +393,60 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                     ),
                                     SizedBox(height: 16.h),
                                     // Share result button
-                                    GestureDetector(
-                                      onTap: _shareResult,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 12.h,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: MyColors.redButtonColor,
-                                          borderRadius: BorderRadius.circular(
-                                            100.r,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Share result'.tr,
-                                              style: AppTextStyles.heading2()
-                                                  .copyWith(
-                                                    fontSize: 6.sp,
-                                                    color: MyColors.white,
-                                                  ),
+                                    // Share result button
+                                    Builder(
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            final box =
+                                                context.findRenderObject()
+                                                    as RenderBox?;
+                                            if (box != null) {
+                                              _shareResult(
+                                                sharePositionOrigin:
+                                                    box.localToGlobal(
+                                                      Offset.zero,
+                                                    ) &
+                                                    box.size,
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
                                             ),
-                                            SizedBox(width: 8.w),
+                                            decoration: BoxDecoration(
+                                              color: MyColors.redButtonColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(100.r),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Share result'.tr,
+                                                  style:
+                                                      AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 6.sp,
+                                                            color:
+                                                                MyColors.white,
+                                                          ),
+                                                ),
+                                                SizedBox(width: 8.w),
 
-                                            Icon(
-                                              Icons.share,
-                                              size: 14.sp,
-                                              color: MyColors.brightRedColor,
+                                                Icon(
+                                                  Icons.share,
+                                                  size: 14.sp,
+                                                  color:
+                                                      MyColors.brightRedColor,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                     SizedBox(height: 16.h),
 
@@ -467,7 +507,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     );
   }
 
-  Future<void> _shareResult() async {
+  Future<void> _shareResult({Rect? sharePositionOrigin}) async {
     try {
       RenderRepaintBoundary? boundary =
           _globalKey.currentContext?.findRenderObject()
@@ -489,9 +529,11 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
           name: 'game_result.png',
         );
 
-        await Share.shareXFiles([
-          file,
-        ], text: 'Check out my game result on Alqadiya!'.tr);
+        await Share.shareXFiles(
+          [file],
+          text: 'Check out my game result on Alqadiya!'.tr,
+          sharePositionOrigin: sharePositionOrigin,
+        );
       }
     } catch (e) {
       print('Error sharing result: $e');
