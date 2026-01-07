@@ -129,6 +129,7 @@ class GameResultController extends GetxController {
       final team = result.teams!.first;
       return {
         'name': team.leaderName ?? team.teamName ?? '',
+        'avatar': team.leaderPhotoURL ?? '',
         'suspectName': team.suspectChosenName ?? '',
         'suspectImage': '', // Image not in API response
         'isCorrect': false, // Would need to check against correct suspect

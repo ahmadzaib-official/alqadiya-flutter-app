@@ -774,14 +774,42 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
-                  child: Container(
-                    color: MyColors.darkBlueColor,
-                    child: Icon(
-                      Icons.person,
-                      size: 20.sp,
-                      color: MyColors.white.withValues(alpha: 0.5),
-                    ),
-                  ),
+                  child:
+                      (result['avatar'] as String? ?? '').isNotEmpty
+                          ? CachedNetworkImage(
+                            imageUrl: result['avatar'] as String,
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => Container(
+                                  color: MyColors.darkBlueColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20.sp,
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                ),
+                            errorWidget:
+                                (context, url, error) => Container(
+                                  color: MyColors.darkBlueColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20.sp,
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                ),
+                          )
+                          : Container(
+                            color: MyColors.darkBlueColor,
+                            child: Icon(
+                              Icons.person,
+                              size: 20.sp,
+                              color: MyColors.white.withValues(alpha: 0.5),
+                            ),
+                          ),
                 ),
               ),
 
