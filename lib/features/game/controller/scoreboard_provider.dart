@@ -20,22 +20,7 @@ class ScoreboardController extends GetxController {
       final response = await _repository.getScoreboard(sessionId: sessionId);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('DEBUG: API Response: ${response.data}');
         final tempScoreboard = ScoreboardModel.fromJson(response.data);
-        print(
-          'DEBUG: Parsed scoreboard - sessionMode: ${tempScoreboard.sessionMode}',
-        );
-        print(
-          'DEBUG: Parsed scoreboard - teams count: ${tempScoreboard.teams.length}',
-        );
-        print(
-          'DEBUG: Parsed scoreboard - root players count: ${tempScoreboard.players?.length ?? 0}',
-        );
-        if (tempScoreboard.teams.isNotEmpty) {
-          print(
-            'DEBUG: First team players count: ${tempScoreboard.teams.first.players.length}',
-          );
-        }
         scoreboard(tempScoreboard);
       }
     } on DioException {
@@ -95,35 +80,24 @@ class ScoreboardController extends GetxController {
 
   // Get solo player for solo mode - using scoreboard model data directly
   Player? get soloPlayer {
-    print('DEBUG: Getting solo player...');
-    print('DEBUG: isTeamMode = $isTeamMode');
-    print('DEBUG: teams.length = ${teams.length}');
-
     if (isTeamMode) {
-      print('DEBUG: Returning null because isTeamMode is true');
       return null;
     }
 
     // In solo mode, first check if we have players at the root level (new API structure)
     final rootPlayers = scoreboard.value?.players;
     if (rootPlayers != null && rootPlayers.isNotEmpty) {
-      final player = rootPlayers.first;
-      print('DEBUG: Found solo player in root players: ${player.userName}');
-      return player;
+      return rootPlayers.first;
     }
 
     // Fallback: try to get player from teams array (old structure)
     if (teams.isNotEmpty) {
       final firstTeam = teams.first;
-      print('DEBUG: First team has ${firstTeam.players.length} players');
       if (firstTeam.players.isNotEmpty) {
-        final player = firstTeam.players.first;
-        print('DEBUG: Found solo player in team: ${player.userName}');
-        return player;
+        return firstTeam.players.first;
       }
     }
 
-    print('DEBUG: No solo player found, returning null');
     return null;
   }
 
