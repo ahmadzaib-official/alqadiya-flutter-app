@@ -37,8 +37,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
       // Initial fetch
       scoreboardController.getScoreboard(sessionId: sessionId);
 
-      // Start polling every 5 seconds
-      _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      // Start polling every 2 seconds
+      _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
         scoreboardController.refreshScoreboard(sessionId: sessionId);
       });
     }
@@ -421,9 +421,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                 ),
                 child: GameFooter(
                   isResultCompleted: true,
-
                   onGameResultTap: () {
-                    Get.toNamed(AppRoutes.gameResultSummaryScreen);
+                    Navigator.pop(context);
                   },
                 ),
               ),

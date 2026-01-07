@@ -745,7 +745,11 @@ class _GameScreenState extends State<GameScreen> {
                     right: 10.sp,
                     bottom: 5.sp,
                   ),
-                  child: GameFooter(onGameResultTap: () {}),
+                  child: GameFooter(
+                    onGameResultTap: () {
+                      Get.toNamed(AppRoutes.scoreboardScreen);
+                    },
+                  ),
                 ),
               ],
             ),
