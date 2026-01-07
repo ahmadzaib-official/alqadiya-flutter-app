@@ -304,15 +304,18 @@ class PlayerSelectionController extends GetxController {
 
     // Allow empty teams? User said "if they are arranged send their team".
     // I assume at least one player per team
+    // Check if any team is empty
     for (var team in teams) {
       if (team.playerCount == 0) {
-        Get.snackbar(
-          'Error',
-          '${team.name} has no players',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        CustomSnackbar.showError('${team.name} ${'has no players'.tr}');
         return false;
       }
+    }
+
+    // Check if any players are left unassigned
+    if (availablePlayers.isNotEmpty) {
+      CustomSnackbar.showError('All players must be assigned to a team'.tr);
+      return false;
     }
 
     return true;
@@ -330,12 +333,6 @@ class PlayerSelectionController extends GetxController {
   /// Proceed with team distribution
   Future<void> proceedWithTeams() async {
     if (!validateTeamDistribution()) {
-      return;
-    }
-
-    // Check if any players are left unassigned (optional validation)
-    if (availablePlayers.isNotEmpty) {
-      CustomSnackbar.showInfo('Some players are not assigned to any team'.tr);
       return;
     }
 
