@@ -6,6 +6,7 @@ import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/start_play_button.dart';
 import 'package:alqadiya_game/widgets/team_leader_card.dart';
+import 'package:alqadiya_game/widgets/leave_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,9 +24,9 @@ class ChooseTeamLeaderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        Navigator.pop(context);
+        await LeaveDialog.showAndNavigateHome(context);
       },
       child: Scaffold(
         backgroundColor: MyColors.backgroundColor,
@@ -74,7 +75,9 @@ class ChooseTeamLeaderScreen extends StatelessWidget {
                       ],
                     ),
                     actionButtons: GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap:
+                          () async =>
+                              await LeaveDialog.showAndNavigateHome(context),
                       child: SvgPicture.asset(MyIcons.arrowbackrounded),
                     ),
                   ),

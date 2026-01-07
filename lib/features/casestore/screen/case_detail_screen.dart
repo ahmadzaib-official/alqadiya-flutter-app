@@ -3,7 +3,6 @@ import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/case_detail_shimmer.dart';
-import 'package:alqadiya_game/widgets/copy_code_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/start_play_button.dart';

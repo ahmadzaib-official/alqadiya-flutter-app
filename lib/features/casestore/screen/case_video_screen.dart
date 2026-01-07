@@ -2,6 +2,7 @@ import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/widgets/custom_icon_text_button.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:alqadiya_game/widgets/leave_dialog.dart';
 import 'package:alqadiya_game/features/game/controller/cutscene_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:flutter/cupertino.dart';
@@ -164,123 +165,133 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
-      body: Stack(
-        children: [
-          Obx(() {
-            if (cutsceneController.isLoading.value) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await LeaveDialog.showAndNavigateHome(context);
+      },
+      child: Scaffold(
+        backgroundColor: MyColors.backgroundColor,
+        body: Stack(
+          children: [
+            Obx(() {
+              if (cutsceneController.isLoading.value) {
+                return Center(
+                  child: CupertinoActivityIndicator(
+                    color: Colors.white,
+                    radius: 20.r,
+                  ),
+                );
+              }
+
+              if (_player != null && _player!.isInitialized) {
+                return GestureDetector(
+                  onTap: _toggleControls,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      VideoPlayer(_player!.controller),
+                      if (_showControls)
+                        GestureDetector(
+                          onTap: _togglePlayPause,
+                          child: Container(
+                            height: 40.sp,
+                            width: 40.sp,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.r),
+                              color: MyColors.black.withValues(alpha: 0.3),
+                            ),
+                            child: Icon(
+                              _player!.controller.value.isPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
+                              color: Colors.white,
+                              size: 28.sp,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }
+
               return Center(
                 child: CupertinoActivityIndicator(
                   color: Colors.white,
                   radius: 20.r,
                 ),
               );
-            }
-
-            if (_player != null && _player!.isInitialized) {
-              return GestureDetector(
-                onTap: _toggleControls,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    VideoPlayer(_player!.controller),
-                    if (_showControls)
-                      GestureDetector(
-                        onTap: _togglePlayPause,
-                        child: Container(
-                          height: 40.sp,
-                          width: 40.sp,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100.r),
-                            color: MyColors.black.withValues(alpha: 0.3),
-                          ),
-                          child: Icon(
-                            _player!.controller.value.isPlaying
-                                ? Icons.pause
-                                : Icons.play_arrow,
-                            color: Colors.white,
-                            size: 28.sp,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            }
-
-            return Center(
-              child: CupertinoActivityIndicator(
-                color: Colors.white,
-                radius: 20.r,
-              ),
-            );
-          }),
-          // Top Bar
-          Padding(
-            padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-            child: HomeHeader(
-              onProfileTap: () async {
-                if (_player != null && _player!.isInitialized) {
-                  _player!.controller.pause();
-                }
-                await Get.toNamed(AppRoutes.settingsScreen);
-                // When returning from settings, show controls if video is paused
-                if (mounted && _player != null && _player!.isInitialized) {
-                  _checkAndShowControls();
-                }
-              },
-              showDivider: false,
-              onChromTap: () {},
-              actionButtons: GestureDetector(
-                onTap: () => Get.offAndToNamed(AppRoutes.homescreen),
-                child: SvgPicture.asset(MyIcons.arrowbackrounded),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 10.sp,
-            right: 10.sp,
-            bottom: 10.sp,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomIconTextButton(
-                  onTap: _replayVideo,
-                  buttonText: 'Replay'.tr,
-                  icon: MyIcons.refresh,
-                  isIconButton: true,
-                ),
-                Obx(() {
-                  final currentCutscene =
-                      _currentCutsceneIndex <
-                              cutsceneController.cutscenes.length
-                          ? cutsceneController.cutscenes[_currentCutsceneIndex]
-                          : null;
-                  final canSkip = currentCutscene?.isSkippable ?? true;
-
-                  if (!canSkip) {
-                    return SizedBox.shrink();
+            }),
+            // Top Bar
+            Padding(
+              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
+              child: HomeHeader(
+                onProfileTap: () async {
+                  if (_player != null && _player!.isInitialized) {
+                    _player!.controller.pause();
                   }
-                  return CustomIconTextButton(
-                    onTap: () {
-                      if (_currentCutsceneIndex <
-                          cutsceneController.cutscenes.length - 1) {
-                        _playNextCutscene();
-                      } else {
-                        // Use Get.toNamed instead of Get.offAndToNamed to preserve GameController
-                        Get.toNamed(AppRoutes.gameScreen);
-                      }
-                    },
-                    buttonText: 'Skip'.tr,
-                    icon: MyIcons.arrow_right,
-                    isIconButton: true,
-                  );
-                }),
-              ],
+                  await Get.toNamed(AppRoutes.settingsScreen);
+                  // When returning from settings, show controls if video is paused
+                  if (mounted && _player != null && _player!.isInitialized) {
+                    _checkAndShowControls();
+                  }
+                },
+                showDivider: false,
+                onChromTap: () {},
+                actionButtons: GestureDetector(
+                  onTap:
+                      () async =>
+                          await LeaveDialog.showAndNavigateHome(context),
+                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                ),
+              ),
             ),
-          ),
-        ],
+            Positioned(
+              left: 10.sp,
+              right: 10.sp,
+              bottom: 10.sp,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomIconTextButton(
+                    onTap: _replayVideo,
+                    buttonText: 'Replay'.tr,
+                    icon: MyIcons.refresh,
+                    isIconButton: true,
+                  ),
+                  Obx(() {
+                    final currentCutscene =
+                        _currentCutsceneIndex <
+                                cutsceneController.cutscenes.length
+                            ? cutsceneController
+                                .cutscenes[_currentCutsceneIndex]
+                            : null;
+                    final canSkip = currentCutscene?.isSkippable ?? true;
+
+                    if (!canSkip) {
+                      return SizedBox.shrink();
+                    }
+                    return CustomIconTextButton(
+                      onTap: () {
+                        if (_currentCutsceneIndex <
+                            cutsceneController.cutscenes.length - 1) {
+                          _playNextCutscene();
+                        } else {
+                          // Use Get.toNamed instead of Get.offAndToNamed to preserve GameController
+                          Get.toNamed(AppRoutes.gameScreen);
+                        }
+                      },
+                      buttonText: 'Skip'.tr,
+                      icon: MyIcons.arrow_right,
+                      isIconButton: true,
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/casestore/controller/player_selection_controller.dart';
 import 'package:alqadiya_game/widgets/available_players_section.dart';
@@ -9,6 +8,7 @@ import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/start_play_button.dart';
 import 'package:alqadiya_game/widgets/team_container.dart';
+import 'package:alqadiya_game/widgets/leave_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -75,9 +75,9 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        Get.offAllNamed(AppRoutes.homescreen);
+        await LeaveDialog.showAndNavigateHome(context);
       },
       child: Scaffold(
         backgroundColor: MyColors.backgroundColor,
@@ -126,7 +126,9 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                       ],
                     ),
                     actionButtons: GestureDetector(
-                      onTap: () => Get.offAllNamed(AppRoutes.homescreen),
+                      onTap:
+                          () async =>
+                              await LeaveDialog.showAndNavigateHome(context),
                       child: SvgPicture.asset(MyIcons.arrowbackrounded),
                     ),
                   ),

@@ -925,4 +925,8 @@ const Map<String, String> enUS = {
   'Server error occurred. Please try again later':
       'Server error occurred. Please try again later',
   'Phone Number': 'Phone Number',
+  'Leave Game?': 'Leave Game?',
+  'Are you sure you want to leave the game?':
+      'Are you sure you want to leave the game?',
+  'Yes': 'Yes',
 };
