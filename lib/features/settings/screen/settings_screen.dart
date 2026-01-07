@@ -113,9 +113,10 @@ class SettingsScreen extends StatelessWidget {
             CircleAvatar(
               radius: 15.w,
               backgroundImage: CachedNetworkImageProvider(
-                controller.user.value?.photoUrl ?? "https://i.pravatar.cc/300",
+                controller.user.value?.photoUrl ??
+                    "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
               ),
-              child: SvgPicture.asset(MyIcons.camera),
+              // child: SvgPicture.asset(MyIcons.camera),
             ),
             SizedBox(height: 15.h),
             // User Information
@@ -124,7 +125,8 @@ class SettingsScreen extends StatelessWidget {
             _buildInfoRow(
               'Phone:',
               controller.user.value?.phoneNumber != null
-                  ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
+                  ? '${controller.user.value?.phoneNumber ?? ""}'
+                  // ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
                   : "N/A",
             ),
             if (controller.user.value?.email != null &&
@@ -641,12 +643,12 @@ class SettingsScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            'Edit Profile'.tr,
-                            style: AppTextStyles.captionBold10().copyWith(
-                              color: MyColors.white,
-                            ),
-                          ),
+                          // Text(
+                          //   'Edit Profile'.tr,
+                          //   style: AppTextStyles.captionBold10().copyWith(
+                          //     color: MyColors.white,
+                          //   ),
+                          // ),
                           SizedBox(height: 20.h),
                           // Profile Picture
                           GestureDetector(
@@ -716,23 +718,23 @@ class SettingsScreen extends StatelessWidget {
                             label: 'Full Name'.tr,
                             controller: nameController,
                             hintText: 'Enter full name'.tr,
-                            labelFontSize: 9,
+                            labelFontSize: 8,
                             textFontSize: 10,
-                            hintFontSize: 9,
+                            hintFontSize: 8,
                             width: 150.w,
                           ),
                           SizedBox(height: 12.h),
                           // Phone Number Field
-                          // DenseTextField(
-                          //   label: 'Phone Number'.tr,
-                          //   controller: phoneController,
-                          //   hintText: 'Enter your number'.tr,
-                          //   keyboardType: TextInputType.phone,
-                          //   labelFontSize: 9,
-                          //   textFontSize: 10,
-                          //   hintFontSize: 9,
-                          //   width: 150.w,
-                          // ),
+                          DenseTextField(
+                            label: 'Phone Number'.tr,
+                            controller: phoneController,
+                            hintText: 'Enter your number'.tr,
+                            keyboardType: TextInputType.phone,
+                            labelFontSize: 8,
+                            textFontSize: 10,
+                            hintFontSize: 8,
+                            width: 150.w,
+                          ),
                           // SizedBox(height: 12.h),
                           // // Email Field
                           // DenseTextField(
@@ -866,17 +868,12 @@ class SettingsScreen extends StatelessWidget {
                                                 'Update profile result: $success',
                                               );
                                               if (success) {
-                                                // Close dialog after a small delay to avoid navigation conflicts
-                                                await Future.delayed(
-                                                  const Duration(
-                                                    milliseconds: 300,
-                                                  ),
-                                                );
-                                                if (context.mounted &&
-                                                    Navigator.of(
-                                                      context,
-                                                    ).canPop()) {
-                                                  Navigator.of(context).pop();
+                                                // Close dialog immediately
+                                                if (Navigator.canPop(context)) {
+                                                  Navigator.pop(context);
+                                                } else {
+                                                  // Fallback for GetX dialog
+                                                  Get.back();
                                                 }
                                               }
                                             },

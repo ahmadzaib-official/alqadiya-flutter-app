@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           theme: AppThemeInfo.themeData,
           debugShowCheckedModeBanner: false,
-          initialRoute: AppRoutes.splash,
+          initialRoute: AppRoutes.sigin,
         );
       },
     );
@@ -42,6 +42,9 @@ class MyApp extends StatelessWidget {
 // Qwerty@123
 
 /// local
+/// 0000000
+//  Qwerty@123
+
 // 1234569
 // Qwerty@123
 
