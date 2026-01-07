@@ -62,14 +62,14 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                 ),
               ),
               // Body
-              if (controller.isLoading.value &&
-                  controller.gameDetail.value.isBlank!) ...[
+              if (controller.isLoading.value ||
+                  (controller.gameDetail.value.id != null &&
+                      controller.gameDetail.value.id != this.gameId)) ...[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.sp),
                   child: CaseDetailShimmer(),
                 ),
-              ] else if (!controller.isLoading.value &&
-                  controller.gameDetail.value.isBlank!) ...[
+              ] else if (controller.gameDetail.value.id == null) ...[
                 Center(
                   child: Text(
                     'Failed to get case details...'.tr,
