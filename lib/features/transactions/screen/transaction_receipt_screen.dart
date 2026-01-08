@@ -16,7 +16,7 @@ class TransactionReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<TransactionReceiptController>();
-    return Scaffold( 
+    return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       body: GameBackground(
         imageUrl: "https://picsum.photos/200",
@@ -34,7 +34,7 @@ class TransactionReceiptScreen extends StatelessWidget {
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                     ),
                     actionButtons: GestureDetector(
-                      onTap: () => Get.back(),
+                      onTap: () => Navigator.pop(context),
                       child: SvgPicture.asset(MyIcons.arrowbackrounded),
                     ),
                   ),

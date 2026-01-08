@@ -114,7 +114,8 @@ class CachedVideoPlayerController extends GetxController {
     } on TimeoutException {
       if (!_isDisposed) {
         isLoading.value = false;
-        errorMessage.value = 'Video loading timeout. Please check your connection.';
+        errorMessage.value =
+            'Video loading timeout. Please check your connection.';
         await _disposePlayer();
       }
     } catch (e) {

@@ -54,7 +54,7 @@ class PlayerSelectionController extends GetxController {
 
   // Track dragged player
   final Rx<Player?> draggedPlayer = Rx<Player?>(null);
-  
+
   // Workers for cleanup
   Worker? _teamsWorker;
   Worker? _playersWorker;
@@ -108,7 +108,9 @@ class PlayerSelectionController extends GetxController {
     _syncPlayers(gameController.sessionPlayers);
 
     // Listen for updates - watch the list length and content changes
-    _playersWorker = ever(gameController.sessionPlayers, (List<MemberModel> players) {
+    _playersWorker = ever(gameController.sessionPlayers, (
+      List<MemberModel> players,
+    ) {
       _syncPlayers(players);
     });
   }
@@ -171,7 +173,7 @@ class PlayerSelectionController extends GetxController {
               (m) => Player(
                 id: m.userId ?? m.id ?? '',
                 name: m.userName ?? 'Unknown',
-                imageUrl: "https://picsum.photos/200",
+                imageUrl: m.userPhotoURL ?? '',
               ),
             )
             .toList();
@@ -302,15 +304,18 @@ class PlayerSelectionController extends GetxController {
 
     // Allow empty teams? User said "if they are arranged send their team".
     // I assume at least one player per team
+    // Check if any team is empty
     for (var team in teams) {
       if (team.playerCount == 0) {
-        Get.snackbar(
-          'Error',
-          '${team.name} has no players',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        CustomSnackbar.showError('${team.name} ${'has no players'.tr}');
         return false;
       }
+    }
+
+    // Check if any players are left unassigned
+    if (availablePlayers.isNotEmpty) {
+      CustomSnackbar.showError('All players must be assigned to a team'.tr);
+      return false;
     }
 
     return true;
@@ -328,12 +333,6 @@ class PlayerSelectionController extends GetxController {
   /// Proceed with team distribution
   Future<void> proceedWithTeams() async {
     if (!validateTeamDistribution()) {
-      return;
-    }
-
-    // Check if any players are left unassigned (optional validation)
-    if (availablePlayers.isNotEmpty) {
-      CustomSnackbar.showInfo('Some players are not assigned to any team'.tr);
       return;
     }
 

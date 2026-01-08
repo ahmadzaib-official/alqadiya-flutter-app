@@ -24,16 +24,18 @@ class GameResultModel {
       sessionId: json["sessionId"],
       caseName: json["caseName"],
       gameDisplayId: json["gameDisplayId"],
-      teams: json["teams"] != null
-          ? (json["teams"] as List)
-              .map((e) => TeamResult.fromJson(e))
-              .toList()
-          : null,
-      players: json["players"] != null
-          ? (json["players"] as List)
-              .map((e) => PlayerResult.fromJson(e))
-              .toList()
-          : null,
+      teams:
+          json["teams"] != null
+              ? (json["teams"] as List)
+                  .map((e) => TeamResult.fromJson(e))
+                  .toList()
+              : null,
+      players:
+          json["players"] != null
+              ? (json["players"] as List)
+                  .map((e) => PlayerResult.fromJson(e))
+                  .toList()
+              : null,
       winnerTeamId: json["winnerTeamId"],
       winnerTeamName: json["winnerTeamName"],
       completedAt: DateTime.tryParse(json["completedAt"] ?? ""),
@@ -57,6 +59,8 @@ class TeamResult {
     this.teamId,
     this.teamName,
     this.leaderName,
+    this.leaderPhotoURL,
+    this.members,
     this.suspectChosenName,
     this.totalScore,
     this.timeTaken,
@@ -69,6 +73,8 @@ class TeamResult {
   final String? teamId;
   final String? teamName;
   final String? leaderName;
+  final String? leaderPhotoURL;
+  final List<TeamMember>? members;
   final String? suspectChosenName;
   final int? totalScore;
   final String? timeTaken;
@@ -82,6 +88,13 @@ class TeamResult {
       teamId: json["teamId"],
       teamName: json["teamName"],
       leaderName: json["leaderName"],
+      leaderPhotoURL: json["leaderPhotoURL"],
+      members:
+          json["members"] != null
+              ? (json["members"] as List)
+                  .map((e) => TeamMember.fromJson(e))
+                  .toList()
+              : null,
       suspectChosenName: json["suspectChosenName"],
       totalScore: json["totalScore"] ?? 0,
       timeTaken: json["timeTaken"],
@@ -96,6 +109,8 @@ class TeamResult {
     "teamId": teamId,
     "teamName": teamName,
     "leaderName": leaderName,
+    "leaderPhotoURL": leaderPhotoURL,
+    "members": members?.map((e) => e.toJson()).toList(),
     "suspectChosenName": suspectChosenName,
     "totalScore": totalScore,
     "timeTaken": timeTaken,
@@ -103,6 +118,34 @@ class TeamResult {
     "hintsUsed": hintsUsed,
     "questionsAnswered": questionsAnswered,
     "totalQuestions": totalQuestions,
+  };
+}
+
+class TeamMember {
+  TeamMember({this.id, this.userId, this.name, this.photoURL, this.isLeader});
+
+  final String? id;
+  final String? userId;
+  final String? name;
+  final String? photoURL;
+  final bool? isLeader;
+
+  factory TeamMember.fromJson(Map<String, dynamic> json) {
+    return TeamMember(
+      id: json["id"],
+      userId: json["userId"],
+      name: json["name"],
+      photoURL: json["photoURL"],
+      isLeader: json["isLeader"] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "userId": userId,
+    "name": name,
+    "photoURL": photoURL,
+    "isLeader": isLeader,
   };
 }
 
@@ -155,5 +198,3 @@ class PlayerResult {
     "totalQuestions": totalQuestions,
   };
 }
-
-

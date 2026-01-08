@@ -5,7 +5,7 @@ class LanguageModel {
   String? image;
   bool? isRtl;
 
-  LanguageModel({this.isActive, this.slug, this.title, this.isRtl,this.image});
+  LanguageModel({this.isActive, this.slug, this.title, this.isRtl, this.image});
 
   LanguageModel.fromJson(Map<String, dynamic> json) {
     isActive = json['isActive'];

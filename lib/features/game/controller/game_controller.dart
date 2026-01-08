@@ -5,6 +5,7 @@ import 'package:alqadiya_game/features/game/model/game_session_model.dart';
 import 'package:alqadiya_game/features/casestore/model/member_model.dart';
 import 'package:alqadiya_game/features/game/model/team_model.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
+import 'package:alqadiya_game/features/casestore/controller/choose_team_leader_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -120,7 +121,9 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       if (isLoadMore) {
         isMoreLoading(false);
@@ -144,7 +147,9 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
@@ -159,6 +164,12 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final tempGameDetail = GameModel.fromJson(response.data);
         gameDetail(tempGameDetail);
+
+        // Refresh the game detail to reflect the purchase status in detail screen
+        await getGameDetail(gameId: gameId);
+
+        // Refresh the games list to reflect the purchase status in case store
+        await getGamesList();
         return true;
       }
       return false;
@@ -166,7 +177,9 @@ class GameController extends GetxController {
       return false;
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
       return false;
     } finally {
       isLoading(false);
@@ -194,7 +207,9 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
@@ -229,9 +244,33 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
+    }
+  }
+
+  // Update Game Session Status
+  Future<void> updateSessionStatus({required String status}) async {
+    final sessionId = gameSession.value?.id;
+    if (sessionId == null) return;
+
+    try {
+      final response = await GameRepository().updateGameSessionStatus(
+        sessionId: sessionId,
+        status: status,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        gameSession.value = gameSession.value?.copyWith(status: status);
+      }
+    } on DioException {
+      // Error already shown by interceptor
+    } catch (e) {
+      // Don't show error for status update failures, just log silently
+      // The game can still proceed even if status update fails
     }
   }
 
@@ -259,7 +298,6 @@ class GameController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data;
         this.teams.assignAll(list.map((e) => TeamModel.fromJson(e)).toList());
-        CustomSnackbar.showSuccess('Teams created successfully'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
         // Use post frame callback to ensure navigation happens safely
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -271,7 +309,9 @@ class GameController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
@@ -295,7 +335,7 @@ class GameController extends GetxController {
         // Update session players directly - this will trigger the ever() listener
         // in PlayerSelectionController to sync the players automatically
         final newPlayers = list.map((e) => MemberModel.fromJson(e)).toList();
-        
+
         // Clear and rebuild to ensure observable triggers properly
         // This is more reliable than assignAll() for triggering listeners
         sessionPlayers.clear();
@@ -308,8 +348,11 @@ class GameController extends GetxController {
     } catch (e) {
       if (!silent) {
         final errorMessage = e.toString().toLowerCase();
-        if (!errorMessage.contains('setstate') && !errorMessage.contains('markaas')) {
-          CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+        if (!errorMessage.contains('setstate') &&
+            !errorMessage.contains('markaas')) {
+          CustomSnackbar.showError(
+            "${'Something went wrong!!!:'.tr} ${e.toString()}",
+          );
         }
       }
     } finally {
@@ -334,9 +377,6 @@ class GameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Show success message first
-        CustomSnackbar.showSuccess('Members assigned successfully'.tr);
-        
         // Refresh session details to get updated team assignments (silently, without showing errors)
         await getGameSessionDetails(sessionId: sessionId, silent: true);
 
@@ -361,8 +401,11 @@ class GameController extends GetxController {
     } catch (e) {
       // Only show error if it's not a setState related error
       final errorMessage = e.toString().toLowerCase();
-      if (!errorMessage.contains('setstate') && !errorMessage.contains('markaas')) {
-        CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      if (!errorMessage.contains('setstate') &&
+          !errorMessage.contains('markaas')) {
+        CustomSnackbar.showError(
+          "${'Something went wrong!!!:'.tr} ${e.toString()}",
+        );
       }
     } finally {
       isLoading(false);
@@ -382,26 +425,109 @@ class GameController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        CustomSnackbar.showSuccess('Team leader assigned successfully'.tr);
+        // Refresh session details to get updated team leader information
+        final sessionId = gameSession.value?.id;
+        if (sessionId != null) {
+          await getGameSessionDetails(sessionId: sessionId, silent: true);
+        }
+
         await Future.delayed(const Duration(milliseconds: 500));
-        // Use post frame callback to ensure navigation happens safely
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.isRegistered<GameController>()) {
-            Get.toNamed(AppRoutes.caseVideoScreen);
+
+        // Sort teams by teamNumber to ensure proper order (team 1, then team 2)
+        final sortedTeams = List<TeamModel>.from(teams)
+          ..sort((a, b) => (a.teamNumber ?? 0).compareTo(b.teamNumber ?? 0));
+
+        // Find the current team's index
+        final currentTeamIndex = sortedTeams.indexWhere(
+          (team) => team.id == teamId,
+        );
+
+        // Find the next team that doesn't have a leader assigned
+        // Start searching from the team after the current one
+        TeamModel? nextTeamWithoutLeader;
+        for (int i = currentTeamIndex + 1; i < sortedTeams.length; i++) {
+          final team = sortedTeams[i];
+          if (team.leaderUserId == null ||
+              team.leaderUserId == '' ||
+              (team.leaderUserId is String &&
+                  (team.leaderUserId as String).isEmpty)) {
+            nextTeamWithoutLeader = team;
+            break;
           }
-        });
+        }
+
+        // If no team found after current, check teams before current (shouldn't happen in normal flow)
+        if (nextTeamWithoutLeader == null) {
+          for (int i = 0; i < currentTeamIndex; i++) {
+            final team = sortedTeams[i];
+            if (team.leaderUserId == null ||
+                team.leaderUserId == '' ||
+                (team.leaderUserId is String &&
+                    (team.leaderUserId as String).isEmpty)) {
+              nextTeamWithoutLeader = team;
+              break;
+            }
+          }
+        }
+
+        // Check if all teams have leaders
+        if (nextTeamWithoutLeader == null || nextTeamWithoutLeader.id == null) {
+          // All teams have leaders, update session status to "started" and proceed to case video screen
+          await updateSessionStatus(status: 'in_progress');
+
+          // Use post frame callback to ensure navigation happens safely
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isRegistered<GameController>()) {
+              Get.toNamed(AppRoutes.caseVideoScreen);
+            }
+          });
+        } else {
+          // Store the next team info in local variables to avoid null issues in callback
+          final nextTeamId = nextTeamWithoutLeader.id;
+          final nextTeamName = nextTeamWithoutLeader.teamName;
+
+          if (nextTeamId != null) {
+            // Use post frame callback to ensure navigation happens safely
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (Get.isRegistered<GameController>()) {
+                // Check if ChooseTeamLeaderController is already registered (same screen is open)
+                if (Get.isRegistered<ChooseTeamLeaderController>()) {
+                  // Update the existing controller with the next team's information
+                  // This will update the same screen for the next team
+                  final chooseLeaderController =
+                      Get.find<ChooseTeamLeaderController>();
+                  chooseLeaderController.updateTeamForNextSelection(
+                    newTeamId: nextTeamId,
+                    newTeamName: nextTeamName ?? '',
+                  );
+                } else {
+                  // Controller not registered, navigate to the screen
+                  Get.toNamed(
+                    AppRoutes.chooseTeamLeaderScreen,
+                    arguments: {'teamId': nextTeamId, 'teamName': nextTeamName},
+                  );
+                }
+              }
+            });
+          }
+        }
       }
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
   }
 
   // Get Game Session Details
-  Future<void> getGameSessionDetails({required String sessionId, bool silent = false}) async {
+  Future<void> getGameSessionDetails({
+    required String sessionId,
+    bool silent = false,
+  }) async {
     try {
       if (!silent) {
         isLoading(true);
@@ -417,7 +543,9 @@ class GameController extends GetxController {
           if (Get.isRegistered<GameController>()) {
             try {
               if (response.data['session'] != null) {
-                final session = GameSessionModel.fromJson(response.data['session']);
+                final session = GameSessionModel.fromJson(
+                  response.data['session'],
+                );
                 gameSession(session);
               }
               if (response.data['players'] != null) {
@@ -428,7 +556,9 @@ class GameController extends GetxController {
               }
               if (response.data['teams'] != null) {
                 final List<dynamic> teamsList = response.data['teams'];
-                teams.assignAll(teamsList.map((e) => TeamModel.fromJson(e)).toList());
+                teams.assignAll(
+                  teamsList.map((e) => TeamModel.fromJson(e)).toList(),
+                );
               }
             } catch (e) {
               // Silently handle setState errors during updates
@@ -446,8 +576,11 @@ class GameController extends GetxController {
       // Only show error if not in silent mode and not a setState error
       if (!silent) {
         final errorMessage = e.toString().toLowerCase();
-        if (!errorMessage.contains('setstate') && !errorMessage.contains('markaas')) {
-          CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+        if (!errorMessage.contains('setstate') &&
+            !errorMessage.contains('markaas')) {
+          CustomSnackbar.showError(
+            "${'Something went wrong!!!:'.tr} ${e.toString()}",
+          );
         }
       }
     } finally {
@@ -477,7 +610,9 @@ class GameController extends GetxController {
       // Error already shown by interceptor
       return false;
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
       return false;
     } finally {
       isLoading(false);

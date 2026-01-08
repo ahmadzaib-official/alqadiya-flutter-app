@@ -37,7 +37,7 @@ class LanguageSelectionButton extends StatelessWidget {
       }
       return 'English';
     } catch (e) {
-      return Get.locale?.languageCode == 'ar' ? 'عربي' : 'English';
+      return Get.locale?.languageCode == 'ar' ? 'عربي'.tr : 'English'.tr;
     }
   }
 
@@ -61,7 +61,8 @@ class LanguageSelectionButton extends StatelessWidget {
 
     final currentLang =
         Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
-    final currentLanguageName = currentLang == 'ar' ? 'Arabic' : 'English';
+    final currentLanguageName =
+        currentLang == 'ar' ? 'Arabic'.tr : 'English'.tr;
 
     // Check orientation
     final isLandscape =
@@ -83,11 +84,11 @@ class LanguageSelectionButton extends StatelessWidget {
       LanguageSelectionBottomSheet.show(
         currentLanguage: currentLanguageName,
         onEnglishSelected: () async {
-          Get.back();
+          Navigator.pop(context);
           await LocalizationService().changeLocale('en');
         },
         onArabicSelected: () async {
-          Get.back();
+          Navigator.pop(context);
           await LocalizationService().changeLocale('ar');
         },
       );

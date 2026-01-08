@@ -15,6 +15,7 @@ import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/gradient_box_border.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:alqadiya_game/widgets/leave_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,6 +24,7 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
+import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 
 class GameScreen extends StatefulWidget {
   GameScreen({super.key});
@@ -39,7 +41,7 @@ class _GameScreenState extends State<GameScreen> {
       Get.find<UserAnswerController>();
   late final GameFooterController footerController;
 
-  int? currentQuestionOrder;
+  int? currentQuestionIndex;
   var selectedAnswerIndex = Rx<int?>(null);
   bool hintUsed = false;
   DateTime? questionStartTime;
@@ -49,6 +51,20 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Reset all controllers and local state when entering game screen
+    // This ensures fresh state when coming back to the game screen
+    questionController.reset();
+    answerController.reset();
+
+    // Reset local state variables
+    currentQuestionIndex = null;
+    selectedAnswerIndex.value = null;
+    hintUsed = false;
+    questionStartTime = null;
+    lastSubmittedAnswer = null;
+    _isNavigatingToResult = false;
+
     // Initialize timer controller (permanent to persist across navigation)
     timerController = Get.put(GameTimerController(), permanent: true);
 
@@ -58,42 +74,49 @@ class _GameScreenState extends State<GameScreen> {
     }
     footerController = Get.find<GameFooterController>();
 
+    // Reset footer controller data
+    footerController.reset();
+
     // Listen to questions changes to set the first question when loaded
     ever(questionController.questions, (questions) {
       if (questions.isNotEmpty && currentQuestion == null) {
-        // Find the first question (minimum order)
-        final sortedQuestions = List<QuestionModel>.from(questions)
-          ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
-
-        final firstQuestion = sortedQuestions.firstOrNull;
-        if (firstQuestion != null && firstQuestion.order != null) {
-          // Set to the first question's order
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && currentQuestion == null) {
-              setState(() {
-                currentQuestionOrder = firstQuestion.order;
-              });
-            }
-          });
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && currentQuestion == null) {
+            setState(() {
+              // Use index-based navigation by default (index 0)
+              currentQuestionIndex = 0;
+            });
+          }
+        });
       }
     });
 
     // Fetch questions for the game
-    final gameController = Get.find<GameController>();
-    final gameId =
-        gameController.gameDetail.value?.id ??
+    final gameController;
+    if (!Get.isRegistered<GameController>()) {
+      gameController = Get.put(GameController(), permanent: true);
+    } else {
+      gameController = Get.find<GameController>();
+    }
+    var gameId =
+        gameController.gameDetail.value.id ??
         gameController.gameSession.value?.gameId;
 
-    if (gameId != null) {
+    // If gameId is null but we have a sessionId, get gameId from session status API
+    // This happens when coming from join game screen
+    if (gameId == null && gameController.gameSession.value?.id != null) {
+      _getGameIdFromSessionStatus(gameController);
+    } else if (gameId != null) {
       // Fetch game details if not already loaded
-      if (gameController.gameDetail.value?.id == null) {
+      if (gameController.gameDetail.value.id == null) {
         gameController.getGameDetail(gameId: gameId).then((_) {
           // Start timer with duration from game details after loading
+          // Timer controller will detect if it's a new game and reset, or resume if same game
           _startTimerFromGameDetails(gameController);
         });
       } else {
         // Game details already loaded, start timer immediately
+        // Timer controller will detect if it's a new game and reset, or resume if same game
         _startTimerFromGameDetails(gameController);
       }
 
@@ -101,16 +124,107 @@ class _GameScreenState extends State<GameScreen> {
       questionController.getQuestionsByGame(gameId: gameId, language: 'en');
     } else {
       // Fallback: start timer with default values if game details not available
-      timerController.startTimer();
+      timerController.startTimer(gameId: null);
     }
 
     // Initialize question start time
     questionStartTime = DateTime.now();
   }
 
+  Future<void> _getGameIdFromSessionStatus(
+    GameController gameController,
+  ) async {
+    final sessionId = gameController.gameSession.value?.id;
+    if (sessionId == null) {
+      // Fallback: start timer with default values if session ID not available
+      timerController.startTimer(gameId: null);
+      return;
+    }
+
+    try {
+      // Get game ID from session status API
+      final response = await GameRepository().getGameSessionStatus(
+        sessionId: sessionId,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data != null) {
+          // Extract gameId from response
+          // The response might have gameId directly or in a nested structure
+          String? gameId;
+
+          if (response.data['gameId'] != null) {
+            gameId = response.data['gameId'] as String?;
+          } else if (response.data['session'] != null &&
+              response.data['session']['gameId'] != null) {
+            gameId = response.data['session']['gameId'] as String?;
+          } else {
+            // Fallback: use gameId from gameSession if available
+            gameId = gameController.gameSession.value?.gameId;
+          }
+
+          if (gameId != null && gameId.isNotEmpty) {
+            // Fetch game details using the game ID from session status API
+            await gameController.getGameDetail(gameId: gameId);
+
+            // Start timer with duration from game details after loading
+            _startTimerFromGameDetails(gameController);
+
+            // Fetch questions
+            questionController.getQuestionsByGame(
+              gameId: gameId,
+              language: 'en',
+            );
+          } else {
+            // Fallback: try to get gameId from session details API
+            await _getGameIdFromSessionDetails(gameController, sessionId);
+          }
+        } else {
+          // Fallback: try to get gameId from session details API
+          await _getGameIdFromSessionDetails(gameController, sessionId);
+        }
+      } else {
+        // Fallback: try to get gameId from session details API
+        await _getGameIdFromSessionDetails(gameController, sessionId);
+      }
+    } catch (e) {
+      // Fallback: try to get gameId from session details API
+      await _getGameIdFromSessionDetails(gameController, sessionId);
+    }
+  }
+
+  Future<void> _getGameIdFromSessionDetails(
+    GameController gameController,
+    String sessionId,
+  ) async {
+    try {
+      // Try to get gameId from session details API
+      await gameController.getGameSessionDetails(sessionId: sessionId);
+
+      // After fetching session details, check if gameId is now available
+      final gameId = gameController.gameSession.value?.gameId;
+
+      if (gameId != null && gameId.isNotEmpty) {
+        // Fetch game details using the game ID
+        await gameController.getGameDetail(gameId: gameId);
+        _startTimerFromGameDetails(gameController);
+        questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+      } else {
+        // Final fallback: start timer with default values
+        timerController.startTimer(gameId: null);
+      }
+    } catch (e) {
+      // Final fallback: start timer with default values
+      timerController.startTimer(gameId: null);
+    }
+  }
+
   void _startTimerFromGameDetails(GameController gameController) {
     // Get timer duration from game details
     final estimatedDuration = gameController.gameDetail.value.estimatedDuration;
+    final gameId =
+        gameController.gameDetail.value.id ??
+        gameController.gameSession.value?.gameId;
 
     if (estimatedDuration != null && estimatedDuration > 0) {
       // estimatedDuration is in minutes, convert to minutes:seconds
@@ -119,29 +233,34 @@ class _GameScreenState extends State<GameScreen> {
       timerController.startTimer(
         initialMinutes: minutes,
         initialSeconds: seconds,
+        gameId: gameId,
       );
     } else {
       // Fallback to default if duration not available
-      timerController.startTimer();
+      timerController.startTimer(gameId: gameId);
     }
   }
 
   int get totalQuestions => questionController.questions.length;
-  int get correctAnswers =>
-      questionController.questions
-          .where((q) => answerController.lastAnswer.value?.isCorrect == true)
-          .length;
+  int get correctAnswers => footerController.correctAnswers;
 
   QuestionModel? get currentQuestion {
-    if (currentQuestionOrder == null) return null;
-    return questionController.questions.firstWhereOrNull(
-      (q) => q.order == currentQuestionOrder,
-    );
+    if (currentQuestionIndex == null) return null;
+
+    // Use index-based navigation by default
+    if (!questionController.useOrderBasedNavigation.value) {
+      return questionController.getQuestionByIndex(currentQuestionIndex!);
+    } else {
+      // Fallback to order-based if flag is true
+      return questionController.questions.firstWhereOrNull(
+        (q) => q.order == currentQuestionIndex,
+      );
+    }
   }
 
-  void _loadQuestion(int order) {
+  void _loadQuestion(int index) {
     setState(() {
-      currentQuestionOrder = order;
+      currentQuestionIndex = index;
       selectedAnswerIndex.value = null;
       hintUsed = false;
       questionStartTime = DateTime.now();
@@ -163,7 +282,7 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
 
-    final selectedAnswer = question.answers?[selectedAnswerIndex.value!];
+    final selectedAnswer = question.answers[selectedAnswerIndex.value!];
     if (selectedAnswer == null || selectedAnswer.id == null) {
       CustomSnackbar.showError('Invalid answer selected'.tr);
       return;
@@ -217,339 +336,372 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _nextQuestion() {
-    if (currentQuestionOrder != null &&
-        currentQuestionOrder! < totalQuestions) {
-      _loadQuestion(currentQuestionOrder! + 1);
+    if (currentQuestionIndex != null &&
+        currentQuestionIndex! < totalQuestions - 1) {
+      _loadQuestion(currentQuestionIndex! + 1);
     }
   }
 
   @override
   void dispose() {
+    // Pause the timer when leaving the game screen
+    if (Get.isRegistered<GameTimerController>()) {
+      timerController.pauseTimer();
+    }
     // Don't dispose the controller here as it needs to persist across screens
     // It will be disposed when the game ends or user navigates away from game flow
     super.dispose();
+  }
+
+  Future<void> _showExitConfirmationDialog() async {
+    await LeaveDialog.showAndNavigateHome(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final gameController = Get.find<GameController>();
 
-    return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
-      body: Obx(
-        () => GameBackground(
-          isPurchased: true,
-          imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
-              "https://picsum.photos/200",
-          body: Column(
-            children: [
-              // Top Bar
-              Padding(
-                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-                child: HomeHeader(
-                  onChromTap: () {},
-                  title: Row(
-                    children: [
-                      Text(
-                        'Game : '.tr,
-                        style: AppTextStyles.heading2().copyWith(
-                          fontSize: 10.sp,
-                          color: MyColors.white.withValues(alpha: 0.5),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _showExitConfirmationDialog();
+      },
+      child: Scaffold(
+        backgroundColor: MyColors.backgroundColor,
+        body: Obx(
+          () => GameBackground(
+            isPurchased: true,
+            imageUrl:
+                gameController.gameDetail.value.coverImageUrl ??
+                gameController.gameDetail.value.coverImage ??
+                "https://picsum.photos/200",
+            body: Column(
+              children: [
+                // Top Bar
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.sp,
+                    right: 10.sp,
+                    top: 5.sp,
+                  ),
+                  child: HomeHeader(
+                    onChromTap: () {},
+                    title: Row(
+                      children: [
+                        Text(
+                          'Game : '.tr,
+                          style: AppTextStyles.heading2().copyWith(
+                            fontSize: 10.sp,
+                            color: MyColors.white.withValues(alpha: 0.5),
+                          ),
                         ),
-                      ),
-                      Text(
-                        gameController.gameDetail.value?.title ??
-                            'Who did it?'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 10.sp,
-                        ),
-                      ),
-                      SizedBox(width: 20.w),
-                      Text(
-                        'Timer '.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 10.sp,
-                          color: MyColors.white.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      Obx(
-                        () => Text(
-                          timerController.timerText.value,
+                        Text(
+                          gameController.gameDetail.value.title ??
+                              'Who did it?'.tr,
                           style: AppTextStyles.heading1().copyWith(
                             fontSize: 10.sp,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
-                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                        SizedBox(width: 20.w),
+                        Text(
+                          'Timer '.tr,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 10.sp,
+                            color: MyColors.white.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        Obx(
+                          () => Text(
+                            timerController.timerText.value,
+                            style: AppTextStyles.heading1().copyWith(
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actionButtons: GestureDetector(
+                      onTap: () => _showExitConfirmationDialog(),
+                      child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                    ),
                   ),
                 ),
-              ),
 
-              // 10px spacing after header
-              SizedBox(height: 5.h),
-              // Body - Centered
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// Left Buttons
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'List of suspects'.tr,
-                                style: AppTextStyles.heading1().copyWith(
-                                  fontSize: 6.sp,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6.h),
-                          Image(
-                            image: AssetImage(MyImages.suspects),
-                            height: 80.h,
-                          ),
-                          CustomButton(
-                            width: 50.w,
-                            height: 40.h,
-                            borderRadius: 100.r,
-                            text: 'View List'.tr,
-                            fontSize: 5.sp,
-                            backgroundColor: MyColors.redButtonColor,
-                            onPressed: () {
-                              Get.toNamed(AppRoutes.suspectsListScreen);
-                            },
-                            preffix: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: MyColors.brightRedColor,
-                              size: 7.sp,
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 6.h),
-                            child: Container(
-                              width: 60.w,
-                              height: 1.h,
-                              color: MyColors.white.withValues(alpha: 0.1),
-                            ),
-                          ),
-                          SizedBox(height: 8.h),
-                          Text(
-                            'Evidence'.tr,
-                            style: AppTextStyles.heading1().copyWith(
-                              fontSize: 6.sp,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 8.h),
-                          CustomButton(
-                            width: 60.w,
-                            height: 40.h,
-                            borderRadius: 100.r,
-                            backgroundColor: MyColors.greenColor,
-                            text: 'Show Evidence'.tr,
-                            fontSize: 5.sp,
-                            onPressed: () {
-                              Get.toNamed(AppRoutes.evidenceListScreen);
-                            },
-                            preffix: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: MyColors.darkGreenColor,
-                              size: 7.sp,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 5.w),
-
-                      /// Question Card
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: MyColors.redButtonColor),
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 50.h,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 8.w,
-                                  vertical: 8.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: MyColors.redButtonColor,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(18.r),
-                                    topRight: Radius.circular(18.r),
+                // 10px spacing after header
+                SizedBox(height: 5.h),
+                // Body - Centered
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// Left Buttons
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'List of suspects'.tr,
+                                  style: AppTextStyles.heading1().copyWith(
+                                    fontSize: 6.sp,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    // Left: Question of the case
-                                    Text(
-                                      'Question of the case'.tr,
-                                      style: AppTextStyles.heading1().copyWith(
-                                        fontSize: 6.sp,
-                                        color: MyColors.white,
-                                      ),
-                                    ),
-                                    Spacer(flex: 1),
-                                    // Center: Stepper
-                                    QuestionStepper(
-                                      currentQuestion:
-                                          currentQuestionOrder ?? 1,
-                                      totalQuestions:
-                                          totalQuestions > 0
-                                              ? totalQuestions
-                                              : 1,
-                                    ),
-                                    Spacer(flex: 5),
+                              ],
+                            ),
+                            SizedBox(height: 6.h),
+                            Image(
+                              image: AssetImage(MyImages.suspects),
+                              height: 80.h,
+                            ),
+                            CustomButton(
+                              width: 50.w,
+                              height: 40.h,
+                              borderRadius: 100.r,
+                              text: 'View List'.tr,
+                              fontSize: 5.sp,
+                              backgroundColor: MyColors.redButtonColor,
+                              onPressed: () {
+                                Get.toNamed(AppRoutes.suspectsListScreen);
+                              },
+                              preffix: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: MyColors.brightRedColor,
+                                size: 7.sp,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 6.h),
+                              child: Container(
+                                width: 60.w,
+                                height: 1.h,
+                                color: MyColors.white.withValues(alpha: 0.1),
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              'Evidence'.tr,
+                              style: AppTextStyles.heading1().copyWith(
+                                fontSize: 6.sp,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 8.h),
+                            CustomButton(
+                              width: 60.w,
+                              height: 40.h,
+                              borderRadius: 100.r,
+                              backgroundColor: MyColors.greenColor,
+                              text: 'Show Evidence'.tr,
+                              fontSize: 5.sp,
+                              onPressed: () {
+                                Get.toNamed(AppRoutes.evidenceListScreen);
+                              },
+                              preffix: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: MyColors.darkGreenColor,
+                                size: 7.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(width: 5.w),
 
-                                    // Right: Correct answers
-                                    Text(
-                                      'Correct answers '.tr,
-                                      style: AppTextStyles.heading1().copyWith(
-                                        fontSize: 6.sp,
-                                        color: MyColors.white.withValues(
-                                          alpha: 0.5,
-                                        ),
-                                      ),
+                        /// Question Card
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: MyColors.redButtonColor,
+                              ),
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            alignment: Alignment.center,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 50.h,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w,
+                                    vertical: 8.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: MyColors.redButtonColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(18.r),
+                                      topRight: Radius.circular(18.r),
                                     ),
-                                    Obx(
-                                      () => Text(
-                                        '${answerController.lastAnswer.value?.isCorrect == true ? correctAnswers : correctAnswers}'
-                                            .tr,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // Left: Question of the case
+                                      Text(
+                                        'Question of the case'.tr,
                                         style: AppTextStyles.heading1()
                                             .copyWith(
-                                              fontSize: 7.sp,
+                                              fontSize: 6.sp,
                                               color: MyColors.white,
                                             ),
                                       ),
-                                    ),
-                                    Text(
-                                      '/$totalQuestions'.tr,
-                                      style: AppTextStyles.heading1().copyWith(
-                                        fontSize: 6.sp,
-                                        color: MyColors.white.withValues(
-                                          alpha: 0.5,
+                                      Spacer(flex: 1),
+                                      // Center: Stepper
+                                      QuestionStepper(
+                                        currentQuestion:
+                                            currentQuestionIndex != null
+                                                ? currentQuestionIndex! + 1
+                                                : 1,
+                                        totalQuestions:
+                                            totalQuestions > 0
+                                                ? totalQuestions
+                                                : 1,
+                                      ),
+                                      Spacer(flex: 5),
+
+                                      // Right: Correct answers
+                                      Text(
+                                        'Correct answers '.tr,
+                                        style: AppTextStyles.heading1()
+                                            .copyWith(
+                                              fontSize: 6.sp,
+                                              color: MyColors.white.withValues(
+                                                alpha: 0.5,
+                                              ),
+                                            ),
+                                      ),
+                                      Obx(
+                                        () => Text(
+                                          '${footerController.correctAnswers}',
+                                          style: AppTextStyles.heading1()
+                                              .copyWith(
+                                                fontSize: 7.sp,
+                                                color: MyColors.white,
+                                              ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Text(
+                                        '/$totalQuestions'.tr,
+                                        style: AppTextStyles.heading1()
+                                            .copyWith(
+                                              fontSize: 6.sp,
+                                              color: MyColors.white.withValues(
+                                                alpha: 0.5,
+                                              ),
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 8.h),
+                                SizedBox(height: 8.h),
 
-                              // Hint Button
-                              Obx(() {
-                                // Access observable to trigger rebuild
-                                final questions = questionController.questions;
-                                final isLoading =
-                                    questionController.isLoading.value;
-                                final question = questions.firstWhereOrNull(
-                                  (q) => q.order == currentQuestionOrder,
-                                );
-                                if (question == null) {
-                                  if (isLoading && questions.isEmpty) {
+                                // Hint Button
+                                Obx(() {
+                                  // Access observable to trigger rebuild
+                                  final questions =
+                                      questionController.questions;
+                                  final isLoading =
+                                      questionController.isLoading.value;
+                                  final question = currentQuestion;
+                                  if (question == null) {
+                                    if (isLoading && questions.isEmpty) {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          color: MyColors.redButtonColor,
+                                        ),
+                                      );
+                                    }
+                                    // If questions are loaded but current question not found, show error
                                     return Center(
-                                      child: CircularProgressIndicator(
-                                        color: MyColors.redButtonColor,
+                                      child: Text(
+                                        'Question not found'.tr,
+                                        style: AppTextStyles.heading1()
+                                            .copyWith(
+                                              fontSize: 6.sp,
+                                              color: MyColors.white,
+                                            ),
                                       ),
                                     );
                                   }
-                                  // If questions are loaded but current question not found, show error
-                                  return Center(
-                                    child: Text(
-                                      'Question not found'.tr,
-                                      style: AppTextStyles.heading1().copyWith(
-                                        fontSize: 6.sp,
-                                        color: MyColors.white,
-                                      ),
-                                    ),
-                                  );
-                                }
 
-                                return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    if (question.hints != null &&
-                                        question.hints!.isNotEmpty)
-                                      _buildHintButton(question),
-                                    SizedBox(width: 8.h),
-                                    // Question Text
-                                    Expanded(
-                                      child: Text(
-                                        question.question ?? '',
-                                        style:
-                                            AppTextStyles.captionRegular10medium()
-                                                .copyWith(
-                                                  fontSize: 6.sp,
-                                                  color: MyColors.white,
-                                                ),
-                                        textAlign: TextAlign.center,
+                                  return Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (question.hints != null &&
+                                          question.hints!.isNotEmpty)
+                                        _buildHintButton(question),
+                                      SizedBox(width: 8.h),
+                                      // Question Text
+                                      Expanded(
+                                        child: Text(
+                                          question.question ?? '',
+                                          style:
+                                              AppTextStyles.captionRegular10medium()
+                                                  .copyWith(
+                                                    fontSize: 6.sp,
+                                                    color: MyColors.white,
+                                                  ),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                              SizedBox(height: 16.h),
-                              // Answer Options
-                              Obx(() {
-                                // Access observables to trigger rebuild
-                                final questions = questionController.questions;
-                                final lastAnswer =
-                                    answerController.lastAnswer.value;
-                                final selectedIndex = selectedAnswerIndex.value;
-                                return _buildAnswerOptions(
-                                  questions,
-                                  lastAnswer,
-                                  selectedIndex,
-                                );
-                              }),
-                              const Spacer(),
-                              // Footer Buttons
-                              _buildFooterButtons(),
-                              SizedBox(height: 10.h),
-                            ],
+                                    ],
+                                  );
+                                }),
+                                SizedBox(height: 16.h),
+                                // Answer Options
+                                Obx(() {
+                                  // Access observables to trigger rebuild
+                                  final questions =
+                                      questionController.questions;
+                                  final lastAnswer =
+                                      answerController.lastAnswer.value;
+                                  final selectedIndex =
+                                      selectedAnswerIndex.value;
+                                  return _buildAnswerOptions(
+                                    questions,
+                                    lastAnswer,
+                                    selectedIndex,
+                                  );
+                                }),
+                                const Spacer(),
+                                // Footer Buttons
+                                _buildFooterButtons(),
+                                SizedBox(height: 10.h),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              // Footer
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 10.sp,
-                  right: 10.sp,
-                  bottom: 5.sp,
+                // Footer
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.sp,
+                    right: 10.sp,
+                    bottom: 5.sp,
+                  ),
+                  child: GameFooter(
+                    onGameResultTap: () {
+                      Get.toNamed(AppRoutes.scoreboardScreen);
+                    },
+                  ),
                 ),
-                child: GameFooter(onGameResultTap: () {}),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -557,7 +709,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildHintButton(QuestionModel question) {
-    final hint = question.hints?.firstOrNull;
+    final hint = question.hints.firstOrNull;
     final pointsCost = hint?.pointsCost ?? 0;
 
     return GestureDetector(
@@ -590,6 +742,7 @@ class _GameScreenState extends State<GameScreen> {
         );
       },
       child: Container(
+        margin: EdgeInsets.only(left: 10.w),
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: MyColors.BlueColor,
@@ -633,9 +786,7 @@ class _GameScreenState extends State<GameScreen> {
     UserAnswerModel? lastAnswer,
     int? selectedIndex,
   ) {
-    final question = questions.firstWhereOrNull(
-      (q) => q.order == currentQuestionOrder,
-    );
+    final question = currentQuestion;
     if (question == null ||
         question.answers == null ||
         question.answers!.isEmpty) {
@@ -650,7 +801,7 @@ class _GameScreenState extends State<GameScreen> {
       );
     }
 
-    final answers = question.answers!;
+    final answers = question.answers;
     // Check if the answer belongs to the current question
     final isAnswerSubmitted =
         lastAnswer != null && lastAnswer.questionId == question.id;
@@ -804,8 +955,8 @@ class _GameScreenState extends State<GameScreen> {
                         _submitAnswer();
                       } else {
                         // Answer already submitted - move to next question or result
-                        if (currentQuestionOrder != null &&
-                            currentQuestionOrder! < totalQuestions) {
+                        if (currentQuestionIndex != null &&
+                            currentQuestionIndex! < totalQuestions - 1) {
                           _nextQuestion();
                         } else {
                           // Last question already answered - navigate to result
@@ -867,6 +1018,7 @@ class _GameScreenState extends State<GameScreen> {
                         if (lastAnswer.isCorrect == true)
                           SvgPicture.asset(
                             MyIcons.circle_check_outline,
+                            height: 18.h,
                             colorFilter: ColorFilter.mode(
                               Colors.white,
                               BlendMode.srcIn,
@@ -875,6 +1027,7 @@ class _GameScreenState extends State<GameScreen> {
                         else
                           SvgPicture.asset(
                             MyIcons.close,
+                            height: 18.h,
                             colorFilter: ColorFilter.mode(
                               Colors.white,
                               BlendMode.srcIn,

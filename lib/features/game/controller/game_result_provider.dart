@@ -12,10 +12,16 @@ class GameResultController extends GetxController {
   var isLoading = false.obs;
 
   // Get Game Result
-  Future<void> getGameResult({required String sessionId}) async {
+  Future<void> getGameResult({
+    required String sessionId,
+    bool silent = false,
+  }) async {
     try {
-      isLoading(true);
-      gameResult(null);
+      // Only show loading and clear result on initial load, not on polling
+      if (!silent) {
+        isLoading(true);
+        gameResult(null);
+      }
 
       final response = await _repository.getGameResult(sessionId: sessionId);
 
@@ -25,12 +31,20 @@ class GameResultController extends GetxController {
       }
     } on DioException {
       // Error already shown by interceptor
+      // Only show loading state change on initial load
+      if (!silent) {
+        isLoading(false);
+      }
     } catch (e) {
-      CustomSnackbar.showError(
-        "${'Something went wrong!!!:'.tr} ${e.toString()}",
-      );
+      if (!silent) {
+        CustomSnackbar.showError(
+          "${'Something went wrong!!!:'.tr} ${e.toString()}",
+        );
+      }
     } finally {
-      isLoading(false);
+      if (!silent) {
+        isLoading(false);
+      }
     }
   }
 
@@ -61,11 +75,23 @@ class GameResultController extends GetxController {
   // Helper method for backward compatibility with existing screens
   List<Map<String, dynamic>> get teamResults {
     if (gameResult.value?.teams == null) return [];
+
     return gameResult.value!.teams!.map((team) {
+      // Get players from team members
+      final members = team.members ?? [];
+
+      final players =
+          members.map((member) {
+            return {
+              'name': member.name ?? '',
+              'avatar': member.photoURL ?? '',
+              'isLeader': member.isLeader ?? false,
+            };
+          }).toList();
+
       return {
         'name': team.teamName ?? '',
-        'players':
-            [], // Players not in team result, would need separate API call
+        'players': players,
         'suspectName': team.suspectChosenName ?? '',
         'suspectImage': '', // Image not in API response
         'isCorrect': false, // Would need to check against correct suspect
@@ -103,6 +129,7 @@ class GameResultController extends GetxController {
       final team = result.teams!.first;
       return {
         'name': team.leaderName ?? team.teamName ?? '',
+        'avatar': team.leaderPhotoURL ?? '',
         'suspectName': team.suspectChosenName ?? '',
         'suspectImage': '', // Image not in API response
         'isCorrect': false, // Would need to check against correct suspect

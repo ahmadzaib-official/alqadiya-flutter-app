@@ -15,6 +15,7 @@ class UserController extends GetxController {
   var user = Rxn<UserModel>();
   var isLoading = false.obs;
   var isUpdatingProfile = false.obs;
+  var isDeletingAccount = false.obs;
 
   @override
   void onInit() {
@@ -51,7 +52,7 @@ class UserController extends GetxController {
     try {
       // Determine file type from file extension
       final fileType = _getMimeType(imageFile.path);
-      
+
       // Get upload link from API
       final uploadLinkResponse = await ApiFetch().getPhotoUploadLink(
         fileType: fileType,
@@ -74,7 +75,7 @@ class UserController extends GetxController {
 
       // Upload to S3 using http package
       final success = await _uploadToS3(uploadData, imageFile);
-      
+
       if (success) {
         DebugPoint.log('✅ Photo uploaded successfully, uploadId: $uploadId');
         return uploadId;
@@ -118,7 +119,8 @@ class UserController extends GetxController {
 
       // Add required S3 form fields (use exact key from response - cannot modify due to Policy signature)
       request.fields.addAll({
-        'key': fileKey, // Must use exact key from API (Policy is signed with this key)
+        'key':
+            fileKey, // Must use exact key from API (Policy is signed with this key)
         'bucket': fields['bucket'],
         'X-Amz-Algorithm': fields['X-Amz-Algorithm'],
         'X-Amz-Credential': fields['X-Amz-Credential'],
@@ -140,7 +142,7 @@ class UserController extends GetxController {
       DebugPoint.log('Sending S3 upload request...');
       final response = await request.send();
       final success = response.statusCode == 200 || response.statusCode == 204;
-      
+
       if (success) {
         DebugPoint.log('✅ Uploaded successfully: ${file.path}');
         DebugPoint.log('✅ Uploaded to S3 key: $fileKey');
@@ -237,6 +239,34 @@ class UserController extends GetxController {
       return false;
     } finally {
       isUpdatingProfile(false);
+    }
+  }
+
+  // Delete user account
+  Future<bool> deleteAccount() async {
+    try {
+      isDeletingAccount(true);
+
+      final response = await ApiFetch().deleteAccount();
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Clear user data and logout
+        user.value = null;
+        final prefs = Get.find<Preferences>();
+        await prefs.clear();
+
+        CustomSnackbar.showSuccess('Account deleted successfully');
+        return true;
+      }
+      return false;
+    } on DioException {
+      // Error already shown by interceptor
+      return false;
+    } catch (e) {
+      CustomSnackbar.showError("Failed to delete account: ${e.toString()}");
+      return false;
+    } finally {
+      isDeletingAccount(false);
     }
   }
 }

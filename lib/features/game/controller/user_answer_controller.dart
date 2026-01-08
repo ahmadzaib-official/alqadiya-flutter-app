@@ -48,4 +48,10 @@ class UserAnswerController extends GetxController {
       isLoading(false);
     }
   }
+
+  // Reset answer data
+  void reset() {
+    lastAnswer.value = null;
+    isLoading.value = false;
+  }
 }

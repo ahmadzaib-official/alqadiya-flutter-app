@@ -1,4 +1,3 @@
-
 class AppStrings {
   static const String userId = "userID";
   static const String accessToken = "accessToken";

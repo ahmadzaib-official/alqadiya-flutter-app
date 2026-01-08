@@ -6,12 +6,12 @@ import 'package:get/get.dart';
 
 class EvidenceController extends GetxController {
   final _repository = EvidenceRepository();
-  
+
   RxList<EvidenceModel> evidences = <EvidenceModel>[].obs;
   Rx<EvidenceModel?> evidenceDetail = Rx<EvidenceModel?>(null);
   var isLoading = false.obs;
   var isMoreLoading = false.obs;
-  
+
   // Pagination variables
   int currentPage = 1;
   int limit = 10;
@@ -43,9 +43,8 @@ class EvidenceController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> list = response.data['data'] ?? [];
-        final tempEvidences = list
-            .map((e) => EvidenceModel.fromJson(e))
-            .toList();
+        final tempEvidences =
+            list.map((e) => EvidenceModel.fromJson(e)).toList();
 
         if (isLoadMore) {
           evidences.addAll(tempEvidences);
@@ -63,7 +62,9 @@ class EvidenceController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       if (isLoadMore) {
         isMoreLoading(false);
@@ -74,14 +75,14 @@ class EvidenceController extends GetxController {
   }
 
   // Get Evidence by ID
-  Future<void> getEvidenceById({
-    required String evidenceId,
-  }) async {
+  Future<void> getEvidenceById({required String evidenceId}) async {
     try {
       isLoading(true);
       evidenceDetail(null);
 
-      final response = await _repository.getEvidenceById(evidenceId: evidenceId);
+      final response = await _repository.getEvidenceById(
+        evidenceId: evidenceId,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final tempEvidence = EvidenceModel.fromJson(response.data);
@@ -90,10 +91,11 @@ class EvidenceController extends GetxController {
     } on DioException {
       // Error already shown by interceptor
     } catch (e) {
-      CustomSnackbar.showError("${'Something went wrong!!!:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
     } finally {
       isLoading(false);
     }
   }
 }
-

@@ -24,10 +24,11 @@ class NotificationsController extends GetxController {
     isLoading.value = true;
     try {
       final response = await _repository.getNotifications();
-        if(response.statusCode==200||response.statusCode==201){
-
+      if (response.statusCode == 200 || response.statusCode == 201) {
         notifications.assignAll(
-          (response.data as List).map((e) => NotificationModel.fromJson(e)).toList(),
+          (response.data as List)
+              .map((e) => NotificationModel.fromJson(e))
+              .toList(),
         );
       }
     } on DioException catch (e) {
@@ -111,7 +112,7 @@ class NotificationsController extends GetxController {
   /// Mark a specific notification as read
   /// Mark a specific notification as read
   void markAsRead(int index) {
-      // Implement API call
-      update();
+    // Implement API call
+    update();
   }
 }

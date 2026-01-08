@@ -42,5 +42,3 @@ class CutsceneRepository extends GetxService {
     return response;
   }
 }
-
-

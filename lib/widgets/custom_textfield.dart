@@ -132,7 +132,12 @@ class _CustomTextfieldState extends State<CustomTextfield> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.labelVisible ?? true) ...[
-          Text(widget.label!, style: AppTextStyles.labelRegular14().copyWith(fontSize: widget.labelFontSize ?? 14.sp)),
+          Text(
+            widget.label!,
+            style: AppTextStyles.labelRegular14().copyWith(
+              fontSize: widget.labelFontSize ?? 14.sp,
+            ),
+          ),
           AppSizedBoxes.smallSizedBox,
         ],
         Container(
@@ -162,7 +167,6 @@ class _CustomTextfieldState extends State<CustomTextfield> {
             ],
           ),
           child: TextFormField(
-          
             obscuringCharacter: '*',
             inputFormatters: widget.inputFormatters,
             focusNode: widget.focusNode,
@@ -183,7 +187,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
             ),
             minLines: widget.obscureText ? 1 : widget.minLines,
             maxLines: widget.obscureText ? 1 : widget.maxLines,
-              decoration: InputDecoration(
+            decoration: InputDecoration(
               isDense: true,
               filled: true,
               hintText: widget.hintText ?? '',
@@ -199,12 +203,13 @@ class _CustomTextfieldState extends State<CustomTextfield> {
               fillColor:
                   widget.color ??
                   MyColors.redButtonColor.withValues(alpha: 0.1),
-              contentPadding: widget.contentPadding ?? EdgeInsets.symmetric(
-                vertical: 10.h,
-                horizontal: widget.horizentalContentPadding?.w ?? 12.w,
-              ),
+              contentPadding:
+                  widget.contentPadding ??
+                  EdgeInsets.symmetric(
+                    vertical: 10.h,
+                    horizontal: widget.horizentalContentPadding?.w ?? 12.w,
+                  ),
               border: OutlineInputBorder(
-                
                 borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide.none,
               ),

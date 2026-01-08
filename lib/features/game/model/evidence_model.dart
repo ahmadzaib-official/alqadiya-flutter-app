@@ -38,11 +38,12 @@ class EvidenceModel {
       descriptionAr: json["descriptionAr"],
       profileImageURL: json["profileImageURL"],
       profileImage: json["profileImage"],
-      attachments: json["attachments"] != null
-          ? (json["attachments"] as List)
-              .map((e) => EvidenceAttachment.fromJson(e))
-              .toList()
-          : null,
+      attachments:
+          json["attachments"] != null
+              ? (json["attachments"] as List)
+                  .map((e) => EvidenceAttachment.fromJson(e))
+                  .toList()
+              : null,
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
@@ -105,5 +106,3 @@ class EvidenceAttachment {
     "thumbnailUrl": thumbnailUrl,
   };
 }
-
-

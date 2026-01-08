@@ -5,6 +5,7 @@ class MemberModel {
     required this.userId,
     required this.userName,
     required this.userEmail,
+    this.userPhotoURL,
     required this.role,
     required this.status,
     required this.individualScore,
@@ -16,6 +17,7 @@ class MemberModel {
   final String? userId;
   final String? userName;
   final dynamic userEmail;
+  final String? userPhotoURL;
   final String? role;
   final String? status;
   final int? individualScore;
@@ -27,6 +29,7 @@ class MemberModel {
     String? userId,
     String? userName,
     dynamic userEmail,
+    String? userPhotoURL,
     String? role,
     String? status,
     int? individualScore,
@@ -38,6 +41,7 @@ class MemberModel {
       userId: userId ?? this.userId,
       userName: userName ?? this.userName,
       userEmail: userEmail ?? this.userEmail,
+      userPhotoURL: userPhotoURL ?? this.userPhotoURL,
       role: role ?? this.role,
       status: status ?? this.status,
       individualScore: individualScore ?? this.individualScore,
@@ -52,6 +56,7 @@ class MemberModel {
       userId: json["userId"],
       userName: json["userName"],
       userEmail: json["userEmail"],
+      userPhotoURL: json["userPhotoURL"],
       role: json["role"],
       status: json["status"],
       individualScore: json["individualScore"],
@@ -65,6 +70,7 @@ class MemberModel {
     "userId": userId,
     "userName": userName,
     "userEmail": userEmail,
+    "userPhotoURL": userPhotoURL,
     "role": role,
     "status": status,
     "individualScore": individualScore,

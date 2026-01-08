@@ -3,7 +3,6 @@ import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/case_detail_shimmer.dart';
-import 'package:alqadiya_game/widgets/copy_code_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/start_play_button.dart';
@@ -25,6 +24,8 @@ class CaseDetailScreen extends StatefulWidget {
 class _CaseDetailScreenState extends State<CaseDetailScreen> {
   final gameId = Get.arguments['gameId'] ?? '';
   final GameController controller = Get.find<GameController>();
+  bool isStartingGame = false;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -56,20 +57,20 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                   ),
                   actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => Navigator.pop(context),
                     child: SvgPicture.asset(MyIcons.arrowbackrounded),
                   ),
                 ),
               ),
               // Body
-              if (controller.isLoading.value &&
-                  controller.gameDetail.value.isBlank!) ...[
+              if ((controller.isLoading.value && !isStartingGame) ||
+                  (controller.gameDetail.value.id != null &&
+                      controller.gameDetail.value.id != this.gameId)) ...[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.sp),
                   child: CaseDetailShimmer(),
                 ),
-              ] else if (!controller.isLoading.value &&
-                  controller.gameDetail.value.isBlank!) ...[
+              ] else if (controller.gameDetail.value.id == null) ...[
                 Center(
                   child: Text(
                     'Failed to get case details...'.tr,
@@ -107,9 +108,12 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                                   .value
                                                   .coverImageUrl ??
                                               '',
-                                          width: isPurchased ? 0.2.sw : 0.18.sw,
+                                          width:
+                                              //  isPurchased ? 0.2.sw :
+                                              0.18.sw,
                                           height:
-                                              isPurchased ? 0.45.sh : 0.65.sh,
+                                              // isPurchased ? 0.45.sh :
+                                              0.65.sh,
                                           fit: BoxFit.cover,
                                           placeholder:
                                               (context, url) =>
@@ -122,13 +126,15 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                                         .withValues(alpha: 0.1),
                                                     child: Container(
                                                       width:
-                                                          isPurchased
-                                                              ? 0.2.sw
-                                                              : 0.18.sw,
+                                                          // isPurchased
+                                                          //     ? 0.2.sw
+                                                          //     :
+                                                          0.18.sw,
                                                       height:
-                                                          isPurchased
-                                                              ? 0.45.sh
-                                                              : 0.65.sh,
+                                                          // isPurchased
+                                                          //     ? 0.45.sh
+                                                          //     :
+                                                          0.65.sh,
                                                       color: Colors.grey,
                                                     ),
                                                   ),
@@ -138,13 +144,15 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                               (context, url, error) =>
                                                   Container(
                                                     width:
-                                                        isPurchased
-                                                            ? 0.2.sw
-                                                            : 0.18.sw,
+                                                        // isPurchased
+                                                        //     ? 0.2.sw
+                                                        //     :
+                                                        0.18.sw,
                                                     height:
-                                                        isPurchased
-                                                            ? 0.45.sh
-                                                            : 0.65.sh,
+                                                        // isPurchased
+                                                        //     ? 0.45.sh
+                                                        //     :
+                                                        0.65.sh,
                                                     color: Colors.grey.shade200,
                                                     alignment: Alignment.center,
                                                     child: const Icon(
@@ -166,22 +174,23 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         ),
                                     ],
                                   ),
-                                  if (isPurchased && gameId.isNotEmpty) ...[
-                                    SizedBox(height: 8.h),
-                                    CopyCodeButton(code: gameId),
+                                  // if (isPurchased && gameId.isNotEmpty) ...[
+                                  //   SizedBox(height: 8.h),
+                                  //   CopyCodeButton(code: gameId),
 
-                                    SizedBox(height: 10.h),
+                                  //   SizedBox(height: 10.h),
 
-                                    Text(
-                                      'Share this code with friends to join.'.tr,
-                                      style: AppTextStyles.captionRegular12()
-                                          .copyWith(
-                                            color: MyColors.white,
-                                            height: 1.5,
-                                            fontSize: 5.sp,
-                                          ),
-                                    ),
-                                  ],
+                                  //   Text(
+                                  //     'Share this code with friends to join.'
+                                  //         .tr,
+                                  //     style: AppTextStyles.captionRegular12()
+                                  //         .copyWith(
+                                  //           color: MyColors.white,
+                                  //           height: 1.5,
+                                  //           fontSize: 5.sp,
+                                  //         ),
+                                  //   ),
+                                  // ],
                                 ],
                               ),
                               SizedBox(width: 12.w),
@@ -287,11 +296,27 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                           StartPlayButton(
                                             buttonWidth: 50.w,
                                             buttonText: 'Start Play'.tr,
-                                            onTap: () {
-                                              controller.createGameSession(
-                                                gameId: gameId,
-                                              );
-                                            },
+                                            onTap:
+                                                isStartingGame
+                                                    ? () {}
+                                                    : () async {
+                                                      setState(() {
+                                                        isStartingGame = true;
+                                                      });
+
+                                                      await controller
+                                                          .createGameSession(
+                                                            gameId: gameId,
+                                                          );
+
+                                                      // Reset state after navigation
+                                                      if (mounted) {
+                                                        setState(() {
+                                                          isStartingGame =
+                                                              false;
+                                                        });
+                                                      }
+                                                    },
                                           ),
                                         ] else ...[
                                           GestureDetector(

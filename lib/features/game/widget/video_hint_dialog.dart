@@ -358,8 +358,8 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
               GestureDetector(
                 onTap: () => _audioController.togglePlayPause(),
                 child: Container(
-                  width: 60.w,
-                  height: 60.w,
+                  width: 25.w,
+                  height: 25.w,
                   decoration: BoxDecoration(
                     color: MyColors.BlueColor,
                     shape: BoxShape.circle,
@@ -369,11 +369,11 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
                         ? Icons.pause
                         : Icons.play_arrow,
                     color: Colors.white,
-                    size: 32.sp,
+                    size: 16.sp,
                   ),
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 10.h),
               // Progress indicator
               ClipRRect(
                 borderRadius: BorderRadius.circular(2.r),
@@ -391,7 +391,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
                   '${_formatDuration(_audioController.position.value)} / ${_formatDuration(_audioController.duration.value)}',
                   style: AppTextStyles.captionRegular10().copyWith(
                     color: Colors.white,
-                    fontSize: 10.sp,
+                    fontSize: 8.sp,
                   ),
                 ),
             ],

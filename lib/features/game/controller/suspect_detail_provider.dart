@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 /// Controller for managing suspect detail screen state
 class SuspectDetailController extends GetxController {
   final selectedMainTab = 0.obs;
-  final selectedAttachmentType = Rxn<String>(); // Videos, Images, Documents, Audio
+  final selectedAttachmentType =
+      Rxn<String>(); // Videos, Images, Documents, Audio
 
   /// Set selected main tab
   void setSelectedMainTab(int tab) {

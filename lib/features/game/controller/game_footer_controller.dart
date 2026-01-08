@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 class GameFooterController extends GetxController {
   final GameController _gameController = Get.find<GameController>();
   final QuestionController _questionController = Get.find<QuestionController>();
-  final UserAnswerController _answerController = Get.find<UserAnswerController>();
+  final UserAnswerController _answerController =
+      Get.find<UserAnswerController>();
 
   // Observable values
   var totalScore = 0.obs;
@@ -98,6 +99,10 @@ class GameFooterController extends GetxController {
   // Get current progress as a fraction (0.0 to 1.0)
   double get progress => progressPercentage.value;
 
+  // Get count of correct answers
+  int get correctAnswers =>
+      _submittedAnswers.where((answer) => answer.isCorrect == true).length;
+
   // Get score from scoreboard if available (for team mode)
   int? getScoreFromScoreboard() {
     try {
@@ -110,7 +115,7 @@ class GameFooterController extends GetxController {
 
       if (sessionMode == 'solo') {
         // Solo mode - get individual score
-        final player = scoreboard.players?.firstOrNull;
+        final player = scoreboard.teams?.firstOrNull?.players?.firstOrNull;
         return player?.individualScore;
       } else {
         // Team mode - get team score (first team for now)
@@ -163,4 +168,3 @@ class GameFooterController extends GetxController {
     _updateValues();
   }
 }
-

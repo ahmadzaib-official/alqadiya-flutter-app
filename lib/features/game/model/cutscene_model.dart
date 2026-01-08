@@ -71,5 +71,3 @@ class CutsceneModel {
     "updatedAt": updatedAt?.toIso8601String(),
   };
 }
-
-

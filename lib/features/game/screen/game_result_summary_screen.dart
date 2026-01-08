@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -7,9 +8,14 @@ import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:alqadiya_game/widgets/gradient_box_border.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +28,9 @@ class GameResultSummaryScreen extends StatefulWidget {
 }
 
 class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
+  Timer? _pollingTimer;
+  final GlobalKey _globalKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -30,8 +39,20 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     final sessionId = gameController.gameSession.value?.id;
 
     if (sessionId != null) {
-      gameResultController.getGameResult(sessionId: sessionId);
+      // Initial API call (with loading state)
+      gameResultController.getGameResult(sessionId: sessionId, silent: false);
+
+      // Set up polling timer to call API every 2 seconds (silent updates)
+      _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+        gameResultController.getGameResult(sessionId: sessionId, silent: true);
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -40,385 +61,495 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     final gameResultController = Get.find<GameResultController>();
     final gameController = Get.find<GameController>();
 
-    return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Column(
-          children: [
-            // Header
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-              child: HomeHeader(
-                onChromTap: () {},
-                title: Text(
-                  'Game Result Summary'.tr,
-                  style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Get.offNamedUntil(AppRoutes.homescreen, (route) => false);
+      },
+      child: Scaffold(
+        backgroundColor: MyColors.backgroundColor,
+        body: RepaintBoundary(
+          key: _globalKey,
+          child: GameBackground(
+            imageUrl: "https://picsum.photos/200",
+            body: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.sp,
+                    right: 10.sp,
+                    top: 5.sp,
+                  ),
+                  child: HomeHeader(
+                    onChromTap: () {},
+                    title: Text(
+                      'Game Result Summary'.tr,
+                      style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
+                    ),
+                    actionButtons: GestureDetector(
+                      onTap:
+                          () => Get.offNamedUntil(
+                            AppRoutes.homescreen,
+                            (route) => false,
+                          ),
+                      child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                    ),
+                  ),
                 ),
-                actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: SvgPicture.asset(MyIcons.arrowbackrounded),
+
+                // Main Content
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                    child: Obx(() {
+                      // Observe gameResult directly to trigger rebuilds
+                      final gameResult = gameResultController.gameResult.value;
+                      final isLoading = gameResultController.isLoading.value;
+                      // Check solo mode from game session mode OR from result data structure
+                      final isSoloMode =
+                          gameController.gameSession.value?.mode == 'solo' ||
+                          gameResultController.isSoloModeFromData;
+
+                      if (isLoading) {
+                        return Center(
+                          child: Text(
+                            'Loading results...'.tr,
+                            style: AppTextStyles.heading1().copyWith(
+                              fontSize: 8.sp,
+                              color: MyColors.white.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (gameResult == null) {
+                        return Center(
+                          child: Text(
+                            'No results available'.tr,
+                            style: AppTextStyles.heading1().copyWith(
+                              fontSize: 8.sp,
+                              color: MyColors.white.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (isSoloMode) {
+                        // Solo mode UI
+                        final soloPlayerResult =
+                            gameResultController.soloPlayerResult;
+                        if (soloPlayerResult == null) {
+                          return Center(
+                            child: Text(
+                              'No solo player results available'.tr,
+                              style: AppTextStyles.heading1().copyWith(
+                                fontSize: 8.sp,
+                                color: MyColors.white.withValues(alpha: 0.5),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Solo Player Result Card
+                            Expanded(
+                              child: _buildSoloPlayerResultCard(
+                                context,
+                                soloPlayerResult,
+                              ),
+                            ),
+                            SizedBox(width: 6.w),
+
+                            // Right Side - Actions
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8.h,
+                                  horizontal: 6.w,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: MyColors.black.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Completion Message
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: MyColors.black.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          80.r,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Game Completed'.tr,
+                                            style: AppTextStyles.heading1()
+                                                .copyWith(
+                                                  fontSize: 8.sp,
+                                                  color: MyColors.white,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    // Share result button
+                                    Builder(
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            final box =
+                                                context.findRenderObject()
+                                                    as RenderBox?;
+                                            if (box != null) {
+                                              _shareResult(
+                                                sharePositionOrigin:
+                                                    box.localToGlobal(
+                                                      Offset.zero,
+                                                    ) &
+                                                    box.size,
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 10.h,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: MyColors.redButtonColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(100.r),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Share result'.tr,
+                                                  style:
+                                                      AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 6.sp,
+                                                            color:
+                                                                MyColors.white,
+                                                          ),
+                                                ),
+                                                SizedBox(width: 8.w),
+
+                                                Icon(
+                                                  Icons.share,
+                                                  size: 14.sp,
+                                                  color:
+                                                      MyColors.brightRedColor,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    SizedBox(height: 16.h),
+
+                                    // Back to Main Page button
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.offAllNamed(AppRoutes.homescreen);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 12.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            80.r,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Back to the Main Page'.tr,
+                                            style: AppTextStyles.heading1()
+                                                .copyWith(
+                                                  fontSize: 6.sp,
+                                                  color: MyColors.white,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        // Team mode UI (existing)
+                        final teamResults = gameResultController.teamResults;
+                        if (teamResults.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No team results available'.tr,
+                              style: AppTextStyles.heading1().copyWith(
+                                fontSize: 8.sp,
+                                color: MyColors.white.withValues(alpha: 0.5),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Left Team Result Card
+                            if (teamResults.length > 0)
+                              Expanded(
+                                child: _buildTeamResultCard(
+                                  context,
+                                  teamResults[0],
+                                  isWinner: _isWinningTeam(
+                                    teamResults[0]['name'],
+                                  ),
+                                ),
+                              ),
+                            if (teamResults.length > 0) SizedBox(width: 6.w),
+                            if (teamResults.length > 1)
+                              Expanded(
+                                child: _buildTeamResultCard(
+                                  context,
+                                  teamResults[1],
+                                  isWinner: _isWinningTeam(
+                                    teamResults[1]['name'],
+                                  ),
+                                ),
+                              ),
+                            if (teamResults.length <= 1)
+                              Expanded(child: SizedBox()),
+                            if (teamResults.length > 1) SizedBox(width: 6.w),
+
+                            // Right Side - Team Card, Winner & Actions
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8.h,
+                                  horizontal: 6.w,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: MyColors.black.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Winner Announcement
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: MyColors.black.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          80.r,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'The winner'.tr,
+                                            style: AppTextStyles.heading2()
+                                                .copyWith(
+                                                  fontSize: 6.sp,
+                                                  color: MyColors.white
+                                                      .withValues(alpha: 0.5),
+                                                ),
+                                          ),
+                                          Text(
+                                            ' ${gameResultController.winnerTeamName ?? ''}',
+                                            style: AppTextStyles.heading1()
+                                                .copyWith(
+                                                  fontSize: 8.sp,
+                                                  color: MyColors.white,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    // Share result button
+                                    // Share result button
+                                    Builder(
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            final box =
+                                                context.findRenderObject()
+                                                    as RenderBox?;
+                                            if (box != null) {
+                                              _shareResult(
+                                                sharePositionOrigin:
+                                                    box.localToGlobal(
+                                                      Offset.zero,
+                                                    ) &
+                                                    box.size,
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: MyColors.redButtonColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(100.r),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Share result'.tr,
+                                                  style:
+                                                      AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 6.sp,
+                                                            color:
+                                                                MyColors.white,
+                                                          ),
+                                                ),
+                                                SizedBox(width: 8.w),
+
+                                                Icon(
+                                                  Icons.share,
+                                                  size: 14.sp,
+                                                  color:
+                                                      MyColors.brightRedColor,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    SizedBox(height: 16.h),
+
+                                    // Back to Main Page button
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.offAllNamed(AppRoutes.homescreen);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 12.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            80.r,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Back to the Main Page'.tr,
+                                            style: AppTextStyles.heading1()
+                                                .copyWith(
+                                                  fontSize: 6.sp,
+                                                  color: MyColors.white,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }),
+                  ),
                 ),
-              ),
+
+                // Footer
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.sp,
+                    right: 10.sp,
+                    bottom: 5.sp,
+                  ),
+                  child: GameFooter(onGameResultTap: () {}),
+                ),
+              ],
             ),
-
-            // Main Content
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                child: Obx(() {
-                  // Observe gameResult directly to trigger rebuilds
-                  final gameResult = gameResultController.gameResult.value;
-                  final isLoading = gameResultController.isLoading.value;
-                  // Check solo mode from game session mode OR from result data structure
-                  final isSoloMode =
-                      gameController.gameSession.value?.mode == 'solo' ||
-                      gameResultController.isSoloModeFromData;
-
-                  if (isLoading) {
-                    return Center(
-                      child: Text(
-                        'Loading results...'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 8.sp,
-                          color: MyColors.white.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (gameResult == null) {
-                    return Center(
-                      child: Text(
-                        'No results available'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 8.sp,
-                          color: MyColors.white.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (isSoloMode) {
-                    // Solo mode UI
-                    final soloPlayerResult =
-                        gameResultController.soloPlayerResult;
-                    if (soloPlayerResult == null) {
-                      return Center(
-                        child: Text(
-                          'No solo player results available'.tr,
-                          style: AppTextStyles.heading1().copyWith(
-                            fontSize: 8.sp,
-                            color: MyColors.white.withValues(alpha: 0.5),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Solo Player Result Card
-                        Expanded(
-                          child: _buildSoloPlayerResultCard(
-                            context,
-                            soloPlayerResult,
-                          ),
-                        ),
-                        SizedBox(width: 6.w),
-
-                        // Right Side - Actions
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 8.h,
-                              horizontal: 6.w,
-                            ),
-                            decoration: BoxDecoration(
-                              color: MyColors.black.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Completion Message
-                                Container(
-                                  padding: EdgeInsets.symmetric(vertical: 12.h),
-                                  decoration: BoxDecoration(
-                                    color: MyColors.black.withValues(
-                                      alpha: 0.2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(80.r),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Game Completed'.tr,
-                                        style: AppTextStyles.heading1()
-                                            .copyWith(
-                                              fontSize: 8.sp,
-                                              color: MyColors.white,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 16.h),
-                                // Share result button
-                                GestureDetector(
-                                  onTap: () {
-                                    // Share result action
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 12.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.redButtonColor,
-                                      borderRadius: BorderRadius.circular(
-                                        100.r,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Share result'.tr,
-                                          style: AppTextStyles.heading2()
-                                              .copyWith(
-                                                fontSize: 6.sp,
-                                                color: MyColors.white,
-                                              ),
-                                        ),
-                                        SizedBox(width: 8.w),
-
-                                        Icon(
-                                          Icons.share,
-                                          size: 14.sp,
-                                          color: MyColors.brightRedColor,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 16.h),
-
-                                // Back to Main Page button
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.offAllNamed(AppRoutes.homescreen);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 12.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.white.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      borderRadius: BorderRadius.circular(80.r),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        'Back to the Main Page'.tr,
-                                        style: AppTextStyles.heading1()
-                                            .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    // Team mode UI (existing)
-                    final teamResults = gameResultController.teamResults;
-                    if (teamResults.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No team results available'.tr,
-                          style: AppTextStyles.heading1().copyWith(
-                            fontSize: 8.sp,
-                            color: MyColors.white.withValues(alpha: 0.5),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Left Team Result Card
-                        if (teamResults.length > 0)
-                          Expanded(
-                            child: _buildTeamResultCard(
-                              context,
-                              teamResults[0],
-                            ),
-                          ),
-                        if (teamResults.length > 0) SizedBox(width: 6.w),
-                        if (teamResults.length > 1)
-                          Expanded(
-                            child: _buildTeamResultCard(
-                              context,
-                              teamResults[1],
-                            ),
-                          ),
-                        if (teamResults.length <= 1)
-                          Expanded(child: SizedBox()),
-                        if (teamResults.length > 1) SizedBox(width: 6.w),
-
-                        // Right Side - Team Card, Winner & Actions
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 8.h,
-                              horizontal: 6.w,
-                            ),
-                            decoration: BoxDecoration(
-                              color: MyColors.black.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Winner Announcement
-                                Container(
-                                  padding: EdgeInsets.symmetric(vertical: 12.h),
-                                  decoration: BoxDecoration(
-                                    color: MyColors.black.withValues(
-                                      alpha: 0.2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(80.r),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'The winner'.tr,
-                                        style: AppTextStyles.heading2()
-                                            .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white.withValues(
-                                                alpha: 0.5,
-                                              ),
-                                            ),
-                                      ),
-                                      Text(
-                                        ' ${gameResultController.winnerTeamName ?? ''}',
-                                        style: AppTextStyles.heading1()
-                                            .copyWith(
-                                              fontSize: 8.sp,
-                                              color: MyColors.white,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 16.h),
-                                // Share result button
-                                GestureDetector(
-                                  onTap: () {
-                                    // Share result action
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 12.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.redButtonColor,
-                                      borderRadius: BorderRadius.circular(
-                                        100.r,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Share result'.tr,
-                                          style: AppTextStyles.heading2()
-                                              .copyWith(
-                                                fontSize: 6.sp,
-                                                color: MyColors.white,
-                                              ),
-                                        ),
-                                        SizedBox(width: 8.w),
-
-                                        Icon(
-                                          Icons.share,
-                                          size: 14.sp,
-                                          color: MyColors.brightRedColor,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 16.h),
-
-                                // Back to Main Page button
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.offAllNamed(AppRoutes.homescreen);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 12.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.white.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      borderRadius: BorderRadius.circular(80.r),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        'Back to the Main Page'.tr,
-                                        style: AppTextStyles.heading1()
-                                            .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                }),
-              ),
-            ),
-
-            // Footer
-            Padding(
-              padding: EdgeInsets.only(left: 10.sp, right: 10.sp, bottom: 5.sp),
-              child: GameFooter(onGameResultTap: () {}),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  Future<void> _shareResult({Rect? sharePositionOrigin}) async {
+    try {
+      RenderRepaintBoundary? boundary =
+          _globalKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+
+      if (boundary == null) return;
+
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
+      if (byteData != null) {
+        Uint8List pngBytes = byteData.buffer.asUint8List();
+
+        final XFile file = XFile.fromData(
+          pngBytes,
+          mimeType: 'image/png',
+          name: 'game_result.png',
+        );
+
+        await Share.shareXFiles(
+          [file],
+          text: 'Check out my game result on Alqadiya!'.tr,
+          sharePositionOrigin: sharePositionOrigin,
+        );
+      }
+    } catch (e) {
+      print('Error sharing result: $e');
+    }
+  }
+
   Widget _buildTeamResultCard(
     BuildContext context,
-    Map<String, dynamic> result,
-  ) {
+    Map<String, dynamic> result, {
+    bool isWinner = false,
+  }) {
     // Safely cast players list - handle both List<dynamic> and List<Map<String, dynamic>>
     final playersData = result['players'];
     final List<Map<String, dynamic>> players =
@@ -438,6 +569,23 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
       decoration: BoxDecoration(
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
+        border: GradientBoxBorder(
+          width: 2.0,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors:
+                isWinner
+                    ? [
+                      MyColors.greenColor.withValues(alpha: 0.1),
+                      MyColors.greenColor,
+                    ]
+                    : [
+                      MyColors.redButtonColor.withValues(alpha: 0.1),
+                      MyColors.redButtonColor,
+                    ],
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -454,7 +602,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                       players.asMap().entries.map((entry) {
                         final index = entry.key;
                         final player = entry.value;
-                        final isLast = index == players.length - 1;
+                        final isLeader = player['isLeader'] as bool? ?? false;
                         return Positioned(
                           left: index * (15.w - 8.w),
                           child: Stack(
@@ -464,32 +612,56 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                 height: 15.w,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
+                                  color: MyColors.darkBlueColor,
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50.r),
-                                  child: CachedNetworkImage(
-                                    imageUrl: player['avatar'] as String,
-                                    fit: BoxFit.cover,
-                                    placeholder:
-                                        (context, url) => Container(
-                                          color: MyColors.darkBlueColor,
-                                        ),
-                                    errorWidget:
-                                        (context, url, error) => Container(
-                                          color: MyColors.darkBlueColor,
-                                          child: Icon(
-                                            Icons.person,
-                                            size: 12.sp,
-                                            color: MyColors.white.withValues(
-                                              alpha: 0.5,
+                                  child:
+                                      (player['avatar'] as String? ?? '')
+                                              .isNotEmpty
+                                          ? CachedNetworkImage(
+                                            imageUrl:
+                                                player['avatar'] as String,
+                                            fit: BoxFit.cover,
+                                            placeholder:
+                                                (context, url) => Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
+                                            errorWidget:
+                                                (
+                                                  context,
+                                                  url,
+                                                  error,
+                                                ) => Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
+                                          )
+                                          : Container(
+                                            color: MyColors.darkBlueColor,
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 12.sp,
+                                              color: MyColors.white.withValues(
+                                                alpha: 0.5,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                  ),
                                 ),
                               ),
-                              // Green checkmark - only on rightmost member
-                              if (isLast)
+                              // Green checkmark - only on leader
+                              if (isLeader)
                                 Positioned(
                                   top: -2,
                                   right: -2,
@@ -649,6 +821,17 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
       decoration: BoxDecoration(
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
+        border: GradientBoxBorder(
+          width: 2.0,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              MyColors.greenColor.withValues(alpha: 0.8),
+              MyColors.greenColor,
+            ],
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -661,17 +844,48 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
               Container(
                 width: 30.w,
                 height: 30.w,
-                decoration: BoxDecoration(shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: MyColors.darkBlueColor,
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
-                  child: Container(
-                    color: MyColors.darkBlueColor,
-                    child: Icon(
-                      Icons.person,
-                      size: 20.sp,
-                      color: MyColors.white.withValues(alpha: 0.5),
-                    ),
-                  ),
+                  child:
+                      (result['avatar'] as String? ?? '').isNotEmpty
+                          ? CachedNetworkImage(
+                            imageUrl: result['avatar'] as String,
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => Container(
+                                  color: MyColors.darkBlueColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20.sp,
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                ),
+                            errorWidget:
+                                (context, url, error) => Container(
+                                  color: MyColors.darkBlueColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20.sp,
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                ),
+                          )
+                          : Container(
+                            color: MyColors.darkBlueColor,
+                            child: Icon(
+                              Icons.person,
+                              size: 20.sp,
+                              color: MyColors.white.withValues(alpha: 0.5),
+                            ),
+                          ),
                 ),
               ),
 
@@ -723,5 +937,12 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
         ),
       ],
     );
+  }
+
+  /// Helper method to determine if a team is the winner
+  bool _isWinningTeam(String teamName) {
+    final gameResultController = Get.find<GameResultController>();
+    final winnerName = gameResultController.winnerTeamName;
+    return winnerName != null && winnerName == teamName;
   }
 }

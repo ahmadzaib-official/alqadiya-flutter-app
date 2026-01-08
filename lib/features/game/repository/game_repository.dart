@@ -136,6 +136,20 @@ class GameRepository extends GetxService {
     return response;
   }
 
+  // Update Game Session Status API
+  Future<Response<dynamic>> updateGameSessionStatus({
+    required String sessionId,
+    required String status,
+  }) async {
+    final String url = ServerConfig.createGameSession;
+    var response = await _dioHelper.patch(
+      url: "$url/$sessionId",
+      requestBody: {"status": status},
+      isAuthRequired: true,
+    );
+    return response;
+  }
+
   // Get Session Players API
   Future<Response<dynamic>> getSessionPlayers({
     required String sessionId,
@@ -181,10 +195,7 @@ class GameRepository extends GetxService {
     required String sessionId,
   }) async {
     final String url = ServerConfig.getGameSessionDetails(sessionId);
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 
@@ -193,44 +204,37 @@ class GameRepository extends GetxService {
     required String sessionId,
   }) async {
     final String url = ServerConfig.getGameSessionById(sessionId);
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 
   // Get Scoreboard API
-  Future<Response<dynamic>> getScoreboard({
-    required String sessionId,
-  }) async {
+  Future<Response<dynamic>> getScoreboard({required String sessionId}) async {
     final String url = ServerConfig.getGameSessionScoreboard(sessionId);
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 
   // Get Game Result API
-  Future<Response<dynamic>> getGameResult({
-    required String sessionId,
-  }) async {
+  Future<Response<dynamic>> getGameResult({required String sessionId}) async {
     final String url = ServerConfig.getGameSessionResult(sessionId);
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 
   // Get User Balance API
   Future<Response<dynamic>> getUserBalance() async {
     final String url = ServerConfig.userBalance;
-    var response = await _dioHelper.get(
-      url: url,
-      isAuthRequired: true,
-    );
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
+    return response;
+  }
+
+  // Get Game Session Status API
+  Future<Response<dynamic>> getGameSessionStatus({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getGameSessionStatus(sessionId);
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
 }

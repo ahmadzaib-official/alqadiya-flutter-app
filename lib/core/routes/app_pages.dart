@@ -150,7 +150,10 @@ class AppPages {
       page: () => CaseStoreScreen(),
       bindings: [
         BindingsBuilder(() {
-          Get.lazyPut(fenix: true, () => GameController());
+          // Ensure GameController is permanent to preserve session data
+          if (!Get.isRegistered<GameController>()) {
+            Get.put(GameController(), permanent: true);
+          }
         }),
       ],
       transition: Transition.circularReveal,
@@ -213,6 +216,10 @@ class AppPages {
       bindings: [
         BindingsBuilder(() {
           Get.lazyPut(() => JoinGameController());
+          // Initialize GameController as permanent to persist across navigation
+          if (!Get.isRegistered<GameController>()) {
+            Get.put(GameController(), permanent: true);
+          }
         }),
       ],
       transition: Transition.circularReveal,
@@ -225,7 +232,10 @@ class AppPages {
       bindings: [
         BindingsBuilder(() {
           Get.lazyPut(() => CutsceneController());
-          Get.lazyPut(fenix: true, () => GameController());
+          // Ensure GameController is permanent to preserve session data
+          if (!Get.isRegistered<GameController>()) {
+            Get.put(GameController(), permanent: true);
+          }
         }),
       ],
       transition: Transition.circularReveal,
@@ -238,7 +248,10 @@ class AppPages {
         BindingsBuilder(() {
           Get.lazyPut(() => QuestionController());
           Get.lazyPut(() => UserAnswerController());
-          Get.lazyPut(fenix: true, () => GameController());
+          // Ensure GameController is permanent to preserve session data
+          if (!Get.isRegistered<GameController>()) {
+            Get.put(GameController(), permanent: true);
+          }
         }),
       ],
       transition: Transition.circularReveal,

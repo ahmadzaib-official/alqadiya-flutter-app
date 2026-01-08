@@ -4,15 +4,17 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:alqadiya_game/core/utils/responsive.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/change_language/controller/language_controller.dart';
 import 'package:alqadiya_game/features/settings/controller/settings_provider.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/dense_text_field.dart';
+import 'package:alqadiya_game/widgets/language_selection_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -45,7 +47,7 @@ class SettingsScreen extends StatelessWidget {
                   style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                 ),
                 actionButtons: GestureDetector(
-                  onTap: () => Get.back(),
+                  onTap: () => Navigator.pop(context),
                   child: SvgPicture.asset(MyIcons.arrowbackrounded),
                 ),
               ),
@@ -112,59 +114,73 @@ class SettingsScreen extends StatelessWidget {
             // Avatar
             CircleAvatar(
               radius: 15.w,
-              backgroundImage: CachedNetworkImageProvider(
-                controller.user.value?.photoUrl ?? "https://i.pravatar.cc/300",
-              ),
-              child: SvgPicture.asset(MyIcons.camera),
+              backgroundColor: MyColors.redButtonColor.withValues(alpha: 0.2),
+              backgroundImage:
+                  (controller.user.value?.photoUrl != null &&
+                          controller.user.value!.photoUrl!.isNotEmpty)
+                      ? CachedNetworkImageProvider(
+                        controller.user.value!.photoUrl!,
+                      )
+                      : null,
+              child:
+                  (controller.user.value?.photoUrl == null ||
+                          controller.user.value!.photoUrl!.isEmpty)
+                      ? Icon(Icons.person, size: 20.sp, color: MyColors.white)
+                      : null,
             ),
             SizedBox(height: 15.h),
             // User Information
-            _buildInfoRow('Name:', controller.user.value?.fullName ?? ""),
+            _buildInfoRow('Name:'.tr, controller.user.value?.fullName ?? ""),
             SizedBox(height: 8.h),
             _buildInfoRow(
-              'Phone:',
+              'Phone:'.tr,
               controller.user.value?.phoneNumber != null
-                  ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
-                  : "N/A",
+                  ? '${controller.user.value?.phoneNumber ?? ""}'
+                  // ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
+                  : "N/A".tr,
             ),
             if (controller.user.value?.email != null &&
                 controller.user.value!.email!.isNotEmpty) ...[
               SizedBox(height: 8.h),
-              _buildInfoRow('Email:', controller.user.value?.email ?? ""),
+              _buildInfoRow('Email:'.tr, controller.user.value?.email ?? ""),
             ],
             SizedBox(height: 16.h),
             // Edit profile button
             Builder(
-              builder: (context) => GestureDetector(
-                onTap: () {
-                  _showEditProfileDialog(context, controller);
-                },
-                child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: MyColors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(4.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      offset: Offset(0, 2),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    'Edit profile'.tr,
-                    style: AppTextStyles.heading1().copyWith(
-                      fontSize: 6.sp,
-                      color: MyColors.white,
-                      fontWeight: FontWeight.w600,
+              builder:
+                  (context) => GestureDetector(
+                    onTap: () {
+                      _showEditProfileDialog(context, controller);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 12.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: MyColors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(4.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Edit profile'.tr,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 6.sp,
+                            color: MyColors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
             ),
-          ),
           ],
         ),
       ),
@@ -173,7 +189,7 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w),
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -191,12 +207,15 @@ class SettingsScreen extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.centerRight,
-
-            child: Text(
-              value,
-              style: AppTextStyles.heading1().copyWith(
-                fontSize: 6.sp,
-                color: MyColors.white,
+            child: SizedBox(
+              width: 0.16.sw,
+              child: Text(
+                value,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.heading1().copyWith(
+                  fontSize: 6.sp,
+                  color: MyColors.white,
+                ),
               ),
             ),
           ),
@@ -228,48 +247,24 @@ class SettingsScreen extends StatelessWidget {
           ),
           SizedBox(height: 20.h),
           // Language Selector
-          GestureDetector(
-            onTap: () => _showLanguageSelector(context, languageController),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100.r),
-                    color: MyColors.black.withValues(alpha: 0.2),
-                  ),
-                  child: Row(
-                    children: [
-                      Obx(
-                        () => SvgPicture.asset(
-                          languageController.selectedLanguage.value.image ??
-                              MyIcons.ukFlag,
-                        ),
-                      ),
-                      SizedBox(width: 3.w),
-                      Obx(
-                        () => Text(
-                          languageController.selectedLanguage.value.title ?? 'English',
-                          style: AppTextStyles.heading2().copyWith(
-                            fontSize: 7.sp,
-                            color: MyColors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              LanguageSelectionButton(
+                height: 50.h,
+                width: 50.w,
+                color: MyColors.black.withValues(alpha: 0.2),
+                textFontSize: 6.sp,
+              ),
+              SizedBox(width: 10.w),
+              Text(
+                'Language'.tr,
+                style: AppTextStyles.heading2().copyWith(
+                  fontSize: 7.sp,
+                  color: MyColors.white.withValues(alpha: 0.7),
                 ),
-                SizedBox(width: 10.w),
-                Text(
-                  'Language'.tr,
-                  style: AppTextStyles.heading2().copyWith(
-                    fontSize: 7.sp,
-                    color: MyColors.white.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
           SizedBox(height: 15.h),
           // Terms and Privacy Policy button
@@ -456,32 +451,80 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             Spacer(),
+
             // Delete account
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: MyColors.black.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(100.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  SvgPicture.asset(MyIcons.deleteUser, width: 10.w),
-                  SizedBox(width: 3.w),
-                  Text(
-                    'Delete account'.tr,
-                    style: AppTextStyles.heading2().copyWith(
-                      fontSize: 7.sp,
-                      color: MyColors.white.withValues(alpha: 0.5),
+            GestureDetector(
+              onTap: () => _showDeleteAccountDialog(context, userController),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: MyColors.black.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(100.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    SvgPicture.asset(MyIcons.deleteUser, width: 10.w),
+                    SizedBox(width: 3.w),
+                    Text(
+                      'Delete account'.tr,
+                      style: AppTextStyles.heading2().copyWith(
+                        fontSize: 7.sp,
+                        color: MyColors.white.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(width: 10.w),
+
+            // Logout
+            GestureDetector(
+              onTap: () async {
+                await Get.find<Preferences>().clear();
+                await SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.portraitUp,
+                  DeviceOrientation.portraitDown,
+                ]);
+                Get.offAllNamed(AppRoutes.sigin);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: MyColors.black.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(100.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.logout,
+                      color: MyColors.white.withValues(alpha: 0.5),
+                      size: 10.w,
+                    ),
+                    SizedBox(width: 3.w),
+                    Text(
+                      'Logout'.tr,
+                      style: AppTextStyles.heading2().copyWith(
+                        fontSize: 7.sp,
+                        color: MyColors.white.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -490,101 +533,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showLanguageSelector(
-    BuildContext context,
-    ChangeLanguageController languageController,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: MyColors.backgroundColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(20.sp),
-
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(MyImages.gamebackground),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Select Language'.tr,
-                style: AppTextStyles.heading1().copyWith(
-                  fontSize: 10.sp,
-                  color: MyColors.white,
-                ),
-              ),
-              SizedBox(height: 20.h),
-              ...languageController.languageList.map((language) {
-                return Obx(
-                  () => GestureDetector(
-                    onTap: () async {
-                      await languageController.changeLanguage(language);
-                      if (Navigator.of(context).canPop()) {
-                        Navigator.of(context).pop();
-                      }
-                      // Restart app to apply language change
-                      Future.delayed(const Duration(milliseconds: 100), () {
-                        Get.offAllNamed(AppRoutes.homescreen);
-                      });
-                    },
-                    child: Container(
-                      width: Responsive.width(40, context),
-                      margin: EdgeInsets.only(bottom: 10.h),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15.w,
-                        vertical: 12.h,
-                      ),
-                      decoration: BoxDecoration(
-                        
-                        color: languageController.selectedLanguage.value.slug ==
-                                language.slug
-                            ? MyColors.greenColor.withValues(alpha: 0.3)
-                            : MyColors.black.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(10.r),
-                        border: Border.all(
-                          color: languageController.selectedLanguage.value.slug ==
-                                  language.slug
-                              ? MyColors.greenColor
-                              : Colors.transparent,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(language.image ?? MyIcons.ukFlag,width: 23,),
-                          SizedBox(width: 10.w),
-                          Text(
-                            language.title ?? '',
-                            style: AppTextStyles.heading2().copyWith(
-                              fontSize: 8.sp,
-                              color: MyColors.white,
-                            ),
-                          ),
-                       
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showEditProfileDialog(
-    BuildContext context,
-    UserController controller,
-  ) {
+  void _showEditProfileDialog(BuildContext context, UserController controller) {
     final nameController = TextEditingController(
       text: controller.user.value?.fullName ?? '',
     );
@@ -600,134 +549,375 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.7),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Dialog(
-          backgroundColor: Colors.transparent,
-          // insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 3),
-              constraints: BoxConstraints(maxWidth: 220.w),
-              
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setState) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  // insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.sp,
+                      vertical: 3,
+                    ),
+                    constraints: BoxConstraints(maxWidth: 220.w),
+
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(MyImages.gamebackground),
+                        fit: BoxFit.cover,
+                      ),
+                      // color: MyColors.black.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Text(
+                          //   'Edit Profile'.tr,
+                          //   style: AppTextStyles.captionBold10().copyWith(
+                          //     color: MyColors.white,
+                          //   ),
+                          // ),
+                          SizedBox(height: 20.h),
+                          // Profile Picture
+                          GestureDetector(
+                            onTap: () async {
+                              final picker = ImagePicker();
+                              final pickedFile = await picker.pickImage(
+                                source: ImageSource.gallery,
+                                imageQuality: 80,
+                              );
+                              if (pickedFile != null) {
+                                setState(() {
+                                  selectedImage = File(pickedFile.path);
+                                });
+                              }
+                            },
+                            child: Stack(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20.w,
+                                  backgroundColor: MyColors.redButtonColor
+                                      .withValues(alpha: 0.2),
+                                  backgroundImage:
+                                      selectedImage != null
+                                          ? FileImage(selectedImage!)
+                                          : (controller.user.value?.photoUrl !=
+                                                      null
+                                                  ? CachedNetworkImageProvider(
+                                                    controller
+                                                        .user
+                                                        .value!
+                                                        .photoUrl!,
+                                                  )
+                                                  : null)
+                                              as ImageProvider?,
+                                  child:
+                                      controller.user.value?.photoUrl == null &&
+                                              selectedImage == null
+                                          ? Icon(
+                                            Icons.person,
+                                            size: 20.sp,
+                                            color: MyColors.white,
+                                          )
+                                          : null,
+                                ),
+                                Positioned(
+                                  bottom: 1.5.sp,
+                                  right: 0,
+                                  child: Container(
+                                    padding: EdgeInsets.all(2.5.sp),
+                                    decoration: BoxDecoration(
+                                      color: MyColors.white,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: 5.sp,
+                                      color: MyColors.redButtonColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          // Name Field
+                          DenseTextField(
+                            label: 'Full Name'.tr,
+                            controller: nameController,
+                            hintText: 'Enter full name'.tr,
+                            labelFontSize: 8,
+                            textFontSize: 10,
+                            hintFontSize: 8,
+                            width: 150.w,
+                          ),
+                          SizedBox(height: 12.h),
+                          // Phone Number Field
+                          DenseTextField(
+                            label: 'Phone Number'.tr,
+                            controller: phoneController,
+                            hintText: 'Enter your number'.tr,
+                            keyboardType: TextInputType.phone,
+                            labelFontSize: 8,
+                            textFontSize: 10,
+                            hintFontSize: 8,
+                            width: 150.w,
+                          ),
+                          // SizedBox(height: 12.h),
+                          // // Email Field
+                          // DenseTextField(
+                          //   label: 'Email'.tr,
+                          //   controller: emailController,
+                          //   hintText: 'Enter email'.tr,
+                          //   keyboardType: TextInputType.emailAddress,
+                          //   textFontSize: 10,
+                          //   hintFontSize: 9,
+                          //   width: 150.w,
+                          // ),
+                          // SizedBox(height: 20.h),
+                          // Points balance section
+                          // Obx(
+                          //   () => Text(
+                          //     '${'My points balance'.tr} ${controller.user.value?.pointsBalance ?? 0}',
+                          //     style: AppTextStyles.heading2().copyWith(
+                          //       fontSize: 9.sp,
+                          //       color: MyColors.white.withValues(alpha: 0.8),
+                          //     ),
+                          //   ),
+                          // ),
+                          SizedBox(height: 20.h),
+                          // Buttons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // Cancel Button
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (Navigator.of(context).canPop()) {
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: MyColors.black.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10.r),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Cancel'.tr,
+                                        style: AppTextStyles.heading2()
+                                            .copyWith(
+                                              fontSize: 8.sp,
+                                              color: MyColors.white,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              // Save Button
+                              Expanded(
+                                child: Obx(
+                                  () => GestureDetector(
+                                    onTap:
+                                        controller.isUpdatingProfile.value
+                                            ? null
+                                            : () async {
+                                              print('Save button tapped');
+                                              String? finalPhotoId = photoId;
+
+                                              // Upload photo if selected
+                                              if (selectedImage != null) {
+                                                print('Uploading photo...');
+                                                final uploadId =
+                                                    await controller
+                                                        .uploadPhotoToS3(
+                                                          selectedImage!,
+                                                        );
+                                                if (uploadId != null) {
+                                                  finalPhotoId = uploadId;
+                                                  print(
+                                                    'Photo uploaded, uploadId: $uploadId',
+                                                  );
+                                                } else {
+                                                  print('Photo upload failed');
+                                                  return; // Stop if upload failed
+                                                }
+                                              }
+
+                                              print(
+                                                'Calling updateProfile API...',
+                                              );
+                                              // Update profile
+                                              final success = await controller
+                                                  .updateProfile(
+                                                    fullName:
+                                                        nameController.text
+                                                            .trim(),
+                                                    email:
+                                                        emailController.text
+                                                                .trim()
+                                                                .isEmpty
+                                                            ? null
+                                                            : emailController
+                                                                .text
+                                                                .trim(),
+                                                    phoneNumber:
+                                                        phoneController.text
+                                                                .trim()
+                                                                .isEmpty
+                                                            ? null
+                                                            : phoneController
+                                                                .text
+                                                                .trim(),
+                                                    callingCode:
+                                                        controller
+                                                            .user
+                                                            .value
+                                                            ?.callingCode
+                                                            ?.toString(),
+                                                    countryCode:
+                                                        controller
+                                                            .user
+                                                            .value
+                                                            ?.countryCode
+                                                            ?.toString(),
+                                                    photoId: finalPhotoId,
+                                                  );
+
+                                              print(
+                                                'Update profile result: $success',
+                                              );
+                                              if (success) {
+                                                // Close dialog immediately
+                                                if (Navigator.canPop(context)) {
+                                                  Navigator.pop(context);
+                                                } else {
+                                                  // Fallback for GetX dialog
+                                                  Get.back();
+                                                }
+                                              }
+                                            },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            controller.isUpdatingProfile.value
+                                                ? MyColors.greenColor
+                                                    .withValues(alpha: 0.5)
+                                                : MyColors.greenColor,
+                                        borderRadius: BorderRadius.circular(
+                                          10.r,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child:
+                                            controller.isUpdatingProfile.value
+                                                ? SizedBox(
+                                                  width: 20.w,
+                                                  height: 20.h,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                          Color
+                                                        >(MyColors.white),
+                                                  ),
+                                                )
+                                                : Text(
+                                                  'Save'.tr,
+                                                  style:
+                                                      AppTextStyles.heading2()
+                                                          .copyWith(
+                                                            fontSize: 8.sp,
+                                                            color:
+                                                                MyColors.white,
+                                                          ),
+                                                ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+          ),
+    );
+  }
+
+  void _showDeleteAccountDialog(
+    BuildContext context,
+    UserController controller,
+  ) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
+      builder:
+          (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 20.h),
+              constraints: BoxConstraints(maxWidth: 200.w),
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(MyImages.gamebackground),
                   fit: BoxFit.cover,
                 ),
-                // color: MyColors.black.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(20.r),
               ),
-              child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Warning Icon
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 25.sp,
+                    color: MyColors.redButtonColor,
+                  ),
+                  SizedBox(height: 15.h),
+
+                  // Title
                   Text(
-                    'Edit Profile'.tr,
-                    style: AppTextStyles.captionBold10().copyWith(
+                    'Delete Account'.tr,
+                    style: AppTextStyles.heading1().copyWith(
+                      fontSize: 10.sp,
                       color: MyColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+
+                  // Confirmation message
+                  Text(
+                    'Are you sure you want to delete your account? This action cannot be undone.'
+                        .tr,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyTextMedium16().copyWith(
+                      fontSize: 7.sp,
+                      color: MyColors.white.withValues(alpha: 0.8),
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  // Profile Picture
-                  GestureDetector(
-                    onTap: () async {
-                      final picker = ImagePicker();
-                      final pickedFile = await picker.pickImage(
-                        source: ImageSource.gallery,
-                        imageQuality: 80,
-                      );
-                      if (pickedFile != null) {
-                        setState(() {
-                          selectedImage = File(pickedFile.path);
-                        });
-                      }
-                    },
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 20.w,
-                          backgroundColor: MyColors.redButtonColor.withValues(alpha: 0.2),
-                          backgroundImage: selectedImage != null
-                              ? FileImage(selectedImage!)
-                              : (controller.user.value?.photoUrl != null
-                                      ? CachedNetworkImageProvider(
-                                          controller.user.value!.photoUrl!,
-                                        )
-                                      : null) as ImageProvider?,
-                          child: controller.user.value?.photoUrl == null &&
-                                  selectedImage == null
-                              ? Icon(
-                                  Icons.person,
-                                  size: 20.sp,
-                                  color: MyColors.white,
-                                )
-                              : null,
-                        ),
-                        Positioned(
-                          bottom: 1.5.sp,
-                          right: 0,
-                          child: Container(
-                            padding: EdgeInsets.all(2.5.sp),
-                            decoration: BoxDecoration(
-                              color: MyColors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              size: 5.sp,
-                              color: MyColors.redButtonColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  // Name Field
-                  DenseTextField(
-                    label: 'Full Name'.tr,
-                    controller: nameController,
-                    hintText: 'Enter full name'.tr,
-                    labelFontSize: 9,
-                    textFontSize: 10,
-                    hintFontSize: 9,
-                    width: 150.w,
-                  ),
-                  SizedBox(height: 12.h),
-                  // Phone Number Field
-                  DenseTextField(
-                    label: 'Phone Number'.tr,
-                    controller: phoneController,
-                    hintText: 'Enter your number'.tr,
-                    keyboardType: TextInputType.phone,
-                    labelFontSize: 9,
-                    textFontSize: 10,
-                    hintFontSize: 9,
-                    width: 150.w,
-                  ),
-                  SizedBox(height: 12.h),
-                  // Email Field
-                  DenseTextField(
-                    label: 'Email'.tr,
-                    controller: emailController,
-                    hintText: 'Enter email'.tr,
-                    keyboardType: TextInputType.emailAddress,
-                    textFontSize: 10,
-                    hintFontSize: 9,
-                    width: 150.w,
-                  ),
-                  SizedBox(height: 20.h),
-                  // Points balance section
-                  Obx(
-                    () => Text(
-                      '${'My points balance'.tr} ${controller.user.value?.pointsBalance ?? 0}',
-                      style: AppTextStyles.heading2().copyWith(
-                        fontSize: 9.sp,
-                        color: MyColors.white.withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 25.h),
+
                   // Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -736,9 +926,7 @@ class SettingsScreen extends StatelessWidget {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            if (Navigator.of(context).canPop()) {
-                              Navigator.of(context).pop();
-                            }
+                            Navigator.of(context).pop();
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -759,85 +947,63 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 10.w),
-                      // Save Button
+
+                      // Delete Button
                       Expanded(
                         child: Obx(
                           () => GestureDetector(
-                            onTap: controller.isUpdatingProfile.value
-                                ? null
-                                : () async {
-                                    print('Save button tapped');
-                                    String? finalPhotoId = photoId;
-                                    
-                                    // Upload photo if selected
-                                    if (selectedImage != null) {
-                                      print('Uploading photo...');
-                                      final uploadId =
-                                          await controller.uploadPhotoToS3(
-                                        selectedImage!,
-                                      );
-                                      if (uploadId != null) {
-                                        finalPhotoId = uploadId;
-                                        print('Photo uploaded, uploadId: $uploadId');
-                                      } else {
-                                        print('Photo upload failed');
-                                        return; // Stop if upload failed
-                                      }
-                                    }
-
-                                    print('Calling updateProfile API...');
-                                    // Update profile
-                                    final success =
-                                        await controller.updateProfile(
-                                      fullName: nameController.text.trim(),
-                                      email: emailController.text.trim().isEmpty
-                                          ? null
-                                          : emailController.text.trim(),
-                                      phoneNumber: phoneController.text.trim().isEmpty
-                                          ? null
-                                          : phoneController.text.trim(),
-                                      callingCode: controller.user.value?.callingCode?.toString(),
-                                      countryCode: controller.user.value?.countryCode?.toString(),
-                                      photoId: finalPhotoId,
-                                    );
-
-                                    print('Update profile result: $success');
-                                    if (success) {
-                                      // Close dialog after a small delay to avoid navigation conflicts
-                                      await Future.delayed(const Duration(milliseconds: 300));
-                                      if (context.mounted && Navigator.of(context).canPop()) {
+                            onTap:
+                                controller.isDeletingAccount.value
+                                    ? null
+                                    : () async {
+                                      final success =
+                                          await controller.deleteAccount();
+                                      if (success) {
+                                        // Close dialog
                                         Navigator.of(context).pop();
+                                        await SystemChrome.setPreferredOrientations(
+                                          [
+                                            DeviceOrientation.portraitUp,
+                                            DeviceOrientation.portraitDown,
+                                          ],
+                                        );
+                                        // Navigate to sign in screen
+                                        Get.offAllNamed(AppRoutes.sigin);
                                       }
-                                    }
-                                  },
+                                    },
                             child: Container(
                               padding: EdgeInsets.symmetric(vertical: 12.h),
                               decoration: BoxDecoration(
-                                color: controller.isUpdatingProfile.value
-                                    ? MyColors.greenColor.withValues(alpha: 0.5)
-                                    : MyColors.greenColor,
+                                color:
+                                    controller.isDeletingAccount.value
+                                        ? MyColors.redButtonColor.withValues(
+                                          alpha: 0.5,
+                                        )
+                                        : MyColors.redButtonColor,
                                 borderRadius: BorderRadius.circular(10.r),
                               ),
                               child: Center(
-                                child: controller.isUpdatingProfile.value
-                                    ? SizedBox(
-                                        width: 20.w,
-                                        height: 20.h,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                            MyColors.white,
+                                child:
+                                    controller.isDeletingAccount.value
+                                        ? SizedBox(
+                                          width: 20.w,
+                                          height: 20.h,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  MyColors.white,
+                                                ),
                                           ),
+                                        )
+                                        : Text(
+                                          'Delete'.tr,
+                                          style: AppTextStyles.heading2()
+                                              .copyWith(
+                                                fontSize: 8.sp,
+                                                color: MyColors.white,
+                                              ),
                                         ),
-                                      )
-                                    : Text(
-                                        'Save'.tr,
-                                        style: AppTextStyles.heading2().copyWith(
-                                          fontSize: 8.sp,
-                                          color: MyColors.white,
-                                        ),
-                                      ),
                               ),
                             ),
                           ),
@@ -848,13 +1014,7 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            ),
           ),
-        ),
-      
     );
   }
-
-
-
 }

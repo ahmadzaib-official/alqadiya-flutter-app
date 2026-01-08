@@ -21,7 +21,7 @@ void main() async {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     ),
-  ); 
+  );
   await Services().initServices();
   final locale = await LocalizationService.getCurrentLocale();
   runApp(MyApp(locale: locale));

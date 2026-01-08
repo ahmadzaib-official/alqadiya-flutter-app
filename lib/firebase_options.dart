@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBLxyFWGnLTSzXFz_NF5_qiRrzy1l01Bdk',
-    appId: '1:1017677830312:android:f8c10bf3bae265aca34a9d',
+    appId: '1:1017677830312:android:0af5d681407128f3a34a9d',
     messagingSenderId: '1017677830312',
     projectId: 'alqadiya-bb7f8',
     storageBucket: 'alqadiya-bb7f8.firebasestorage.app',
@@ -59,10 +59,14 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD0mYadQBxfW-kAnPI5bLMNiMqw0U53gYI',
-    appId: '1:1017677830312:ios:37da38ad1ffcdd31a34a9d',
+    appId: '1:1017677830312:ios:9dfb1ba6b60ed2f8a34a9d',
     messagingSenderId: '1017677830312',
     projectId: 'alqadiya-bb7f8',
     storageBucket: 'alqadiya-bb7f8.firebasestorage.app',
+    androidClientId:
+        '1017677830312-lgtb1nf2gd3r6c22i9de30co8r374c4t.apps.googleusercontent.com',
+    iosClientId:
+        '1017677830312-0ffv8e53ndkg0sjhogbnb31uruver6os.apps.googleusercontent.com',
     iosBundleId: 'com.vga.alqadiya',
   );
 }

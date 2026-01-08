@@ -49,7 +49,7 @@ Dio getData() {
           handler.reject(
             DioException(
               requestOptions: response.requestOptions,
-              error: UnauthorizedException('Authentication failed'),
+              error: UnauthorizedException('Authentication failed'.tr),
             ),
           );
         }
@@ -254,47 +254,47 @@ AppException _handleDioError(DioException error) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
     case DioExceptionType.receiveTimeout:
-      return NetworkException('Connection timeout');
+      return NetworkException('Connection timeout'.tr);
     case DioExceptionType.badResponse:
       switch (error.response?.statusCode) {
         case 400:
           return ValidationException(
-            error.response?.data['message'] ?? 'Invalid request',
+            error.response?.data['message'] ?? 'Invalid request'.tr,
             data: error.response?.data,
           );
         case 401:
           return UnauthorizedException(
-            error.response?.data['message'] ?? 'Unauthorized',
+            error.response?.data['message'] ?? 'Unauthorized'.tr,
             data: error.response?.data,
           );
         case 403:
           return UnauthorizedException(
-            error.response?.data['message'] ?? 'Access denied',
+            error.response?.data['message'] ?? 'Access denied'.tr,
             data: error.response?.data,
           );
         case 404:
           return ServerException(
-            error.response?.data['message'] ?? 'Resource not found',
+            error.response?.data['message'] ?? 'Resource not found'.tr,
             data: error.response?.data,
           );
         case 500:
         case 502:
         case 503:
           return ServerException(
-            error.response?.data['message'] ?? 'Server error',
+            error.response?.data['message'] ?? 'Server error'.tr,
             data: error.response?.data,
           );
         default:
           return ServerException(
-            error.response?.data['message'] ?? 'Unknown error occurred',
+            error.response?.data['message'] ?? 'Unknown error occurred'.tr,
             data: error.response?.data,
           );
       }
     case DioExceptionType.cancel:
-      return NetworkException('Request cancelled');
+      return NetworkException('Request cancelled'.tr);
     case DioExceptionType.unknown:
       if (error.error is NetworkException) {
-        return NetworkException('No internet connection');
+        return NetworkException('No internet connection'.tr);
       }
       return ServerException('Unknown error occurred');
     default:
@@ -305,7 +305,7 @@ AppException _handleDioError(DioException error) {
 String _extractErrorMessage(DioException e) {
   final data = e.response?.data;
 
-  if (data == null) return 'Something went wrong';
+  if (data == null) return 'Something went wrong'.tr;
 
   // Case 1: If `message` key exists
   if (data is Map<String, dynamic>) {
@@ -326,11 +326,11 @@ String _extractErrorMessage(DioException e) {
     return data.first.toString().replaceAll(RegExp(r'[\[\]]'), '').trim();
   }
 
-  return 'Something went wrong';
+  return 'Something went wrong'.tr;
 }
 
 void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
-  if (errorMessage == 'Phone number not verified') {
+  if (errorMessage == 'Phone number not verified'.tr) {
     Future.delayed(Duration.zero, () {
       Get.find<SignInController>().verifyPhoneNumber();
     });
@@ -351,7 +351,9 @@ void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
 
   if (statusCode >= 500 && statusCode < 600) {
     Future.delayed(Duration.zero, () {
-      CustomSnackbar.showError('Server error occurred. Please try again later'.tr);
+      CustomSnackbar.showError(
+        'Server error occurred. Please try again later'.tr,
+      );
     });
     return;
   }

@@ -42,7 +42,7 @@ class NotificationsListScreen extends StatelessWidget {
                         // Notification bell with badge
                         GestureDetector(
                           onTap: () {
-                            Get.back();
+                            Navigator.pop(context);
                           },
                           child: SvgPicture.asset(
                             MyIcons.notification_brown_rounded,

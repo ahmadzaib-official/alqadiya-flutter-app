@@ -21,7 +21,7 @@ class Toaster {
   static void showErrorAlertSnackBar(String message) {
     if (message.trim().isEmpty) return;
     Get.snackbar(
-      'Something went wrong!',
+      'Something went wrong!'.tr,
       message,
       backgroundColor: MyColors.backgroundColor,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -37,7 +37,7 @@ class Toaster {
     if (message.trim().isEmpty) return;
 
     Get.snackbar(
-      'Successfully',
+      'Successfully'.tr,
       message,
       backgroundColor: Colors.green,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -54,7 +54,7 @@ class Toaster {
     if (message.trim().isEmpty) return;
 
     Get.snackbar(
-      'Alert',
+      'Alert'.tr,
       message,
       backgroundColor: Colors.red,
       messageText: Text(

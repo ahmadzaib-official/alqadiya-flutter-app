@@ -16,7 +16,6 @@ import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/features/auth/controller/signin_controller.dart';
 import 'package:alqadiya_game/core/utils/validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -163,7 +162,20 @@ class SigninScreen extends StatelessWidget with Validators {
                                     isLoading: controller.isSignIn.value,
                                     text: 'Log In'.tr,
                                     onPressed: () async {
-                                      if (formKey.currentState!.validate()) {
+                                      bool isValid =
+                                          formKey.currentState!.validate();
+                                      bool isPasswordEmpty =
+                                          controller.passwordController.text
+                                              .trim()
+                                              .isEmpty;
+                                      bool isPhoneEmpty =
+                                          controller.phoneNumberController.text
+                                              .trim()
+                                              .isEmpty;
+
+                                      if (isValid &&
+                                          !isPasswordEmpty &&
+                                          !isPhoneEmpty) {
                                         await controller.signIn();
                                       }
                                     },

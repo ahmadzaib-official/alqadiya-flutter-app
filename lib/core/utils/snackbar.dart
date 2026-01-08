@@ -18,8 +18,12 @@ class CustomSnackbar {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // Double-check context is still valid after frame callback
         final currentContext = Get.context;
-        if (currentContext != null && 
+        if (currentContext != null &&
             (Get.isDialogOpen == null || !Get.isDialogOpen!)) {
+          // Check orientation to adjust font size
+          final orientation = MediaQuery.of(currentContext).orientation;
+          final fontSize = orientation == Orientation.portrait ? 14.sp : 8.sp;
+
           Flushbar(
             messageText: Row(
               mainAxisSize: MainAxisSize.min,
@@ -27,7 +31,7 @@ class CustomSnackbar {
                 Flexible(
                   child: Text(
                     message,
-                    style: TextStyle(color: Colors.white, fontSize: 8.sp),
+                    style: TextStyle(color: Colors.white, fontSize: fontSize),
                     textAlign: TextAlign.center,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,

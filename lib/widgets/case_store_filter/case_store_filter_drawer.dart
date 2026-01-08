@@ -27,7 +27,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
     return Container(
       width: MediaQuery.sizeOf(context).width * 0.4,
       height: MediaQuery.sizeOf(context).height,
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
       decoration: BoxDecoration(
         color: MyColors.backgroundColor,
         boxShadow: [
@@ -325,7 +325,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
             CustomButton(
               height: 50.h,
               fontSize: 6.sp,
-              text: 'Apply',
+              text: 'Apply'.tr,
               onPressed: () {
                 controller.applyFilters();
                 onApplyTap();

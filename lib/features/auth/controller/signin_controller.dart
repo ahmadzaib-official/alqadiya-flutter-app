@@ -27,7 +27,11 @@ class SignInController extends GetxController {
   final phorgetPhoneNumberController = TextEditingController();
   final newPassword = TextEditingController();
   final confirmPassword = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId:
+        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
+  );
 
   Future<void> enableLandscapeMode() async {
     await SystemChrome.setPreferredOrientations([
@@ -111,7 +115,8 @@ class SignInController extends GetxController {
           }
         }
 
-        Get.back(); // Close progress dialog
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialog
         Get.find<Preferences>().remove(AppStrings.isGuest);
         // await SystemChrome.setPreferredOrientations([
         //   DeviceOrientation.landscapeLeft,
@@ -120,10 +125,11 @@ class SignInController extends GetxController {
 
         // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
         Get.offAllNamed(AppRoutes.homescreen);
-        clearField();
+        // clearField();
       }
     } catch (e) {
-      Get.back(); // Close progress dialog
+      // if (Get.context != null)
+      // Navigator.pop(Get.context!);
       CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
     } finally {
       isSignIn(false);
@@ -137,12 +143,17 @@ class SignInController extends GetxController {
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        Get.back();
+        if (Get.context != null) Navigator.pop(Get.context!);
         return; // User canceled the sign-in
       }
 
       // Prepare the exact payload your backend expects
-      final body = {"googleId": googleUser.id, "authProvider": "google"};
+      final body = {
+        "googleId": googleUser.id,
+        "fullName": googleUser.displayName ?? "",
+        "email": googleUser.email,
+        "authProvider": "google",
+      };
       DebugPoint.log("Google Sign In Body: $body");
       final response = await ApiFetch().signIn(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -175,7 +186,9 @@ class SignInController extends GetxController {
       DebugPoint.log(e);
     } finally {
       isLoading.value = false;
-      if (Get.isDialogOpen!) Get.back(); // Close dialog if still open
+      if (Get.isDialogOpen! && Get.context != null) {
+        Navigator.pop(Get.context!); // Close dialog if still open
+      }
     }
   }
 
@@ -192,6 +205,9 @@ class SignInController extends GetxController {
 
       final body = {
         "appleId": credential.userIdentifier,
+        "fullName":
+            '${credential.givenName ?? ""} ${credential.familyName ?? ""}',
+        "email": credential.email ?? "",
         "authProvider": "apple",
       };
 
@@ -209,11 +225,13 @@ class SignInController extends GetxController {
           );
         }
 
-        Get.back(); // Close progress dialogs
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialogs
         Get.offAllNamed(AppRoutes.homescreen);
       }
     } catch (e) {
-      Get.back(); // Close progress dialog
+      if (Get.context != null)
+        Navigator.pop(Get.context!); // Close progress dialog
     }
   }
 
@@ -308,7 +326,8 @@ class SignInController extends GetxController {
       };
       final response = await ApiFetch().resetPassword(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.back(); // Close progress dialog
+        if (Get.context != null)
+          Navigator.pop(Get.context!); // Close progress dialog
         Get.toNamed(
           AppRoutes.verifcationSussesfulscreen,
           arguments: {

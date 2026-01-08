@@ -36,7 +36,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Future.delayed(Duration(milliseconds: 60), () {
-      Get.back();
+      if (mounted) Navigator.pop(context);
     });
   }
 

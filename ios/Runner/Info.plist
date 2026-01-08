@@ -30,9 +30,14 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.1017677830312-0ffv8e53ndkg0sjhogbnb31uruver6os</string>
+				<string>com.vga.alqadiya</string>
 			</array>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>1017677830312-0ffv8e53ndkg0sjhogbnb31uruver6os.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com</string>
 	<key>CFBundleVersion</key>
 	<string>2</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

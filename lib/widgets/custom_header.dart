@@ -3,8 +3,6 @@ import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 
 class CustomHeader extends StatelessWidget {
   const CustomHeader({
@@ -26,7 +24,7 @@ class CustomHeader extends StatelessWidget {
         showLogoOnLeft
             ? Image(image: AssetImage(MyImages.appicon), height: 60.h)
             : GestureDetector(
-              onTap: onBack ?? () => Get.back(),
+              onTap: onBack ?? () => Navigator.pop(context),
               child: SvgPicture.asset(
                 MyIcons.arrowback,
                 height: 24.h,
@@ -35,7 +33,7 @@ class CustomHeader extends StatelessWidget {
             ),
         showLogoOnLeft
             ? GestureDetector(
-              onTap: onBack ?? () => Get.back(),
+              onTap: onBack ?? () => Navigator.pop(context),
               child: SvgPicture.asset(
                 MyIcons.arrowback,
                 height: 24.h,

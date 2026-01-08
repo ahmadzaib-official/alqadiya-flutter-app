@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 class ClueDetailController extends GetxController {
   // 0 = Clue Information, 1 = Attachments
   final selectedTab = 0.obs;
-  final selectedAttachmentType = Rxn<String>(); // Videos, Images, Audio, Documents
+  final selectedAttachmentType =
+      Rxn<String>(); // Videos, Images, Audio, Documents
 
   /// Set selected tab
   void setSelectedTab(int tab) {

@@ -41,7 +41,7 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
     // Fetch suspects from API
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final gameId =
-          gameController.gameDetail.value?.id ??
+          gameController.gameDetail.value.id ??
           gameController.gameSession.value?.gameId;
       if (gameId != null && gameId.isNotEmpty) {
         suspectController.getSuspectsByGame(gameId: gameId);
@@ -51,71 +51,82 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
-      body: Obx(
-        () => GameBackground(
-          isPurchased: true,
-          imageUrl:
-              gameController.gameDetail.value?.coverImageUrl ??
-              gameController.gameDetail.value?.coverImage ??
-              "https://picsum.photos/200",
-          body: Column(
-            children: [
-              // Header
-              Padding(
-                padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
-                child: HomeHeader(
-                  onChromTap: () {},
-                  title: Row(
-                    children: [
-                      Text(
-                        gameController.gameDetail.value?.title ??
-                            'List of suspects'.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 10.sp,
-                        ),
-                      ),
-                      SizedBox(width: 20.w),
-                      Text(
-                        'Timer '.tr,
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 10.sp,
-                          color: MyColors.white.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      Obx(
-                        () => Text(
-                          timerController.timerText.value,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: MyColors.backgroundColor,
+        body: Obx(
+          () => GameBackground(
+            isPurchased: true,
+            imageUrl:
+                gameController.gameDetail.value.coverImageUrl ??
+                gameController.gameDetail.value.coverImage ??
+                "https://picsum.photos/200",
+            body: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.sp,
+                    right: 10.sp,
+                    top: 5.sp,
+                  ),
+                  child: HomeHeader(
+                    onChromTap: () {},
+                    title: Row(
+                      children: [
+                        Text(
+                          gameController.gameDetail.value.title ??
+                              'List of suspects'.tr,
                           style: AppTextStyles.heading1().copyWith(
                             fontSize: 10.sp,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  actionButtons: GestureDetector(
-                    onTap: () => Get.back(),
-                    child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                        SizedBox(width: 20.w),
+                        Text(
+                          'Timer '.tr,
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 10.sp,
+                            color: MyColors.white.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        Obx(
+                          () => Text(
+                            timerController.timerText.value,
+                            style: AppTextStyles.heading1().copyWith(
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actionButtons: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                    ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-              // Main Content - Suspects List
-              Expanded(child: _buildSuspectsList()),
+                // Main Content - Suspects List
+                Expanded(child: _buildSuspectsList()),
 
-              // Footer
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 10.sp,
-                  right: 10.sp,
-                  bottom: 5.sp,
+                // Footer
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 10.sp,
+                    right: 10.sp,
+                    bottom: 5.sp,
+                  ),
+                  child: GameFooter(onGameResultTap: () {}),
                 ),
-                child: GameFooter(onGameResultTap: () {}),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
