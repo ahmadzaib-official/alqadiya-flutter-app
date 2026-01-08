@@ -15,6 +15,7 @@ class UserController extends GetxController {
   var user = Rxn<UserModel>();
   var isLoading = false.obs;
   var isUpdatingProfile = false.obs;
+  var isDeletingAccount = false.obs;
 
   @override
   void onInit() {
@@ -238,6 +239,34 @@ class UserController extends GetxController {
       return false;
     } finally {
       isUpdatingProfile(false);
+    }
+  }
+
+  // Delete user account
+  Future<bool> deleteAccount() async {
+    try {
+      isDeletingAccount(true);
+
+      final response = await ApiFetch().deleteAccount();
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Clear user data and logout
+        user.value = null;
+        final prefs = Get.find<Preferences>();
+        await prefs.clear();
+
+        CustomSnackbar.showSuccess('Account deleted successfully');
+        return true;
+      }
+      return false;
+    } on DioException {
+      // Error already shown by interceptor
+      return false;
+    } catch (e) {
+      CustomSnackbar.showError("Failed to delete account: ${e.toString()}");
+      return false;
+    } finally {
+      isDeletingAccount(false);
     }
   }
 }

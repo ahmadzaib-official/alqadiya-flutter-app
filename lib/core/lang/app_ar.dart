@@ -649,6 +649,9 @@ const Map<String, String> lnAr = {
   'Billing': 'الفواتير',
   'Virtual Assistant': 'المساعد الافتراضي',
   'Delete Account': 'حذف الحساب',
+  'Are you sure you want to delete your account? This action cannot be undone.':
+      'هل أنت متأكد من أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+  'Delete': 'حذف',
   'Logout': 'تسجيل الخروج',
   'Save Changes': 'حفظ التغييرات',
   'Details Updated Successfully': 'تم تحديث التفاصيل بنجاح',

@@ -644,6 +644,9 @@ const Map<String, String> enUS = {
   'Billing': 'Billing',
   'Virtual Assistant': 'Virtual Assistant',
   'Delete Account': 'Delete Account',
+  'Are you sure you want to delete your account? This action cannot be undone.':
+      'Are you sure you want to delete your account? This action cannot be undone.',
+  'Delete': 'Delete',
   'Logout': 'Logout',
   'Save Changes': 'Save Changes',
   'Details Updated Successfully': 'Details Updated Successfully',

@@ -14,6 +14,7 @@ import 'package:alqadiya_game/widgets/dense_text_field.dart';
 import 'package:alqadiya_game/widgets/language_selection_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -452,31 +453,34 @@ class SettingsScreen extends StatelessWidget {
             Spacer(),
 
             // Delete account
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: MyColors.black.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(100.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  SvgPicture.asset(MyIcons.deleteUser, width: 10.w),
-                  SizedBox(width: 3.w),
-                  Text(
-                    'Delete account'.tr,
-                    style: AppTextStyles.heading2().copyWith(
-                      fontSize: 7.sp,
-                      color: MyColors.white.withValues(alpha: 0.5),
+            GestureDetector(
+              onTap: () => _showDeleteAccountDialog(context, userController),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: MyColors.black.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(100.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    SvgPicture.asset(MyIcons.deleteUser, width: 10.w),
+                    SizedBox(width: 3.w),
+                    Text(
+                      'Delete account'.tr,
+                      style: AppTextStyles.heading2().copyWith(
+                        fontSize: 7.sp,
+                        color: MyColors.white.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(width: 10.w),
@@ -485,6 +489,10 @@ class SettingsScreen extends StatelessWidget {
             GestureDetector(
               onTap: () async {
                 await Get.find<Preferences>().clear();
+                await SystemChrome.setPreferredOrientations([
+                  DeviceOrientation.portraitUp,
+                  DeviceOrientation.portraitDown,
+                ]);
                 Get.offAllNamed(AppRoutes.sigin);
               },
               child: Container(
@@ -851,6 +859,161 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+          ),
+    );
+  }
+
+  void _showDeleteAccountDialog(
+    BuildContext context,
+    UserController controller,
+  ) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
+      builder:
+          (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 20.h),
+              constraints: BoxConstraints(maxWidth: 200.w),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(MyImages.gamebackground),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Warning Icon
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 25.sp,
+                    color: MyColors.redButtonColor,
+                  ),
+                  SizedBox(height: 15.h),
+
+                  // Title
+                  Text(
+                    'Delete Account'.tr,
+                    style: AppTextStyles.heading1().copyWith(
+                      fontSize: 10.sp,
+                      color: MyColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+
+                  // Confirmation message
+                  Text(
+                    'Are you sure you want to delete your account? This action cannot be undone.'
+                        .tr,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyTextMedium16().copyWith(
+                      fontSize: 7.sp,
+                      color: MyColors.white.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Cancel Button
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            decoration: BoxDecoration(
+                              color: MyColors.black.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Cancel'.tr,
+                                style: AppTextStyles.heading2().copyWith(
+                                  fontSize: 8.sp,
+                                  color: MyColors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+
+                      // Delete Button
+                      Expanded(
+                        child: Obx(
+                          () => GestureDetector(
+                            onTap:
+                                controller.isDeletingAccount.value
+                                    ? null
+                                    : () async {
+                                      final success =
+                                          await controller.deleteAccount();
+                                      if (success) {
+                                        // Close dialog
+                                        Navigator.of(context).pop();
+                                        await SystemChrome.setPreferredOrientations(
+                                          [
+                                            DeviceOrientation.portraitUp,
+                                            DeviceOrientation.portraitDown,
+                                          ],
+                                        );
+                                        // Navigate to sign in screen
+                                        Get.offAllNamed(AppRoutes.sigin);
+                                      }
+                                    },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              decoration: BoxDecoration(
+                                color:
+                                    controller.isDeletingAccount.value
+                                        ? MyColors.redButtonColor.withValues(
+                                          alpha: 0.5,
+                                        )
+                                        : MyColors.redButtonColor,
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: Center(
+                                child:
+                                    controller.isDeletingAccount.value
+                                        ? SizedBox(
+                                          width: 20.w,
+                                          height: 20.h,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  MyColors.white,
+                                                ),
+                                          ),
+                                        )
+                                        : Text(
+                                          'Delete'.tr,
+                                          style: AppTextStyles.heading2()
+                                              .copyWith(
+                                                fontSize: 8.sp,
+                                                color: MyColors.white,
+                                              ),
+                                        ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
     );
   }
