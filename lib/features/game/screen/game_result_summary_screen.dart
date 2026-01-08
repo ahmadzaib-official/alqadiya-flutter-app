@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -9,6 +8,7 @@ import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:alqadiya_game/widgets/gradient_box_border.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -209,7 +209,6 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                     ),
                                     SizedBox(height: 16.h),
                                     // Share result button
-                                    // Share result button
                                     Builder(
                                       builder: (context) {
                                         return GestureDetector(
@@ -325,6 +324,9 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                 child: _buildTeamResultCard(
                                   context,
                                   teamResults[0],
+                                  isWinner: _isWinningTeam(
+                                    teamResults[0]['name'],
+                                  ),
                                 ),
                               ),
                             if (teamResults.length > 0) SizedBox(width: 6.w),
@@ -333,6 +335,9 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                 child: _buildTeamResultCard(
                                   context,
                                   teamResults[1],
+                                  isWinner: _isWinningTeam(
+                                    teamResults[1]['name'],
+                                  ),
                                 ),
                               ),
                             if (teamResults.length <= 1)
@@ -542,8 +547,9 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
 
   Widget _buildTeamResultCard(
     BuildContext context,
-    Map<String, dynamic> result,
-  ) {
+    Map<String, dynamic> result, {
+    bool isWinner = false,
+  }) {
     // Safely cast players list - handle both List<dynamic> and List<Map<String, dynamic>>
     final playersData = result['players'];
     final List<Map<String, dynamic>> players =
@@ -563,6 +569,23 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
       decoration: BoxDecoration(
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
+        border: GradientBoxBorder(
+          width: 2.0,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors:
+                isWinner
+                    ? [
+                      MyColors.greenColor.withValues(alpha: 0.1),
+                      MyColors.greenColor,
+                    ]
+                    : [
+                      MyColors.redButtonColor.withValues(alpha: 0.1),
+                      MyColors.redButtonColor,
+                    ],
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -798,6 +821,17 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
       decoration: BoxDecoration(
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
+        border: GradientBoxBorder(
+          width: 2.0,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              MyColors.greenColor.withValues(alpha: 0.8),
+              MyColors.greenColor,
+            ],
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -903,5 +937,12 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
         ),
       ],
     );
+  }
+
+  /// Helper method to determine if a team is the winner
+  bool _isWinningTeam(String teamName) {
+    final gameResultController = Get.find<GameResultController>();
+    final winnerName = gameResultController.winnerTeamName;
+    return winnerName != null && winnerName == teamName;
   }
 }
