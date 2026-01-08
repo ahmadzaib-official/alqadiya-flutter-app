@@ -272,6 +272,10 @@ class SignupController extends GetxController {
     );
   }
 
+  void openPrivacyAndTerms() {
+    Get.toNamed(AppRoutes.privacyTermsScreen);
+  }
+
   @override
   void dispose() {
     fullNameController.dispose();

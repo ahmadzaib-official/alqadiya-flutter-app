@@ -262,52 +262,66 @@ class SignupScreen extends StatelessWidget with Validators {
                                 ),
                                 SizedBox(width: 8.w),
                                 Expanded(
-                                  child: RichText(
-                                    text: TextSpan(
-                                      style: AppTextStyles.bodyTextRegular16()
-                                          .copyWith(
-                                            fontSize: 12.sp,
-                                            color: MyColors.white.withValues(
-                                              alpha: 0.7,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          style:
+                                              AppTextStyles.bodyTextRegular16()
+                                                  .copyWith(
+                                                    fontSize: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.7),
+                                                  ),
+                                          children: [
+                                            TextSpan(
+                                              text: 'I agree to the '.tr,
                                             ),
-                                          ),
-                                      children: [
-                                        TextSpan(text: 'I agree to the '.tr),
-                                        WidgetSpan(
-                                          child: GestureDetector(
-                                            onTap:
-                                                controller
-                                                    .openTermsAndConditions,
-                                            child: Text(
-                                              'Terms and Conditions'.tr,
-                                              style: TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                decorationColor: MyColors.white,
-                                                color: MyColors.white,
-                                                fontSize: 12.sp,
+                                            WidgetSpan(
+                                              child: GestureDetector(
+                                                onTap:
+                                                    controller
+                                                        .openTermsAndConditions,
+                                                child: Text(
+                                                  'Terms and Conditions'.tr,
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration
+                                                            .underline,
+                                                    decorationColor:
+                                                        MyColors.white,
+                                                    color: MyColors.white,
+                                                    fontSize: 12.sp,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                        TextSpan(text: ' and '.tr),
-                                        WidgetSpan(
-                                          child: GestureDetector(
-                                            onTap: controller.openPrivacyPolicy,
-                                            child: Text(
-                                              'Privacy Policy'.tr,
-                                              style: TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                decorationColor: MyColors.white,
-                                                color: MyColors.white,
-                                                fontSize: 12.sp,
+                                            TextSpan(text: ' and '.tr),
+                                            WidgetSpan(
+                                              child: GestureDetector(
+                                                onTap:
+                                                    controller
+                                                        .openPrivacyPolicy,
+                                                child: Text(
+                                                  'Privacy Policy'.tr,
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration
+                                                            .underline,
+                                                    decorationColor:
+                                                        MyColors.white,
+                                                    color: MyColors.white,
+                                                    fontSize: 12.sp,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],

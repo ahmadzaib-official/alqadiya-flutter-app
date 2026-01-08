@@ -5,6 +5,7 @@ import 'package:alqadiya_game/features/auth/forgotpassword/newPasswordScreen.dar
 import 'package:alqadiya_game/features/auth/otp_screen.dart';
 import 'package:alqadiya_game/features/auth/screen/webview_screen.dart';
 import 'package:alqadiya_game/features/auth/screen/privacy_terms_screen.dart';
+import 'package:alqadiya_game/features/auth/screen/offline_legal_screen.dart';
 import 'package:alqadiya_game/features/auth/signin_screen.dart';
 import 'package:alqadiya_game/features/auth/signup_screen.dart';
 import 'package:alqadiya_game/features/auth/verification_successful_screen.dart';
@@ -138,6 +139,18 @@ class AppPages {
     GetPage(
       name: AppRoutes.webViewScreen,
       page: () => const WebViewScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.privacyTermsScreen,
+      page: () => const PrivacyTermsScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.offlineLegalScreen,
+      page: () => const OfflineLegalScreen(),
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),

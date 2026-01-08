@@ -85,7 +85,20 @@ class _PrivacyTermsScreenState extends State<PrivacyTermsScreen>
       message,
       backgroundColor: MyColors.redButtonColor,
       colorText: Colors.white,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 5),
+      mainButton: TextButton(
+        onPressed: () {
+          Get.back(); // Close snackbar
+          Get.toNamed(
+            '/auth/offline-legal',
+            arguments: {
+              'type':
+                  title.toLowerCase().contains('privacy') ? 'privacy' : 'terms',
+            },
+          );
+        },
+        child: Text('View Offline'.tr, style: TextStyle(color: Colors.white)),
+      ),
     );
   }
 

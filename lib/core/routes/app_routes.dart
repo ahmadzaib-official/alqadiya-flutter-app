@@ -9,6 +9,7 @@ class AppRoutes {
   static const String newPasswordScreen = '/auth/newPasswordScreen';
   static const String webViewScreen = '/auth/webview';
   static const String privacyTermsScreen = '/auth/privacy-terms';
+  static const String offlineLegalScreen = '/auth/offline-legal';
   static const String onbordingScreen = '/onbordingScreen';
   static const String notifcationScreen = '/notifcation_screen';
   static const String submitBookingDetailes = '/submitBookingDetailes_screen';
