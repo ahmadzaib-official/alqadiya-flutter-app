@@ -37,7 +37,7 @@ class Toaster {
     if (message.trim().isEmpty) return;
 
     Get.snackbar(
-      'Successfully',
+      'Successfully'.tr,
       message,
       backgroundColor: Colors.green,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -54,7 +54,7 @@ class Toaster {
     if (message.trim().isEmpty) return;
 
     Get.snackbar(
-      'Alert',
+      'Alert'.tr,
       message,
       backgroundColor: Colors.red,
       messageText: Text(

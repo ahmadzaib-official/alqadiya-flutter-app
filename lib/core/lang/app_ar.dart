@@ -524,4 +524,47 @@ const Map<String, String> lnAr = {
   'Paper': 'الورق',
   'Gold': 'الذهب',
   'Silver': 'الفضة',
+
+  // Additional missing translations
+  'Game Result Summary': 'ملخص نتائج اللعبة',
+  'Loading results...': 'جاري تحميل النتائج...',
+  'No results available': 'لا توجد نتائج متاحة',
+  'No solo player results available': 'لا توجد نتائج لاعب منفرد متاحة',
+  'Game Completed': 'اكتملت اللعبة',
+  'Share result': 'مشاركة النتيجة',
+  'Back to the Main Page': 'العودة إلى الصفحة الرئيسية',
+  'The winner': 'الفائز',
+  'No team results available': 'لا توجد نتائج فريق متاحة',
+  'Check out my game result on Alqadiya!': 'تحقق من نتيجة لعبتي في القضية!',
+  'Total score': 'النتيجة الإجمالية',
+  'Time taken': 'الوقت المستغرق',
+  'Accuracy': 'الدقة',
+  'Hints used': 'التلميحات المستخدمة',
+  'Suspect choosen': 'المشتبه به المختار',
+
+  // Language selection hardcoded text
+  'عربي': 'عربي',
+
+  // Difficulty levels
+  'beginner': 'مبتدئ',
+  'easy': 'سهل',
+  'intermediate': 'متوسط',
+  'medium': 'متوسط',
+  'difficult': 'صعب',
+  'hard': 'صعب',
+  'expert': 'خبير',
+
+  // Network error messages
+  'Authentication failed': 'فشل في المصادقة',
+  'Session expired': 'انتهت صلاحية الجلسة',
+  'Connection timeout': 'انتهت مهلة الاتصال',
+  'Invalid request': 'طلب غير صالح',
+  'Unauthorized': 'غير مخول',
+  'Access denied': 'تم رفض الوصول',
+  'Resource not found': 'لم يتم العثور على المورد',
+  'Server error': 'خطأ في الخادم',
+  'Unknown error occurred': 'حدث خطأ غير معروف',
+  'Request cancelled': 'تم إلغاء الطلب',
+  'No internet connection': 'لا يوجد اتصال بالإنترنت',
+  'Phone number not verified': 'رقم الهاتف غير مؤكد',
 };

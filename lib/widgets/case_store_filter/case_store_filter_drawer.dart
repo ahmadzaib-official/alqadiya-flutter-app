@@ -325,7 +325,7 @@ class CaseStoreFilterDrawer extends StatelessWidget {
             CustomButton(
               height: 50.h,
               fontSize: 6.sp,
-              text: 'Apply',
+              text: 'Apply'.tr,
               onPressed: () {
                 controller.applyFilters();
                 onApplyTap();

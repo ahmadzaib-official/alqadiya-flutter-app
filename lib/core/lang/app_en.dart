@@ -528,4 +528,48 @@ const Map<String, String> enUS = {
   'Paper': 'Paper',
   'Gold': 'Gold',
   'Silver': 'Silver',
+
+  // Additional missing translations
+  'Game Result Summary': 'Game Result Summary',
+  'Loading results...': 'Loading results...',
+  'No results available': 'No results available',
+  'No solo player results available': 'No solo player results available',
+  'Game Completed': 'Game Completed',
+  'Share result': 'Share result',
+  'Back to the Main Page': 'Back to the Main Page',
+  'The winner': 'The winner',
+  'No team results available': 'No team results available',
+  'Check out my game result on Alqadiya!':
+      'Check out my game result on Alqadiya!',
+  'Total score': 'Total score',
+  'Time taken': 'Time taken',
+  'Accuracy': 'Accuracy',
+  'Hints used': 'Hints used',
+  'Suspect choosen': 'Suspect chosen',
+
+  // Language selection hardcoded text
+  'عربي': 'عربي',
+
+  // Difficulty levels
+  'beginner': 'beginner',
+  'easy': 'easy',
+  'intermediate': 'intermediate',
+  'medium': 'medium',
+  'difficult': 'difficult',
+  'hard': 'hard',
+  'expert': 'expert',
+
+  // Network error messages
+  'Authentication failed': 'Authentication failed',
+  'Session expired': 'Session expired',
+  'Connection timeout': 'Connection timeout',
+  'Invalid request': 'Invalid request',
+  'Unauthorized': 'Unauthorized',
+  'Access denied': 'Access denied',
+  'Resource not found': 'Resource not found',
+  'Server error': 'Server error',
+  'Unknown error occurred': 'Unknown error occurred',
+  'Request cancelled': 'Request cancelled',
+  'No internet connection': 'No internet connection',
+  'Phone number not verified': 'Phone number not verified',
 };
