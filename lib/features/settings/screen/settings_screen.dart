@@ -130,19 +130,19 @@ class SettingsScreen extends StatelessWidget {
             ),
             SizedBox(height: 15.h),
             // User Information
-            _buildInfoRow('Name:', controller.user.value?.fullName ?? ""),
+            _buildInfoRow('Name:'.tr, controller.user.value?.fullName ?? ""),
             SizedBox(height: 8.h),
             _buildInfoRow(
-              'Phone:',
+              'Phone:'.tr,
               controller.user.value?.phoneNumber != null
                   ? '${controller.user.value?.phoneNumber ?? ""}'
                   // ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
-                  : "N/A",
+                  : "N/A".tr,
             ),
             if (controller.user.value?.email != null &&
                 controller.user.value!.email!.isNotEmpty) ...[
               SizedBox(height: 8.h),
-              _buildInfoRow('Email:', controller.user.value?.email ?? ""),
+              _buildInfoRow('Email:'.tr, controller.user.value?.email ?? ""),
             ],
             SizedBox(height: 16.h),
             // Edit profile button

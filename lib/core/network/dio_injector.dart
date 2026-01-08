@@ -305,7 +305,7 @@ AppException _handleDioError(DioException error) {
 String _extractErrorMessage(DioException e) {
   final data = e.response?.data;
 
-  if (data == null) return 'Something went wrong';
+  if (data == null) return 'Something went wrong'.tr;
 
   // Case 1: If `message` key exists
   if (data is Map<String, dynamic>) {
@@ -326,7 +326,7 @@ String _extractErrorMessage(DioException e) {
     return data.first.toString().replaceAll(RegExp(r'[\[\]]'), '').trim();
   }
 
-  return 'Something went wrong';
+  return 'Something went wrong'.tr;
 }
 
 void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
