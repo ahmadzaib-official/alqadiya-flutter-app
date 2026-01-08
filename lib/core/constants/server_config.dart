@@ -21,6 +21,8 @@ class ServerConfig {
   static const chooseLeader = "${baseUrl}games/chooseLeader";
   static const joinGame = "${baseUrl}games/joinGame";
   static const notifications = "${baseUrl}notifications";
+  static const markAllNotificationsRead =
+      "${baseUrl}notifications/mark-all-read";
   static const transactions = "${baseUrl}transactions";
   static const packages = "${baseUrl}points/packages";
   static const paymentMethods = "${baseUrl}points/payment-methods";

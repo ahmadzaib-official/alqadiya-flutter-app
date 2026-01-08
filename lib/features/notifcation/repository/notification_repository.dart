@@ -11,12 +11,9 @@ class NotificationRepository {
     return response;
   }
 
-  Future<dynamic> markRead() async {
-    // Assuming an endpoint to mark all as read or similar
-    // If not specified, I'll just check if it exists or leave it empty/dummy
-    // User request: "write its api functions and all"
-    // ServerConfig doesn't have markRead, I will guess it might be a PATCH/POST to notifications
-    // For now, I'll stick to fetching.
-    return null;
+  Future<Response<dynamic>> markAllAsRead() async {
+    final String url = ServerConfig.markAllNotificationsRead;
+    final response = await _dioHelper.post(url: url, isAuthRequired: true);
+    return response;
   }
 }
