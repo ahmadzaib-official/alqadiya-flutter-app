@@ -39,7 +39,10 @@ class TeamLeaderCard extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl,
+                    imageUrl:
+                        imageUrl.isNotEmpty
+                            ? imageUrl
+                            : "https://picsum.photos/200?random=1",
                     fit: BoxFit.cover,
                     placeholder:
                         (context, url) => Container(

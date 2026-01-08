@@ -50,11 +50,18 @@ class ChooseTeamLeaderController extends GetxController {
           Get.arguments['members'] is List) {
         List<TeamLeader> leaders = [];
         for (var m in Get.arguments['members']) {
+          // Use fallback image if userPhotoURL is empty or null
+          String imageUrl = m['userPhotoURL'] ?? "";
+          if (imageUrl.isEmpty) {
+            imageUrl =
+                "https://picsum.photos/200?random=${m['id']?.hashCode ?? 1}";
+          }
+
           leaders.add(
             TeamLeader(
               id: m['id'] ?? '',
               name: m['name'] ?? 'Unknown',
-              imageUrl: m['userPhotoURL'] ?? "https://picsum.photos/200",
+              imageUrl: imageUrl,
             ),
           );
         }
@@ -97,6 +104,12 @@ class ChooseTeamLeaderController extends GetxController {
       // Also fetch session players to ensure we have the latest player data
       await gameController.getSessionPlayers(silent: true);
 
+      // Debug: Log current team and session data
+      print('=== TEAM LEADER SELECTION DEBUG ===');
+      print('Current teamId: $teamId');
+      print('Session players count: ${gameController.sessionPlayers.length}');
+      print('Teams count: ${gameController.teams.length}');
+
       // Find the team
       TeamModel? team = gameController.teams.firstWhereOrNull(
         (t) => t.id == teamId,
@@ -113,16 +126,29 @@ class ChooseTeamLeaderController extends GetxController {
           sessionId,
         );
 
+        print('Members from scoreboard: ${members.length}');
+        for (var member in members) {
+          print('Scoreboard member: ${member.name}, Image: ${member.imageUrl}');
+        }
+
         // If scoreboard doesn't have data, use all session players as fallback
         // This happens when teams are just assigned and scoreboard isn't ready yet
         if (members.isEmpty && gameController.sessionPlayers.isNotEmpty) {
+          print('Using session players as fallback');
           // Use all session players as team members (they should all be in the team after assignment)
           members =
               gameController.sessionPlayers.map((member) {
+                // Use fallback image if userPhotoURL is empty or null
+                String imageUrl = member.userPhotoURL ?? "";
+                if (imageUrl.isEmpty) {
+                  imageUrl =
+                      "https://picsum.photos/200?random=${member.userId?.hashCode ?? member.id?.hashCode ?? 1}";
+                }
+
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
                   name: member.userName ?? 'Unknown',
-                  imageUrl: member.userPhotoURL ?? "",
+                  imageUrl: imageUrl,
                 );
               }).toList();
         }
@@ -136,15 +162,25 @@ class ChooseTeamLeaderController extends GetxController {
         } else if (teamLeaders.isEmpty) {
           _initializeTeamLeaders();
         }
+
+        print('Final team leaders count: ${teamLeaders.length}');
+        print('=== END DEBUG ===');
       } else {
         // Team not found, use all session players as fallback
         if (gameController.sessionPlayers.isNotEmpty) {
           final members =
               gameController.sessionPlayers.map((member) {
+                // Use fallback image if userPhotoURL is empty or null
+                String imageUrl = member.userPhotoURL ?? "";
+                if (imageUrl.isEmpty) {
+                  imageUrl =
+                      "https://picsum.photos/200?random=${member.userId?.hashCode ?? member.id?.hashCode ?? 1}";
+                }
+
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
                   name: member.userName ?? 'Unknown',
-                  imageUrl: member.userPhotoURL ?? "",
+                  imageUrl: imageUrl,
                 );
               }).toList();
           teamMembers.assignAll(members);
@@ -164,10 +200,17 @@ class ChooseTeamLeaderController extends GetxController {
         // Use session players as fallback
         final members =
             gameController.sessionPlayers.map((member) {
+              // Use fallback image if userPhotoURL is empty or null
+              String imageUrl = member.userPhotoURL ?? "";
+              if (imageUrl.isEmpty) {
+                imageUrl =
+                    "https://picsum.photos/200?random=${member.userId?.hashCode ?? member.id?.hashCode ?? 1}";
+              }
+
               return TeamLeader(
                 id: member.userId ?? member.id ?? '',
                 name: member.userName ?? 'Unknown',
-                imageUrl: member.userPhotoURL ?? "",
+                imageUrl: imageUrl,
               );
             }).toList();
         teamMembers.assignAll(members);
@@ -187,18 +230,23 @@ class ChooseTeamLeaderController extends GetxController {
     String sessionId,
   ) async {
     try {
+      print('Fetching scoreboard for session: $sessionId, team: $teamId');
       final response = await _repository.getScoreboard(sessionId: sessionId);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final scoreboard = ScoreboardModel.fromJson(response.data);
 
         if (scoreboard.teams != null) {
+          print('Scoreboard has ${scoreboard.teams!.length} teams');
           // Find the team in scoreboard
           final teamScore = scoreboard.teams!.firstWhereOrNull(
             (t) => t.teamId == teamId,
           );
 
           if (teamScore != null && teamScore.players != null) {
+            print(
+              'Found team in scoreboard with ${teamScore.players!.length} players',
+            );
             final gameController = Get.find<GameController>();
             return teamScore.players!.map((player) {
               // Find member in session players to get image URL
@@ -206,17 +254,32 @@ class ChooseTeamLeaderController extends GetxController {
                 (m) => m.userId == player.userId || m.id == player.userId,
               );
 
+              // Use fallback image if userPhotoURL is empty or null
+              String imageUrl = member?.userPhotoURL ?? "";
+              if (imageUrl.isEmpty) {
+                imageUrl =
+                    "https://picsum.photos/200?random=${player.userId?.hashCode ?? 1}";
+              }
+
+              print('Player: ${player.userName}, Image: $imageUrl');
               return TeamLeader(
                 id: player.userId ?? '',
                 name: player.userName ?? 'Unknown',
-                imageUrl: member?.userPhotoURL ?? "",
+                imageUrl: imageUrl,
               );
             }).toList();
+          } else {
+            print('Team not found in scoreboard or no players');
           }
+        } else {
+          print('Scoreboard has no teams');
         }
+      } else {
+        print('Scoreboard API returned status: ${response.statusCode}');
       }
     } catch (e) {
       // Scoreboard might not be available yet, that's okay
+      print('Error fetching scoreboard: $e');
     }
     return [];
   }
@@ -305,6 +368,21 @@ class ChooseTeamLeaderController extends GetxController {
 
     // Set loading state while fetching
     isLoading.value = true;
+
+    // Ensure we have the latest session data before fetching team members
+    final gameController = Get.find<GameController>();
+    final sessionId = gameController.gameSession.value?.id;
+
+    if (sessionId != null) {
+      // Refresh session details to get the latest team and player data
+      await gameController.getGameSessionDetails(
+        sessionId: sessionId,
+        silent: true,
+      );
+
+      // Also refresh session players to ensure we have the latest player data
+      await gameController.getSessionPlayers(silent: true);
+    }
 
     // Fetch members for the new team
     await fetchTeamMembers();
