@@ -43,6 +43,7 @@ dependencies:
   cached_video_player_plus: ^4.0.4
   video_player: ^2.10.1
   logger: ^2.6.2
+  webview_flutter: ^4.10.0
 
 
 dev_dependencies:

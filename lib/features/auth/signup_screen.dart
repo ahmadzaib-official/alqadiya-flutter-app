@@ -273,23 +273,37 @@ class SignupScreen extends StatelessWidget with Validators {
                                           ),
                                       children: [
                                         TextSpan(text: 'I agree to the '.tr),
-                                        TextSpan(
-                                          text: 'Terms and Conditions'.tr,
-                                          style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor: MyColors.white,
-                                            color: MyColors.white,
+                                        WidgetSpan(
+                                          child: GestureDetector(
+                                            onTap:
+                                                controller
+                                                    .openTermsAndConditions,
+                                            child: Text(
+                                              'Terms and Conditions'.tr,
+                                              style: TextStyle(
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                decorationColor: MyColors.white,
+                                                color: MyColors.white,
+                                                fontSize: 12.sp,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                         TextSpan(text: ' and '.tr),
-                                        TextSpan(
-                                          text: 'Privacy Policy'.tr,
-                                          style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor: MyColors.white,
-                                            color: MyColors.white,
+                                        WidgetSpan(
+                                          child: GestureDetector(
+                                            onTap: controller.openPrivacyPolicy,
+                                            child: Text(
+                                              'Privacy Policy'.tr,
+                                              style: TextStyle(
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                decorationColor: MyColors.white,
+                                                color: MyColors.white,
+                                                fontSize: 12.sp,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],

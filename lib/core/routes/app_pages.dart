@@ -3,6 +3,8 @@ import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/auth/forgotpassword/forgetpassword_screen.dart';
 import 'package:alqadiya_game/features/auth/forgotpassword/newPasswordScreen.dart';
 import 'package:alqadiya_game/features/auth/otp_screen.dart';
+import 'package:alqadiya_game/features/auth/screen/webview_screen.dart';
+import 'package:alqadiya_game/features/auth/screen/privacy_terms_screen.dart';
 import 'package:alqadiya_game/features/auth/signin_screen.dart';
 import 'package:alqadiya_game/features/auth/signup_screen.dart';
 import 'package:alqadiya_game/features/auth/verification_successful_screen.dart';
@@ -130,6 +132,12 @@ class AppPages {
     GetPage(
       name: AppRoutes.newPasswordScreen,
       page: () => NewPasswordScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.webViewScreen,
+      page: () => const WebViewScreen(),
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),

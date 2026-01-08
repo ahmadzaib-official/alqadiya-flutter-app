@@ -252,6 +252,26 @@ class SignupController extends GetxController {
     confirmPasswordController.clear();
   }
 
+  void openPrivacyPolicy() {
+    Get.toNamed(
+      AppRoutes.webViewScreen,
+      arguments: {
+        'title': 'Privacy Policy'.tr,
+        'url': 'https://www.facebook.com/privacy/policy/',
+      },
+    );
+  }
+
+  void openTermsAndConditions() {
+    Get.toNamed(
+      AppRoutes.webViewScreen,
+      arguments: {
+        'title': 'Terms and Conditions'.tr,
+        'url': 'https://www.facebook.com/legal/terms',
+      },
+    );
+  }
+
   @override
   void dispose() {
     fullNameController.dispose();
