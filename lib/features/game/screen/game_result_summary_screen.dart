@@ -229,7 +229,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                           },
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
-                                              vertical: 12.h,
+                                              vertical: 10.h,
                                             ),
                                             decoration: BoxDecoration(
                                               color: MyColors.redButtonColor,

@@ -295,10 +295,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         if (isPurchased) ...[
                                           StartPlayButton(
                                             buttonWidth: 50.w,
-                                            buttonText:
-                                                isStartingGame
-                                                    ? 'Starting...'.tr
-                                                    : 'Start Play'.tr,
+                                            buttonText: 'Start Play'.tr,
                                             onTap:
                                                 isStartingGame
                                                     ? () {}
