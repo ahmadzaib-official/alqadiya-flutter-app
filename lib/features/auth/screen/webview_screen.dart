@@ -67,7 +67,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         backgroundColor: MyColors.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20.sp),
+          icon: Icon(Icons.arrow_back, color: Colors.white, size: 20.sp),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -77,15 +77,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             fontSize: 18.sp,
           ),
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white, size: 24.sp),
-            onPressed: () {
-              controller.reload();
-            },
-          ),
-        ],
+        centerTitle: false,
       ),
       body: Stack(
         children: [
