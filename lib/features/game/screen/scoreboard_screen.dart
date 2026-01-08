@@ -489,106 +489,115 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
                         return Positioned(
                           left: overlapOffset,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Stack(
-                                children: [
-                                  // Avatar
-                                  Container(
-                                    width: 25.w,
-                                    height: 25.w,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50.r),
-                                      child:
-                                          (player.userPhotoUrl as String)
-                                                  .isNotEmpty
-                                              ? CachedNetworkImage(
-                                                imageUrl:
-                                                    player.userPhotoUrl ?? "",
-                                                fit: BoxFit.cover,
-                                                placeholder:
-                                                    (context, url) => Container(
-                                                      color:
-                                                          MyColors
-                                                              .darkBlueColor,
-                                                      child: Center(
-                                                        child: CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                          valueColor:
-                                                              AlwaysStoppedAnimation<
-                                                                Color
-                                                              >(
-                                                                MyColors
-                                                                    .greenColor,
+                          child: SizedBox(
+                            width: 25.w,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Stack(
+                                  children: [
+                                    // Avatar
+                                    Container(
+                                      width: 25.w,
+                                      height: 25.w,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          50.r,
+                                        ),
+                                        child:
+                                            (player.userPhotoUrl as String)
+                                                    .isNotEmpty
+                                                ? CachedNetworkImage(
+                                                  imageUrl:
+                                                      player.userPhotoUrl ?? "",
+                                                  fit: BoxFit.cover,
+                                                  placeholder:
+                                                      (
+                                                        context,
+                                                        url,
+                                                      ) => Container(
+                                                        color:
+                                                            MyColors
+                                                                .darkBlueColor,
+                                                        child: Center(
+                                                          child: CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                  Color
+                                                                >(
+                                                                  MyColors
+                                                                      .greenColor,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  errorWidget:
+                                                      (
+                                                        context,
+                                                        url,
+                                                        error,
+                                                      ) => Container(
+                                                        color:
+                                                            MyColors
+                                                                .darkBlueColor,
+                                                        child: Icon(
+                                                          Icons.person,
+                                                          size: 25.sp,
+                                                          color: MyColors.white
+                                                              .withValues(
+                                                                alpha: 0.5,
                                                               ),
                                                         ),
                                                       ),
-                                                    ),
-                                                errorWidget:
-                                                    (
-                                                      context,
-                                                      url,
-                                                      error,
-                                                    ) => Container(
-                                                      color:
-                                                          MyColors
-                                                              .darkBlueColor,
-                                                      child: Icon(
-                                                        Icons.person,
-                                                        size: 25.sp,
-                                                        color: MyColors.white
-                                                            .withValues(
-                                                              alpha: 0.5,
-                                                            ),
-                                                      ),
-                                                    ),
-                                              )
-                                              : Container(
-                                                color: MyColors.darkBlueColor,
-                                                child: Icon(
-                                                  Icons.person,
-                                                  size: 25.sp,
-                                                  color: MyColors.white
-                                                      .withValues(alpha: 0.5),
+                                                )
+                                                : Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 25.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
                                                 ),
-                                              ),
-                                    ),
-                                  ),
-                                  // Green checkmark overlay - only on rightmost member
-                                  if (isLastPlayer)
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Container(
-                                        width: 10.w,
-                                        height: 10.w,
-                                        decoration: BoxDecoration(
-                                          color: MyColors.greenColor,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.check,
-                                          size: 8.sp,
-                                          color: MyColors.white,
-                                        ),
                                       ),
                                     ),
-                                ],
-                              ),
-                              SizedBox(height: 5.h),
-                              // Player name
-                              Text(
-                                player.userName ?? "",
-                                style: AppTextStyles.bodyTextMedium16()
-                                    .copyWith(
-                                      fontSize: 5.sp,
-                                      color: MyColors.white.withValues(
-                                        alpha: 0.5,
+                                    // Green checkmark overlay - only on rightmost member
+                                    if (isLastPlayer)
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 10.w,
+                                          height: 10.w,
+                                          decoration: BoxDecoration(
+                                            color: MyColors.greenColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.check,
+                                            size: 8.sp,
+                                            color: MyColors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                              ),
-                            ],
+                                  ],
+                                ),
+                                SizedBox(height: 5.h),
+                                // Player name
+                                Text(
+                                  player.userName ?? "",
+                                  textAlign: TextAlign.center,
+                                  style: AppTextStyles.bodyTextMedium16()
+                                      .copyWith(
+                                        fontSize: 5.sp,
+                                        color: MyColors.white.withValues(
+                                          alpha: 0.5,
+                                        ),
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),
