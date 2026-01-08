@@ -125,7 +125,7 @@ class SignInController extends GetxController {
 
         // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
         Get.offAllNamed(AppRoutes.homescreen);
-        clearField();
+        // clearField();
       }
     } catch (e) {
       // if (Get.context != null)

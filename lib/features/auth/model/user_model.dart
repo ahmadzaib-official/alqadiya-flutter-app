@@ -21,11 +21,11 @@ class UserModel {
   final String? fullName;
   final String? role;
   final String? email;
-  final dynamic callingCode;
+  final String? callingCode;
   final dynamic photoId;
   final dynamic photoUrl;
   final dynamic phoneNumber;
-  final dynamic countryCode;
+  final String? countryCode;
   final String? status;
   final String? authProvider;
   final bool? isPhoneNumberVerified;
@@ -39,11 +39,11 @@ class UserModel {
       fullName: json["fullName"],
       role: json["role"],
       email: json["email"],
-      callingCode: json["callingCode"],
+      callingCode: json["callingCode"] ?? "+965",
       photoId: json["photoId"],
       photoUrl: json["photoURL"],
       phoneNumber: json["phoneNumber"],
-      countryCode: json["countryCode"],
+      countryCode: json["countryCode"] ?? "KW",
       status: json["status"],
       authProvider: json["authProvider"],
       isPhoneNumberVerified: json["isPhoneNumberVerified"],
@@ -52,22 +52,4 @@ class UserModel {
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );
   }
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullName": fullName,
-    "role": role,
-    "email": email,
-    "callingCode": callingCode,
-    "photoId": photoId,
-    "photoURL": photoUrl,
-    "phoneNumber": phoneNumber,
-    "countryCode": countryCode,
-    "status": status,
-    "authProvider": authProvider,
-    "isPhoneNumberVerified": isPhoneNumberVerified,
-    "pointsBalance": pointsBalance,
-    "createdAt": createdAt?.toIso8601String(),
-    "updatedAt": updatedAt?.toIso8601String(),
-  };
 }
