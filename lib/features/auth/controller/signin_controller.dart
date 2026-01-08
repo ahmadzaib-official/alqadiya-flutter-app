@@ -128,8 +128,8 @@ class SignInController extends GetxController {
         clearField();
       }
     } catch (e) {
-      if (Get.context != null)
-        Navigator.pop(Get.context!); // Close progress dialog
+      // if (Get.context != null)
+      // Navigator.pop(Get.context!);
       CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
     } finally {
       isSignIn(false);
