@@ -257,7 +257,7 @@ class SignupController extends GetxController {
       AppRoutes.webViewScreen,
       arguments: {
         'title': 'Privacy Policy'.tr,
-        'url': 'http://51.112.131.120/privacy',
+        'url': 'https://www.facebook.com/privacy/policy/',
       },
     );
   }
@@ -267,7 +267,7 @@ class SignupController extends GetxController {
       AppRoutes.webViewScreen,
       arguments: {
         'title': 'Terms and Conditions'.tr,
-        'url': 'http://51.112.131.120/terms',
+        'url': 'https://www.facebook.com/legal/terms',
       },
     );
   }

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
-import 'package:shimmer/shimmer.dart';
 
 class WebViewScreen extends StatefulWidget {
   const WebViewScreen({super.key});
@@ -60,83 +59,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
           ..loadRequest(Uri.parse(url!));
   }
 
-  Widget _buildShimmerLoading() {
-    return Container(
-      color: MyColors.backgroundColor,
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[850]!,
-        highlightColor: Colors.grey[700]!,
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title shimmer
-              Container(
-                width: double.infinity,
-                height: 24.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              ),
-              SizedBox(height: 20.h),
-
-              // Paragraph shimmer lines
-              ...List.generate(16, (index) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
-                  child: Container(
-                    width:
-                        index % 3 == 0
-                            ? double.infinity * 0.7
-                            : double.infinity,
-                    height: 16.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                );
-              }),
-
-              SizedBox(height: 24.h),
-
-              // Section title shimmer
-              Container(
-                width: double.infinity * 0.5,
-                height: 20.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              ),
-              SizedBox(height: 16.h),
-
-              // More paragraph lines
-              ...List.generate(6, (index) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
-                  child: Container(
-                    width:
-                        index % 4 == 0
-                            ? double.infinity * 0.8
-                            : double.infinity,
-                    height: 16.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                );
-              }),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,7 +82,29 @@ class _WebViewScreenState extends State<WebViewScreen> {
       body: Stack(
         children: [
           WebViewWidget(controller: controller),
-          if (isLoading) _buildShimmerLoading(),
+          if (isLoading)
+            Container(
+              color: MyColors.backgroundColor,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        MyColors.redButtonColor,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Loading...'.tr,
+                      style: AppTextStyles.bodyTextRegular16().copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
