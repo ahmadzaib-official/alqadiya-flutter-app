@@ -80,27 +80,47 @@ class SigninScreen extends StatelessWidget with Validators {
                                 Spacer(flex: 1),
                                 CustomTextfield(
                                   maxLines: 1,
-                                  // label: 'Phone / Email'.tr,
-                                  // hintText: 'Phone / Email'.tr,
                                   label: 'Phone'.tr,
                                   hintText: 'Phone'.tr,
                                   controller: controller.phoneNumberController,
                                   autoValidate: true,
                                   labelVisible: false,
-                                  keyboardType:
-                                      // controller.isEmailInput
-                                      //     ? TextInputType.emailAddress
-                                      //     :
-                                      TextInputType.phone,
-                                  // onChanged: (value) {
-                                  //   controller.updatePhoneOrEmailInput(value);
-                                  // },
+                                  keyboardType: TextInputType.phone,
+                                  prefix: Container(
+                                    margin: EdgeInsets.only(right: 8.w),
+                                    padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        right: BorderSide(
+                                          color: MyColors.white.withValues(alpha: 0.2),
+                                          width: 1,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // Kuwait flag emoji
+                                        Text(
+                                          '🇰🇼',
+                                          style: TextStyle(fontSize: 16.sp),
+                                        ),
+                                        SizedBox(width: 4.w),
+                                        Text(
+                                          '+965',
+                                          style: AppTextStyles.bodyTextRegular16().copyWith(
+                                            color: MyColors.white.withValues(alpha: 0.7),
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   suffix: Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: SvgPicture.asset(MyIcons.user),
                                   ),
                                   validator: validatePhoneNumber,
-                                  // validator: validatePhoneOrEmail,
                                 ),
 
                                 SizedBox(height: 12.h),
@@ -162,20 +182,7 @@ class SigninScreen extends StatelessWidget with Validators {
                                     isLoading: controller.isSignIn.value,
                                     text: 'Log In'.tr,
                                     onPressed: () async {
-                                      bool isValid =
-                                          formKey.currentState!.validate();
-                                      bool isPasswordEmpty =
-                                          controller.passwordController.text
-                                              .trim()
-                                              .isEmpty;
-                                      bool isPhoneEmpty =
-                                          controller.phoneNumberController.text
-                                              .trim()
-                                              .isEmpty;
-
-                                      if (isValid &&
-                                          !isPasswordEmpty &&
-                                          !isPhoneEmpty) {
+                                      if (formKey.currentState!.validate()) {
                                         await controller.signIn();
                                       }
                                     },
