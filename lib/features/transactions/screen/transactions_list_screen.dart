@@ -145,11 +145,14 @@ class TransactionsListScreen extends StatelessWidget {
                       ),
                       SizedBox(width: 2.w),
 
-                      Text(
-                        transaction.description.toString(),
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 7.sp,
-                          color: MyColors.white,
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          transaction.description.toString(),
+                          style: AppTextStyles.heading1().copyWith(
+                            fontSize: 7.sp,
+                            color: MyColors.white,
+                          ),
                         ),
                       ),
                     ],

@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/buy_points/controller/buy_points_provider.dart';
@@ -56,13 +57,22 @@ class BuyPointsScreen extends StatelessWidget {
                       // Avatar
                       Obx(() {
                         final user = Get.find<UserController>().user.value;
-                        return CircleAvatar(
-                          backgroundColor: MyColors.redButtonColor,
-                          backgroundImage: CachedNetworkImageProvider(
-                            user!.photoUrl ??
-                                "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
+                        return GestureDetector(
+                          onTap: () {
+                            AuthGuard.executeIfAuthenticated(
+                              title: 'Profile Access'.tr,
+                              message: 'Please sign in to view your profile'.tr,
+                              action: () => Get.toNamed(AppRoutes.userProfileScreen),
+                            );
+                          },
+                          child: CircleAvatar(
+                            backgroundColor: MyColors.redButtonColor,
+                            backgroundImage: CachedNetworkImageProvider(
+                              user!.photoUrl ??
+                                  "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
+                            ),
+                            radius: 9.sp,
                           ),
-                          radius: 9.sp,
                         );
                       }),
                     ],
@@ -211,7 +221,11 @@ class BuyPointsScreen extends StatelessWidget {
           // Buy points button
           GestureDetector(
             onTap: () {
-              goToPaymentScreen(package);
+              AuthGuard.executeIfAuthenticated(
+                title: 'Purchase Points'.tr,
+                message: 'Please sign in to purchase points'.tr,
+                action: () => goToPaymentScreen(package),
+              );
             },
             child: Container(
               width: double.infinity,

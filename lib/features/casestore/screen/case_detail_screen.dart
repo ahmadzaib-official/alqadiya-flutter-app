@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/case_detail_shimmer.dart';
@@ -321,11 +322,15 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         ] else ...[
                                           GestureDetector(
                                             onTap: () {
-                                              Get.toNamed(
-                                                AppRoutes.addCaseScreen,
-                                                arguments: {
-                                                  'game': controller.gameDetail,
-                                                },
+                                              AuthGuard.executeIfAuthenticated(
+                                                title: 'Purchase Case'.tr,
+                                                message: 'Please sign in to purchase this case'.tr,
+                                                action: () => Get.toNamed(
+                                                  AppRoutes.addCaseScreen,
+                                                  arguments: {
+                                                    'game': controller.gameDetail,
+                                                  },
+                                                ),
                                               );
                                             },
                                             child: Container(

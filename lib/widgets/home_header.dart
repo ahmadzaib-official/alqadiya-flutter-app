@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,11 @@ class HomeHeader extends StatelessWidget {
                     onTap:
                         onProfileTap ??
                         () {
-                          Get.toNamed(AppRoutes.settingsScreen);
+                          AuthGuard.executeIfAuthenticated(
+                            title: 'Profile Access'.tr,
+                            message: 'Please sign in to view your profile'.tr,
+                            action: () => Get.toNamed(AppRoutes.settingsScreen),
+                          );
                         },
                     child: CircleAvatar(
                       backgroundColor: MyColors.redButtonColor,
