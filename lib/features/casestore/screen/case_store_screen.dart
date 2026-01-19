@@ -130,7 +130,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                             itemBuilder:
                                 (context) => [
                                   PopupMenuItem(
-                                    value: 'Recent Cases',
+                                    value: 'Recent Cases'.tr,
                                     child: Text(
                                       'Recent Cases'.tr,
                                       style: AppTextStyles.labelMedium14()
@@ -141,7 +141,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                                     ),
                                   ),
                                   PopupMenuItem(
-                                    value: 'My Games',
+                                    value: 'My Games'.tr,
                                     child: Text(
                                       'My Games'.tr,
                                       style: AppTextStyles.labelMedium14()
@@ -156,7 +156,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                               children: [
                                 Obx(
                                   () => Text(
-                                    gameController.selectedCategory.value,
+                                    gameController.selectedCategory.value.tr,
                                     style: AppTextStyles.heading1().copyWith(
                                       fontSize: 7.sp,
                                       color: MyColors.white.withValues(

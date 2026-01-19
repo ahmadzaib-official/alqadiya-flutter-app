@@ -43,7 +43,7 @@ class BuyPointsScreen extends StatelessWidget {
                   ),
                   // Title
                   Text(
-                    'Buy points'.tr,
+                    'Buy Points'.tr,
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                   ),
                   Row(
@@ -259,6 +259,7 @@ class BuyPointsScreen extends StatelessWidget {
               ),
             ),
           ),
+       
         ],
       ),
     );

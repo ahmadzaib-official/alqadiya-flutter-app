@@ -908,8 +908,7 @@ class SettingsScreen extends StatelessWidget {
 
                   // Confirmation message
                   Text(
-                    'Are you sure you want to delete your account? This action cannot be undone.'
-                        .tr,
+                    'Are you sure you want to delete your account? This action cannot be undone.'.tr,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodyTextMedium16().copyWith(
                       fontSize: 7.sp,

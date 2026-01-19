@@ -108,7 +108,7 @@ class GameCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      game.difficulty ?? 'Unknown'.tr,
+                      game.difficulty?.tr ?? 'Unknown'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 6.sp,
@@ -165,7 +165,7 @@ class GameCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 6.sp,
+                        fontSize: 5.5.sp,
                         height: 1.4, // Line height multiplier
                       ),
                       textAlign: TextAlign.center,

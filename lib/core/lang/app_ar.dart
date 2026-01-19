@@ -145,6 +145,15 @@ const Map<String, String> lnAr = {
   'guest': 'ضيوف',
   'Coupon applied successfully!': 'تم تطبيق الكوبون بنجاح!',
   'Beach': 'شاطئ',
+  'Recent Cases': 'الحالات الحديثة',
+  'My Games': 'ألعابي',
+  'beginner': 'مبتدئ',
+  'easy': 'سهل',
+  'intermediate': 'متوسط',
+  'medium': 'متوسط',
+  'difficult': 'صعب',
+  'hard': 'صعب',
+  'expert': 'خبير',
   "Everything you need for a comfortable stay.": 'كل ما تحتاجه لإقامة مريحة.',
   'Back to Chalet Details': 'العودة إلى تفاصيل الشاليه',
   'nights': 'ليالي',
@@ -152,6 +161,9 @@ const Map<String, String> lnAr = {
       'اجمع النقاط لكل حجز مكتمل في شاليهاتنا المشاركة.',
   'Notice': 'إشعار',
   'Points': 'النقاط',
+  'Difficulty': 'الصعوبة',
+  'Duration': 'المدة',
+  'minutes': 'دقيقة',
   'Something went wrong!!!:': 'حدث خطأ ما!!!:',
   'Teams created successfully': 'تم إنشاء الفرق بنجاح',
   'Members assigned successfully': 'تم تعيين الأعضاء بنجاح',
@@ -250,6 +262,14 @@ const Map<String, String> lnAr = {
   'Direct Call': 'اتصال مباشر',
   'My points balance': 'رصيد نقاطي',
   'Buy Points': 'شراء نقاط',
+  'Payment': 'الدفع',
+
+  'Order detail': 'تفاصيل الطلب',
+  'Order:': 'الطلب:',
+  'Order number:': 'رقم الطلب:',
+  'Do you have a discount code?': 'هل لديك كود خصم?',
+  'Discount code': 'كود الخصم',
+  'Buy points': 'شراء نقاط',
   'Delete account': 'حذف الحساب',
   'Logout': 'تسجيل الخروج',
   'Enter full name': 'أدخل الاسم الكامل',
@@ -544,15 +564,6 @@ const Map<String, String> lnAr = {
 
   // Language selection hardcoded text
   'عربي': 'عربي',
-
-  // Difficulty levels
-  'beginner': 'مبتدئ',
-  'easy': 'سهل',
-  'intermediate': 'متوسط',
-  'medium': 'متوسط',
-  'difficult': 'صعب',
-  'hard': 'صعب',
-  'expert': 'خبير',
 
   // Network error messages
   'Authentication failed': 'فشل في المصادقة',

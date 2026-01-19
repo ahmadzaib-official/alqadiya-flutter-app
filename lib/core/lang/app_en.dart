@@ -3,6 +3,15 @@ const Map<String, String> enUS = {
   'start_now': 'Start Now',
   'back': 'Back',
   'next': 'Next',
+  'Recent Cases': 'Recent Cases',
+  'My Games': 'My Games',
+  'beginner': 'Beginner',
+  'easy': 'Easy',
+  'intermediate': 'Intermediate',
+  'medium': 'Medium',
+  'difficult': 'Difficult',
+  'hard': 'Hard',
+  'expert': 'Expert',
   'onboardingHeader1': 'Story-driven criminal\ninvestigation game',
   'onboardingDescription1':
       'The case combines immersive storytelling with\ninvestigative gameplay.',
@@ -253,6 +262,7 @@ const Map<String, String> enUS = {
   'Direct Call': 'Direct Call',
   'My points balance': 'My points balance',
   'Buy Points': 'Buy Points',
+  'Buy points': 'Buy points',
   'Delete account': 'Delete account',
   'Logout': 'Logout',
   'Enter full name': 'Enter full name',
@@ -262,8 +272,13 @@ const Map<String, String> enUS = {
   'Delete Account': 'Delete Account',
   'Delete': 'Delete',
   'Edit profile': 'Edit profile',
+  'Payment': 'Payment',
   'Settings': 'Settings',
-
+  'Order detail': 'Order detail',
+  'Order:': 'Order:',
+  'Order number:': 'Order number:',
+  'Do you have a discount code?': 'Do you have a discount code?',
+  'Discount code': 'Discount code',
   // Game-specific translations
   'Scoreboard': 'Scoreboard',
   'Timer': 'Timer',
@@ -546,18 +561,11 @@ const Map<String, String> enUS = {
   'Accuracy': 'Accuracy',
   'Hints used': 'Hints used',
   'Suspect choosen': 'Suspect chosen',
-
+  'Difficulty': 'Difficulty',
+  'Duration': 'Duration',
+  'minutes': 'minutes',
   // Language selection hardcoded text
   'عربي': 'عربي',
-
-  // Difficulty levels
-  'beginner': 'beginner',
-  'easy': 'easy',
-  'intermediate': 'intermediate',
-  'medium': 'medium',
-  'difficult': 'difficult',
-  'hard': 'hard',
-  'expert': 'expert',
 
   // Network error messages
   'Authentication failed': 'Authentication failed',

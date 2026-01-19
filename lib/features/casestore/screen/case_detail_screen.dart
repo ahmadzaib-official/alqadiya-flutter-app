@@ -234,7 +234,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                             ),
                                           ),
                                           child: Text(
-                                            "${controller.gameDetail.value.difficulty ?? 'Intermediate'}",
+                                            "${controller.gameDetail.value.difficulty?.tr ?? 'Intermediate'}",
                                             style: AppTextStyles.labelMedium14()
                                                 .copyWith(
                                                   fontSize: 6.sp,

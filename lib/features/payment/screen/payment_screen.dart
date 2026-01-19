@@ -151,7 +151,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Row(
           children: [
             Text(
-              'Order: '.tr,
+              '{${'Order:'.tr} } '.tr,
               style: AppTextStyles.bodyTextMedium16().copyWith(fontSize: 10.sp),
             ),
             Text(
@@ -164,7 +164,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Row(
           children: [
             Text(
-              'Order number: '.tr,
+              '${'Order number:'.tr} '.tr,
               style: AppTextStyles.bodyTextMedium16().copyWith(fontSize: 10.sp),
             ),
             Text(
@@ -448,6 +448,8 @@ Widget _buildPaymentMethodSection(PaymentController controller) {
               ),
             ),
           ),
+     
+     
         ],
       ),
     );
