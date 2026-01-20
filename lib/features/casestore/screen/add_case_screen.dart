@@ -1,5 +1,7 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
+import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
+import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
@@ -10,12 +12,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 
 class AddCaseScreen extends StatelessWidget {
   AddCaseScreen({super.key});
 
   final AddCaseController controller = Get.find<AddCaseController>();
+  final UserController userController = Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +206,7 @@ class AddCaseScreen extends StatelessWidget {
                                           ),
                                         ),
                                         child: Text(
-                                          '200 Points',
+                                          '${userController.user.value?.pointsBalance} Points',
                                           style:
                                               AppTextStyles.captionSemiBold10()
                                                   .copyWith(

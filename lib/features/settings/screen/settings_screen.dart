@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -443,8 +444,9 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     Spacer(flex: 1),
-
-                    SvgPicture.asset(MyIcons.arrow_right),
+                    Get.locale?.languageCode == 'en'
+                        ? SvgPicture.asset(MyIcons.arrow_right)
+                        : Icon(Icons.arrow_forward_ios, size: 6.sp,color: const Color.fromARGB(255, 214, 213, 213),),
                     Spacer(flex: 1),
                   ],
                 ),

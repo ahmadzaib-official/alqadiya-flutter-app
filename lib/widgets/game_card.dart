@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -173,8 +174,9 @@ class GameCard extends StatelessWidget {
                   ),
                   SizedBox(height: 10.h),
 
+
                   // Buy Button
-                  if (game.isPurchased! && !game.isPlayed!) ...[
+                  if ((game.isPurchased ?? false) && !(game.isPlayed ?? false)) ...[
                     Container(
                       width: 60.w,
                       padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -208,7 +210,7 @@ class GameCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ] else if (game.isPlayed! && game.isPurchased!) ...[
+                  ] else if ((game.isPlayed ?? false) && (game.isPurchased ?? false)) ...[
                     Container(
                       width: 60.w,
                       padding: EdgeInsets.symmetric(vertical: 10.h),

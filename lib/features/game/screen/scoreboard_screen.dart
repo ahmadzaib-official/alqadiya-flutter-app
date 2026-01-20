@@ -505,8 +505,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                           50.r,
                                         ),
                                         child:
-                                            (player.userPhotoUrl as String)
-                                                    .isNotEmpty
+                                            (player.userPhotoUrl?.isNotEmpty ?? false)
                                                 ? CachedNetworkImage(
                                                   imageUrl:
                                                       player.userPhotoUrl ?? "",
@@ -685,9 +684,9 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50.r),
                       child:
-                          (player.userPhotoUrl as String).isNotEmpty
+                          (player.userPhotoUrl?.isNotEmpty ?? false)
                               ? CachedNetworkImage(
-                                imageUrl: player.userPhotoUrl as String,
+                                imageUrl: player.userPhotoUrl ?? '',
                                 fit: BoxFit.cover,
                                 placeholder:
                                     (context, url) => Container(

@@ -35,7 +35,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
     super.initState();
     // Access GameController to trigger initialization and getGamesList() API call
     gameController = Get.find<GameController>();
-
+gameController.getGamesList();
     // Add listener to scroll controller
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==

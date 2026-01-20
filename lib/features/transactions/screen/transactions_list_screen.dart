@@ -262,7 +262,8 @@ class TransactionsListScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 1),
-                  SvgPicture.asset(MyIcons.arrow_right),
+                  Get.locale=='en'?
+                  SvgPicture.asset(MyIcons.arrow_right):Icon(Icons.arrow_forward_ios,size: 6.sp,),
                   Spacer(flex: 1),
                 ],
               ),

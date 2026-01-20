@@ -246,14 +246,16 @@ class BuyPointsScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 2),
-
-                  SvgPicture.asset(
+  Get.locale?.languageCode == 'en'
+                        ?   SvgPicture.asset(
                     MyIcons.arrow_right,
                     colorFilter: ColorFilter.mode(
                       MyColors.brightRedColor,
                       BlendMode.srcIn,
                     ),
-                  ),
+                  )
+                        : Icon(Icons.arrow_forward_ios, size: 6.sp,color:MyColors.brightRedColor,),
+                
                   Spacer(flex: 1),
                 ],
               ),

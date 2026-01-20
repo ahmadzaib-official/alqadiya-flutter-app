@@ -442,7 +442,9 @@ Widget _buildPaymentMethodSection(PaymentController controller) {
                     ),
                   ),
                   Spacer(flex: 2),
-                  SvgPicture.asset(MyIcons.arrow_right),
+                 Get.locale?.languageCode == 'en'
+                        ? SvgPicture.asset(MyIcons.arrow_right)
+                        : Icon(Icons.arrow_forward_ios, size: 15.sp,color: Colors.white,),
                   Spacer(flex: 1),
                 ],
               ),
