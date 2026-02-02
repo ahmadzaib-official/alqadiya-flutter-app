@@ -14,3 +14,17 @@
 -dontwarn kotlin.**
 
 # Add rules for any plugins you use (e.g. Glide, Retrofit, etc.)
+
+# Keep model classes that might be serialized
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Keep enum classes
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Generate mapping file for deobfuscation
+-printmapping build/outputs/mapping/release/mapping.txt

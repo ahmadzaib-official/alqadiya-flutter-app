@@ -16,6 +16,7 @@ class EvidenceRepository extends GetxService {
     var response = await _dioHelper.get(
       url: url,
       queryParameters: {'page': page, 'limit': limit},
+      excludeLanguage: true, // Exclude language parameter for this API
       isAuthRequired: true,
     );
     return response;

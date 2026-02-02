@@ -38,12 +38,18 @@ class DioHelper {
     required String url,
     bool isAuthRequired = false,
     Map<String, dynamic>? queryParameters,
+    bool excludeLanguage = false, // Add this parameter
   }) async {
     try {
-      // Merge language query with existing query parameters
+      // Merge language query with existing query parameters (only if not excluded)
       final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
       if (queryParameters != null) {
         mergedQueryParameters.addAll(queryParameters);
+      }
+      
+      // Remove language parameter if excluded
+      if (excludeLanguage) {
+        mergedQueryParameters.remove('language');
       }
       
       final response = await dio.get(
