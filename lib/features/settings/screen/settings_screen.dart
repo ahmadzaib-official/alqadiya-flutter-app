@@ -344,6 +344,8 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
           ),
+          
+          
           SizedBox(height: 10.h),
           // Direct Call button
           _buildSettingsButton(

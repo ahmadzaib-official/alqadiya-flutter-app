@@ -219,9 +219,14 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                     child: Obx(() {
                       final gameResult = gameResultController.gameResult.value;
                       final isLoading = gameResultController.isLoading.value;
-                      final isSoloMode =
-                          gameController.gameSession.value?.mode == 'solo' ||
-                              gameResultController.isSoloModeFromData;
+
+                      // Prefer data-driven mode detection:
+                      // - If multiple teams exist -> team mode (scoreboard with 2 cards)
+                      // - Else fall back to solo mode checks
+                      final isTeamMode = gameResultController.isTeamMode;
+                      final isSoloMode = !isTeamMode &&
+                          (gameController.gameSession.value?.mode == 'solo' ||
+                              gameResultController.isSoloModeFromData);
 
                       if (isLoading) {
                         return Center(
@@ -238,7 +243,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                       if (gameResult == null) {
                         return Center(
                           child: Text(
-                            'No results available'.tr,
+                            'No results available'.tr, 
                             style: AppTextStyles.heading1().copyWith(
                               fontSize: 8.sp,
                               color: MyColors.white.withValues(alpha: 0.5),
@@ -247,7 +252,136 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                         );
                       }
 
-                      if (isSoloMode) {
+                      if (isTeamMode) {
+                        final teamResults = gameResultController.teamResults;
+                        if (teamResults.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No team results available'.tr,
+                              style: AppTextStyles.heading1().copyWith(
+                                fontSize: 8.sp,
+                                color:
+                                    MyColors.white.withValues(alpha: 0.5),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (teamResults.length > 0)
+                              Expanded(
+                                child: _buildTeamResultCard(
+                                  context,
+                                  teamResults[0],
+                                  isWinner: _isWinningTeam(
+                                    teamResults[0]['name'],
+                                  ),
+                                ),
+                              ),
+                            if (teamResults.length > 1) SizedBox(width: 6.w),
+                            if (teamResults.length > 1)
+                              Expanded(
+                                child: _buildTeamResultCard(
+                                  context,
+                                  teamResults[1],
+                                  isWinner: _isWinningTeam(
+                                    teamResults[1]['name'],
+                                  ),
+                                ),
+                              ),
+                            if (teamResults.length > 1) SizedBox(width: 6.w),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8.h,
+                                  horizontal: 6.w,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      MyColors.black.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: MyColors.black.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(80.r),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'The winner'.tr,
+                                            style: AppTextStyles.heading2()
+                                                .copyWith(
+                                              fontSize: 6.sp,
+                                              color: MyColors.white
+                                                  .withValues(alpha: 0.5),
+                                            ),
+                                          ),
+                                          Text(
+                                            ' ${gameResultController.winnerTeamName ?? ''}',
+                                            style: AppTextStyles.heading1()
+                                                .copyWith(
+                                              fontSize: 8.sp,
+                                              color: MyColors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    _buildShareButton(isSoloMode: false),
+                                    SizedBox(height: 16.h),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.offAllNamed(
+                                            AppRoutes.homescreen);
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 12.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(80.r),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Back to the Main Page'.tr,
+                                            style: AppTextStyles.heading1()
+                                                .copyWith(
+                                              fontSize: 6.sp,
+                                              color: MyColors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else if (isSoloMode) {
                         final soloPlayerResult =
                             gameResultController.soloPlayerResult;
                         if (soloPlayerResult == null) {
@@ -362,118 +496,18 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                           );
                         }
 
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (teamResults.length > 0)
-                              Expanded(
-                                child: _buildTeamResultCard(
-                                  context,
-                                  teamResults[0],
-                                  isWinner: _isWinningTeam(
-                                    teamResults[0]['name'],
-                                  ),
-                                ),
-                              ),
-                            if (teamResults.length > 0) SizedBox(width: 6.w),
-                            if (teamResults.length > 1)
-                              Expanded(
-                                child: _buildTeamResultCard(
-                                  context,
-                                  teamResults[1],
-                                  isWinner: _isWinningTeam(
-                                    teamResults[1]['name'],
-                                  ),
-                                ),
-                              ),
-                            if (teamResults.length <= 1)
-                              Expanded(child: SizedBox()),
-                            if (teamResults.length > 1) SizedBox(width: 6.w),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 8.h,
-                                  horizontal: 6.w,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: MyColors.black.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(20.r),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 12.h,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: MyColors.black.withValues(
-                                          alpha: 0.2,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(80.r),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'The winner'.tr,
-                                            style: AppTextStyles.heading2()
-                                                .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white
-                                                  .withValues(alpha: 0.5),
-                                            ),
-                                          ),
-                                          Text(
-                                            ' ${gameResultController.winnerTeamName ?? ''}',
-                                            style: AppTextStyles.heading1()
-                                                .copyWith(
-                                              fontSize: 8.sp,
-                                              color: MyColors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(height: 16.h),
-                                    _buildShareButton(isSoloMode: false),
-                                    SizedBox(height: 16.h),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.offAllNamed(AppRoutes.homescreen);
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 12.h,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: MyColors.white.withValues(
-                                            alpha: 0.05,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(80.r),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Back to the Main Page'.tr,
-                                            style: AppTextStyles.heading1()
-                                                .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        // Fallback: if neither team nor solo mode detected, show a simple message
+                        return Center(
+                          child: Text(
+                            'No results available'.tr,
+                            style: AppTextStyles.heading1().copyWith(
+                              fontSize: 8.sp,
+                              color: MyColors.white.withValues(alpha: 0.5),
                             ),
-                          ],
+                          ),
                         );
+                     
+                     
                       }
                     }),
                   ),

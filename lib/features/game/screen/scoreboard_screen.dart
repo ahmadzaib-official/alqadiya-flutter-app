@@ -448,6 +448,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
   Widget _buildTeamCard(BuildContext context, Team team) {
     final players = team.players;
+    final scoreboardController = Get.find<ScoreboardController>();
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
@@ -625,7 +626,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${team.teamScore ?? 0}',
+                  '${scoreboardController.getTeamScore(team)}',
                   style: AppTextStyles.heading1().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,

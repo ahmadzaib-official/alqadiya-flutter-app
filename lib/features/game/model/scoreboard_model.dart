@@ -217,7 +217,7 @@ class Team {
               : List<Player>.from(
                 json["players"]!.map((x) => Player.fromJson(x)),
               ),
-      teamScore: json["teamScore"],
+      teamScore: json["totalScore"],
       questionProgress:
           json["questionProgress"] == null
               ? []

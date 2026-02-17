@@ -49,7 +49,7 @@ class CopyCodeButton extends StatelessWidget {
             SvgPicture.asset(MyIcons.copy),
             SizedBox(width: 4.w),
             Text(
-              'Copy the code'.tr,
+             code.toString(),
               style: AppTextStyles.labelMedium14().copyWith(
                 fontSize: 7.sp,
                 color: MyColors.white,
