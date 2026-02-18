@@ -26,6 +26,7 @@ import 'package:alqadiya_game/features/game/screen/clue_detail_screen.dart';
 import 'package:alqadiya_game/features/game/screen/scoreboard_screen.dart';
 import 'package:alqadiya_game/features/game/screen/game_result_summary_screen.dart';
 import 'package:alqadiya_game/features/notifcation/screen/notifications_list_screen.dart';
+import 'package:alqadiya_game/features/notifcation/screen/notification_detail_screen.dart';
 import 'package:alqadiya_game/features/payment/controller/payment_provider.dart';
 import 'package:alqadiya_game/features/settings/controller/settings_provider.dart';
 import 'package:alqadiya_game/features/transactions/screen/transactions_list_screen.dart';
@@ -354,6 +355,12 @@ class AppPages {
           Get.lazyPut(() => NotificationsController());
         }),
       ],
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.notificationDetailScreen,
+      page: () => const NotificationDetailScreen(),
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),

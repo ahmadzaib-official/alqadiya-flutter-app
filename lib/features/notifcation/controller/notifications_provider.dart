@@ -85,7 +85,7 @@ class NotificationsController extends GetxController {
           onTap: () async {
             closeDrawer();
 
-            final url = Uri.parse('http://51.112.131.120/admin/support');
+            final url = Uri.parse('http://51.112.131.120/faqs');
 
             if (await canLaunchUrl(url)) {
               await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -99,14 +99,33 @@ class NotificationsController extends GetxController {
     );
   }
 
+  /// Check if there are any unread notifications
+  bool get hasUnreadNotifications => notifications.any((n) => n.isRead == false);
+
   /// Mark all notifications as read
-  /// Mark all notifications as read
-  void markAllAsRead() {
-    // Implement API call here if needed
-    // for (var notification in notifications) {
-    //   notification.isRead = true; // NotificationModel is final, need to handle this or ignore for now as API isn't ready for updates
-    // }
-    update();
+  Future<void> markAllAsRead() async {
+    if (!hasUnreadNotifications) return;
+    
+    try {
+      // Call API to mark all as read
+      final response = await _repository.markAllAsRead();
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Update local state - mark all as read
+        notifications.value = notifications.map((n) => n.copyWith(isRead: true)).toList();
+        notifications.refresh();
+        update();
+      }
+    } on DioException catch (e) {
+      print('Error marking all as read: $e');
+      Get.snackbar(
+        'Error'.tr,
+        'Failed to mark notifications as read'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      print('Error marking all as read: $e');
+    }
   }
 
   /// Mark a specific notification as read

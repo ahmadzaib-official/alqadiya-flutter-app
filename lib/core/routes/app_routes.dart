@@ -35,6 +35,7 @@ class AppRoutes {
   static const String scoreboardScreen = '/scoreboardScreen';
   static const String gameResultSummaryScreen = '/gameResultSummaryScreen';
   static const String notificationsListScreen = '/notificationsListScreen';
+  static const String notificationDetailScreen = '/notificationDetailScreen';
   static const String transactionsListScreen = '/transactionsListScreen';
   static const String settingsScreen = '/settingsScreen';
   static const String buyPointsScreen = '/buyPointsScreen';

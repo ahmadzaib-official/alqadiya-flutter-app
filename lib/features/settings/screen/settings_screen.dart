@@ -80,7 +80,7 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 10.w),
                     // Right Column - Support and Guidance
-                    Expanded(child: _buildSupportSection(settingsController)),
+                    Expanded(child: _buildSupportSection(settingsController, userController)),
                   ],
                 ),
               ),
@@ -270,24 +270,35 @@ class SettingsScreen extends StatelessWidget {
           // Terms and Privacy Policy button
           _buildSettingsButton(
             'Terms and Privacy Policy'.tr,
-            onTap: () {
-              // Navigate to terms and privacy policy
+            onTap: () async {
+              final url = Uri.parse('http://51.112.131.120/privacy-policy');
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(
+                    url,
+                    mode: LaunchMode.externalApplication,
+                  );
+                
+                }
+              } catch (e) {
+                print('Could not launch URL: $e');
+              }
             },
           ),
           SizedBox(height: 10.h),
           // Replay demonstration program button
-          _buildSettingsButton(
-            'Replay demonstration program'.tr,
-            onTap: () {
-              // Navigate to tutorial/demo
-            },
-          ),
+          // _buildSettingsButton(
+          //   'Replay demonstration program'.tr,
+          //   onTap: () {
+          //     // Navigate to tutorial/demo
+          //   },
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildSupportSection(SettingsController controller) {
+  Widget _buildSupportSection(SettingsController controller, UserController userController) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 6.w),
       decoration: BoxDecoration(
@@ -309,10 +320,38 @@ class SettingsScreen extends StatelessWidget {
           // Via WhatsApp button
           GestureDetector(
             onTap: () async {
-              final url =
-                  'https://wa.me/1234567890'; // Replace with actual WhatsApp number
-              if (await canLaunchUrl(Uri.parse(url))) {
-                await launchUrl(Uri.parse(url));
+              final phoneNumber = userController.user.value?.phoneNumber;
+              if (phoneNumber == null || phoneNumber.isEmpty) return;
+              
+              // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+              final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+              
+              // Try WhatsApp scheme first (works on both iOS and Android when WhatsApp is installed)
+              final whatsappUrl = 'whatsapp://send?phone=$cleanNumber';
+              final whatsappUri = Uri.parse(whatsappUrl);
+              
+              // Try to launch WhatsApp directly
+              try {
+                bool launched = await launchUrl(
+                  whatsappUri,
+                  mode: LaunchMode.externalApplication,
+                );
+                
+                // If WhatsApp scheme fails, fallback to web URL
+                if (!launched) {
+                  final webUrl = 'https://wa.me/$cleanNumber';
+                  await launchUrl(
+                    Uri.parse(webUrl),
+                    mode: LaunchMode.externalApplication,
+                  );
+                }
+              } catch (e) {
+                // If both fail, try web URL as last resort
+                final webUrl = 'https://wa.me/$cleanNumber';
+                await launchUrl(
+                  Uri.parse(webUrl),
+                  mode: LaunchMode.externalApplication,
+                );
               }
             },
             child: Container(
@@ -351,9 +390,20 @@ class SettingsScreen extends StatelessWidget {
           _buildSettingsButton(
             'Direct Call'.tr,
             onTap: () async {
-              final url = 'tel:+1234567890'; // Replace with actual phone number
-              if (await canLaunchUrl(Uri.parse(url))) {
-                await launchUrl(Uri.parse(url));
+              final phoneNumber = userController.user.value?.phoneNumber;
+              if (phoneNumber == null || phoneNumber.isEmpty) return;
+              
+              // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+              final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+              final url = 'tel:$cleanNumber';
+              
+              try {
+                await launchUrl(
+                  Uri.parse(url),
+                  mode: LaunchMode.externalApplication,
+                );
+              } catch (e) {
+                print('Could not launch phone call: $e');
               }
             },
           ),
