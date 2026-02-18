@@ -66,13 +66,12 @@ class HomeController extends GetxController {
           label: 'FAQ & Support'.tr,
           onTap: () async {
             closeDrawer();
-
-            final url = Uri.parse('https://www.google.com');
+ final url = Uri.parse('http://51.112.131.120/faqs');
 
             if (await canLaunchUrl(url)) {
               await launchUrl(url, mode: LaunchMode.externalApplication);
             } else {
-              debugPrint('Could not launch $url');
+              Get.log('Could not launch $url');
             }
           },
         ),

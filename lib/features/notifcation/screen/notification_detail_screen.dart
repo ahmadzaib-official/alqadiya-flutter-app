@@ -57,62 +57,68 @@ class NotificationDetailScreen extends StatelessWidget {
             SizedBox(height: 20.h),
             
             // Main Content
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50.sp),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                  decoration: BoxDecoration(
-                    color: MyColors.black.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Timestamp
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time,
-                            color: MyColors.redButtonColor,
-                            size: 16.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            _formatDate(notification.createdAt),
-                            style: AppTextStyles.heading2().copyWith(
-                              fontSize: 7.sp,
-                              color: MyColors.redButtonColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      SizedBox(height: 20.h),
-                      
-                      // Title
-                      Text(
-                        notification.title ?? '',
-                        style: AppTextStyles.heading1().copyWith(
-                          fontSize: 10.sp,
-                          color: MyColors.white,
-                          fontWeight: FontWeight.w600,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 50.sp),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                decoration: BoxDecoration(
+                  color: MyColors.black.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Timestamp
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          color: MyColors.redButtonColor,
+                          size: 16.sp,
                         ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          _formatDate(notification.createdAt),
+                          style: AppTextStyles.heading2().copyWith(
+                            fontSize: 7.sp,
+                            color: MyColors.redButtonColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    SizedBox(height: 20.h),
+                    
+                    // Title
+                    Text(
+                      notification.title ?? '',
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 10.sp,
+                        color: MyColors.white,
+                        fontWeight: FontWeight.w600,
                       ),
-                      
-                      SizedBox(height: 15.h),
-                      
-                      // Divider
-                      Divider(
-                        color: MyColors.white.withValues(alpha: 0.1),
-                        thickness: 1,
+                    ),
+                    
+                    SizedBox(height: 15.h),
+                    
+                    // Divider
+                    Divider(
+                      color: MyColors.white.withValues(alpha: 0.1),
+                      thickness: 1,
+                    ),
+                    
+                    SizedBox(height: 15.h),
+                    
+                    // Body/Description - Auto height based on content
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: 0.5.sh, // Max 50% of screen height
                       ),
-                      
-                      SizedBox(height: 15.h),
-                      
-                      // Body/Description
-                      Expanded(
-                        child: SingleChildScrollView(
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 20.h),
                           child: Text(
                             notification.body ?? '',
                             style: AppTextStyles.bodyTextMedium16().copyWith(
@@ -123,14 +129,13 @@ class NotificationDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
             
-            SizedBox(height: 130.h),
+            SizedBox(height: 20.h),
           ],
         ),
       ),

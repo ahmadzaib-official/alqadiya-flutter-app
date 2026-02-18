@@ -327,7 +327,7 @@ class SettingsScreen extends StatelessWidget {
               final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
               
               // Try WhatsApp scheme first (works on both iOS and Android when WhatsApp is installed)
-              final whatsappUrl = 'whatsapp://send?phone=$cleanNumber';
+              final whatsappUrl = 'whatsapp://send?phone=+965$cleanNumber';
               final whatsappUri = Uri.parse(whatsappUrl);
               
               // Try to launch WhatsApp directly
@@ -339,15 +339,15 @@ class SettingsScreen extends StatelessWidget {
                 
                 // If WhatsApp scheme fails, fallback to web URL
                 if (!launched) {
-                  final webUrl = 'https://wa.me/$cleanNumber';
+                  final webUrl = 'https://wa.me/+965$cleanNumber';
                   await launchUrl(
-                    Uri.parse(webUrl),
+                    Uri.parse(webUrl),  
                     mode: LaunchMode.externalApplication,
                   );
                 }
               } catch (e) {
                 // If both fail, try web URL as last resort
-                final webUrl = 'https://wa.me/$cleanNumber';
+                final webUrl = 'https://wa.me/+965$cleanNumber';
                 await launchUrl(
                   Uri.parse(webUrl),
                   mode: LaunchMode.externalApplication,
@@ -395,7 +395,7 @@ class SettingsScreen extends StatelessWidget {
               
               // Clean the number - remove spaces, dashes, etc. Keep only digits and +
               final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-              final url = 'tel:$cleanNumber';
+              final url = 'tel:+965$cleanNumber';
               
               try {
                 await launchUrl(
