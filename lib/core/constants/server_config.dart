@@ -78,4 +78,7 @@ class ServerConfig {
 
   // User Balance
   static const userBalance = "${baseUrl}games/balance";
+
+  // Support Contacts
+  static const supportContacts = "${baseUrl}user/settings/support-contacts";
 }

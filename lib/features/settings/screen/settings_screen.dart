@@ -305,110 +305,121 @@ class SettingsScreen extends StatelessWidget {
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Support and guidance'.tr,
-            style: AppTextStyles.heading1().copyWith(
-              fontSize: 8.sp,
-              color: MyColors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 15.h),
-          // Via WhatsApp button
-          GestureDetector(
-            onTap: () async {
-              final phoneNumber = userController.user.value?.phoneNumber;
-              if (phoneNumber == null || phoneNumber.isEmpty) return;
-              
-              // Clean the number - remove spaces, dashes, etc. Keep only digits and +
-              final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-              
-              // Try WhatsApp scheme first (works on both iOS and Android when WhatsApp is installed)
-              final whatsappUrl = 'whatsapp://send?phone=+965$cleanNumber';
-              final whatsappUri = Uri.parse(whatsappUrl);
-              
-              // Try to launch WhatsApp directly
-              try {
-                bool launched = await launchUrl(
-                  whatsappUri,
-                  mode: LaunchMode.externalApplication,
-                );
-                
-                // If WhatsApp scheme fails, fallback to web URL
-                if (!launched) {
-                  final webUrl = 'https://wa.me/+965$cleanNumber';
-                  await launchUrl(
-                    Uri.parse(webUrl),  
-                    mode: LaunchMode.externalApplication,
-                  );
-                }
-              } catch (e) {
-                // If both fail, try web URL as last resort
-                final webUrl = 'https://wa.me/+965$cleanNumber';
-                await launchUrl(
-                  Uri.parse(webUrl),
-                  mode: LaunchMode.externalApplication,
-                );
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: MyColors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(4.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Via WhatsApp'.tr,
-                    style: AppTextStyles.heading1().copyWith(
-                      fontSize: 6.sp,
-                      color: MyColors.white,
-                    ),
-                  ),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(MyIcons.whatsapp),
-                ],
+      child: Obx(() {
+        final whatsappContact = controller.whatsappContact;
+        final directCallContact = controller.directCallContact;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Support and guidance'.tr,
+              style: AppTextStyles.heading1().copyWith(
+                fontSize: 8.sp,
+                color: MyColors.white,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ),
-          
-          
-          SizedBox(height: 10.h),
-          // Direct Call button
-          _buildSettingsButton(
-            'Direct Call'.tr,
-            onTap: () async {
-              final phoneNumber = userController.user.value?.phoneNumber;
-              if (phoneNumber == null || phoneNumber.isEmpty) return;
-              
-              // Clean the number - remove spaces, dashes, etc. Keep only digits and +
-              final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-              final url = 'tel:+965$cleanNumber';
-              
-              try {
-                await launchUrl(
-                  Uri.parse(url),
-                  mode: LaunchMode.externalApplication,
-                );
-              } catch (e) {
-                print('Could not launch phone call: $e');
-              }
-            },
-          ),
-        ],
-      ),
+            SizedBox(height: 15.h),
+            // Via WhatsApp button
+            if (whatsappContact != null)
+              GestureDetector(
+                onTap: () async {
+                  final phoneNumber = whatsappContact.contactValue;
+                  if (phoneNumber.isEmpty) return;
+
+                  // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+                  final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+
+                  // Try WhatsApp scheme first (works on both iOS and Android when WhatsApp is installed)
+                  final whatsappUrl = 'whatsapp://send?phone=$cleanNumber';
+                  final whatsappUri = Uri.parse(whatsappUrl);
+
+                  // Try to launch WhatsApp directly
+                  try {
+                    bool launched = await launchUrl(
+                      whatsappUri,
+                      mode: LaunchMode.externalApplication,
+                    );
+
+                    // If WhatsApp scheme fails, fallback to web URL
+                    if (!launched) {
+                      final webUrl = 'https://wa.me/$cleanNumber';
+                      await launchUrl(
+                        Uri.parse(webUrl),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  } catch (e) {
+                    // If both fail, try web URL as last resort
+                    final webUrl = 'https://wa.me/$cleanNumber';
+                    await launchUrl(
+                      Uri.parse(webUrl),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: MyColors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(4.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        offset: Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        Get.locale?.languageCode == 'ar'
+                            ? whatsappContact.labelAr
+                            : whatsappContact.labelEn,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 6.sp,
+                          color: MyColors.white,
+                        ),
+                      ),
+                      SizedBox(width: 5.w),
+                      SvgPicture.asset(MyIcons.whatsapp),
+                    ],
+                  ),
+                ),
+              ),
+
+            if (whatsappContact != null) SizedBox(height: 10.h),
+
+            // Direct Call button
+            if (directCallContact != null)
+              _buildSettingsButton(
+                Get.locale?.languageCode == 'ar'
+                    ? directCallContact.labelAr
+                    : directCallContact.labelEn,
+                onTap: () async {
+                  final phoneNumber = directCallContact.contactValue;
+                  if (phoneNumber.isEmpty) return;
+
+                  // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+                  final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+                  final url = 'tel:$cleanNumber';
+
+                  try {
+                    await launchUrl(
+                      Uri.parse(url),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  } catch (e) {
+                    print('Could not launch phone call: $e');
+                  }
+                },
+              ),
+          ],
+        );
+      }),
     );
   }
 
