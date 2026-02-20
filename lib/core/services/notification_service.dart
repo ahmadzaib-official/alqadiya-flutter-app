@@ -121,11 +121,13 @@ class NotificationService {
     RemoteMessage? message,
   }) async {
     // Non-call notifications fall back to notifications tab (if provided)
-    showSimpleNotification(
-      title: message!.notification!.title ?? "",
-      body: message.notification!.body ?? "",
-      payload: jsonEncode(message.data),
-    );
+    if (message != null && message.notification != null) {
+      showSimpleNotification(
+        title: message.notification!.title ?? "",
+        body: message.notification!.body ?? "",
+        payload: jsonEncode(message.data),
+      );
+    }
   }
 
   // Enhanced local notification initialization
@@ -183,7 +185,10 @@ class NotificationService {
     }
 
     // Initialize notifications with the settings
-    await _flutterLocalNotificationPlugin.initialize(initializationSettings);
+    await _flutterLocalNotificationPlugin.initialize(
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: onNotificationTap,
+    );
   }
 
   // Create Android notification channels
@@ -233,41 +238,48 @@ class NotificationService {
             >();
 
     if (iosImplementation != null) {
-      await iosImplementation.initialize(DarwinInitializationSettings());
-
       // Define call notification category with actions
-      DarwinNotificationCategory callCategory = DarwinNotificationCategory(
-        'call_category',
-        actions: <DarwinNotificationAction>[
-          DarwinNotificationAction.plain(
-            'accept_call',
-            'Accept',
-            options: <DarwinNotificationActionOption>{
-              DarwinNotificationActionOption.foreground,
+      final DarwinNotificationCategory callCategory =
+          DarwinNotificationCategory(
+            'call_category',
+            actions: <DarwinNotificationAction>[
+              DarwinNotificationAction.plain(
+                'accept_call',
+                'Accept',
+                options: <DarwinNotificationActionOption>{
+                  DarwinNotificationActionOption.foreground,
+                },
+              ),
+              DarwinNotificationAction.plain(
+                'decline_call',
+                'Decline',
+                options: <DarwinNotificationActionOption>{
+                  DarwinNotificationActionOption.destructive,
+                },
+              ),
+            ],
+            options: <DarwinNotificationCategoryOption>{
+              DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
             },
-          ),
-          DarwinNotificationAction.plain(
-            'decline_call',
-            'Decline',
-            options: <DarwinNotificationActionOption>{
-              DarwinNotificationActionOption.destructive,
-            },
-          ),
-        ],
-        options: <DarwinNotificationCategoryOption>{
-          DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
-        },
-      );
+          );
 
       await iosImplementation.initialize(
-        DarwinInitializationSettings(notificationCategories: [callCategory]),
+        settings: DarwinInitializationSettings(
+          notificationCategories: [callCategory],
+        ),
       );
     }
   }
 
   // Method to manually cancel call notification
   static Future<void> cancelCallNotification() async {
-    await _flutterLocalNotificationPlugin.cancel(0);
+    await _flutterLocalNotificationPlugin.cancel(id: 0);
+  }
+
+  // Handle notification tap
+  static void onNotificationTap(NotificationResponse response) {
+    // Handle notification tap logic here
+    log('Notification tapped: ${response.payload}');
   }
 
   // Enhanced simple notification
@@ -301,10 +313,10 @@ class NotificationService {
     );
 
     await _flutterLocalNotificationPlugin.show(
-      0,
-      title,
-      body,
-      notificationDetails,
+      id: 0,
+      title: title,
+      body: body,
+      notificationDetails: notificationDetails,
       payload: payload,
     );
   }
