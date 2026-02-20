@@ -49,10 +49,12 @@ class HomeHeader extends StatelessWidget {
                         },
                     child: CircleAvatar(
                       backgroundColor: MyColors.redButtonColor,
-                      backgroundImage: CachedNetworkImageProvider(
-                        userController.user.value?.photoUrl ??
-                            "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
-                      ),
+                      backgroundImage:
+                          userController.user.value?.photoUrl != null
+                              ? CachedNetworkImageProvider(
+                                userController.user.value!.photoUrl!,
+                              )
+                              : AssetImage(MyIcons.userImage),
                       radius: 9.sp,
                     ),
                   ),

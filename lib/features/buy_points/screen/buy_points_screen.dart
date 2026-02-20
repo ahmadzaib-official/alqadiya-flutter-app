@@ -62,15 +62,20 @@ class BuyPointsScreen extends StatelessWidget {
                             AuthGuard.executeIfAuthenticated(
                               title: 'Profile Access'.tr,
                               message: 'Please sign in to view your profile'.tr,
-                              action: () => Get.toNamed(AppRoutes.userProfileScreen),
+                              action:
+                                  () =>
+                                      Get.toNamed(AppRoutes.userProfileScreen),
                             );
                           },
                           child: CircleAvatar(
                             backgroundColor: MyColors.redButtonColor,
-                            backgroundImage: CachedNetworkImageProvider(
-                              user!.photoUrl ??
-                                  "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
-                            ),
+                            backgroundImage:
+                                user!.photoUrl != null
+                                    ? CachedNetworkImageProvider(
+                                      user!.photoUrl ??
+                                          "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
+                                    )
+                                    : AssetImage(MyIcons.userImage),
                             radius: 9.sp,
                           ),
                         );
@@ -246,22 +251,25 @@ class BuyPointsScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 2),
-  Get.locale?.languageCode == 'en'
-                        ?   SvgPicture.asset(
-                    MyIcons.arrow_right,
-                    colorFilter: ColorFilter.mode(
-                      MyColors.brightRedColor,
-                      BlendMode.srcIn,
-                    ),
-                  )
-                        : Icon(Icons.arrow_forward_ios, size: 6.sp,color:MyColors.brightRedColor,),
-                
+                  Get.locale?.languageCode == 'en'
+                      ? SvgPicture.asset(
+                        MyIcons.arrow_right,
+                        colorFilter: ColorFilter.mode(
+                          MyColors.brightRedColor,
+                          BlendMode.srcIn,
+                        ),
+                      )
+                      : Icon(
+                        Icons.arrow_forward_ios,
+                        size: 6.sp,
+                        color: MyColors.brightRedColor,
+                      ),
+
                   Spacer(flex: 1),
                 ],
               ),
             ),
           ),
-       
         ],
       ),
     );
