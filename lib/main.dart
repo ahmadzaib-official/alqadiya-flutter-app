@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/services/localization_services.dart';
+import 'package:alqadiya_game/core/services/notification_service.dart';
 import 'package:alqadiya_game/core/services/services.dart';
 import 'package:alqadiya_game/my_app.dart' show MyApp;
 import 'package:flutter/foundation.dart';
@@ -23,6 +24,12 @@ void main() async {
     ),
   );
   await Services().initServices();
+  // Initialize local notifications with enhanced setup
+  if (!kIsWeb) {
+    await NotificationService.localNotiInit();
+    await NotificationService.getDeviceToken();
+  }
+
   final locale = await LocalizationService.getCurrentLocale();
   runApp(MyApp(locale: locale));
 }

@@ -9,6 +9,7 @@
 import 'package:audio_session/audio_session_web.dart';
 import 'package:device_info_plus/src/device_info_plus_web.dart';
 import 'package:firebase_core_web/firebase_core_web.dart';
+import 'package:firebase_messaging_web/firebase_messaging_web.dart';
 import 'package:fluttertoast/fluttertoast_web.dart';
 import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'package:image_picker_for_web/image_picker_for_web.dart';
@@ -27,6 +28,7 @@ void registerPlugins([final Registrar? pluginRegistrar]) {
   AudioSessionWeb.registerWith(registrar);
   DeviceInfoPlusWebPlugin.registerWith(registrar);
   FirebaseCoreWeb.registerWith(registrar);
+  FirebaseMessagingWeb.registerWith(registrar);
   FluttertoastWebPlugin.registerWith(registrar);
   GoogleSignInPlugin.registerWith(registrar);
   ImagePickerPlugin.registerWith(registrar);
