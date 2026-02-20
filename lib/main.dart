@@ -33,3 +33,6 @@ void main() async {
   final locale = await LocalizationService.getCurrentLocale();
   runApp(MyApp(locale: locale));
 }
+
+// 98765432
+// Raheel@123
