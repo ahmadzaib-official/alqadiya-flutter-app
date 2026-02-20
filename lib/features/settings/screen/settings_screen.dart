@@ -135,7 +135,7 @@ class SettingsScreen extends StatelessWidget {
             _buildInfoRow(
               'Phone:'.tr,
               controller.user.value?.phoneNumber != null
-                  ? '${controller.user.value?.phoneNumber ?? ""}'
+                  ? '+965${controller.user.value?.phoneNumber ?? ""}'
                   // ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
                   : "N/A".tr,
             ),
@@ -730,7 +730,43 @@ class SettingsScreen extends StatelessWidget {
                             textFontSize: 10,
                             hintFontSize: 8,
                             width: 150.w,
+                            prefix: Container(
+                              margin: EdgeInsets.only(left: 4.w),
+                              padding: EdgeInsets.only(right: 6.w),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                    color: MyColors.white.withValues(alpha: 0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Kuwait flag emoji
+                                  Text(
+                                    '🇰🇼',
+                                    style: TextStyle(fontSize: 8.sp),
+                                  ),
+                                  SizedBox(width: 2.w),
+                                  Text(
+                                    '+965',
+                                    style: AppTextStyles.labelMedium14().copyWith(
+                                      color: MyColors.white.withValues(alpha: 0.7),
+                                      fontSize: 6.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(9),
+                            ],
                           ),
+                          
                           // SizedBox(height: 12.h),
                           // // Email Field
                           // DenseTextField(
