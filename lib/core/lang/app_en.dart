@@ -595,6 +595,16 @@ const Map<String, String> enUS = {
   'Game status': 'Game status',
   'Got it': 'Got it',
 
+  // Screen casting translations
+  'Cast to Device': 'Cast to Device',
+  'Scanning for devices...': 'Scanning for devices...',
+  'No devices found': 'No devices found',
+  'Make sure your casting device is on the same network':
+      'Make sure your casting device is on the same network',
+  'Cast Error': 'Cast Error',
+  'Stop Scanning': 'Stop Scanning',
+  'Scan Again': 'Scan Again',
+
   // Language selection hardcoded text
   'عربي': 'عربي',
 

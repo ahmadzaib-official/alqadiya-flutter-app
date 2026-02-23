@@ -28,7 +28,6 @@ class TransactionReceiptScreen extends StatelessWidget {
                 children: [
                   // Header
                   HomeHeader(
-                    onChromTap: () {},
                     title: Text(
                       'Transaction Receipt'.tr,
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),

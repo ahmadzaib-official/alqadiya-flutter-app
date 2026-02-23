@@ -32,7 +32,6 @@ class TransactionsListScreen extends StatelessWidget {
                 children: [
                   // Header
                   HomeHeader(
-                    onChromTap: () {},
                     title: Text(
                       'Transactions'.tr,
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -262,8 +261,9 @@ class TransactionsListScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 1),
-                  Get.locale=='en'?
-                  SvgPicture.asset(MyIcons.arrow_right):Icon(Icons.arrow_forward_ios,size: 6.sp,),
+                  Get.locale == 'en'
+                      ? SvgPicture.asset(MyIcons.arrow_right)
+                      : Icon(Icons.arrow_forward_ios, size: 6.sp),
                   Spacer(flex: 1),
                 ],
               ),

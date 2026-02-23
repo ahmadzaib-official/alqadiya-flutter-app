@@ -42,7 +42,6 @@ class NotificationDetailScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 5.sp),
               child: HomeHeader(
-                onChromTap: () {},
                 title: Text(
                   'Notification Detail'.tr,
                   style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -53,9 +52,9 @@ class NotificationDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             SizedBox(height: 20.h),
-            
+
             // Main Content
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 50.sp),
@@ -87,9 +86,9 @@ class NotificationDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     SizedBox(height: 20.h),
-                    
+
                     // Title
                     Text(
                       notification.title ?? '',
@@ -99,17 +98,17 @@ class NotificationDetailScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    
+
                     SizedBox(height: 15.h),
-                    
+
                     // Divider
                     Divider(
                       color: MyColors.white.withValues(alpha: 0.1),
                       thickness: 1,
                     ),
-                    
+
                     SizedBox(height: 15.h),
-                    
+
                     // Body/Description - Auto height based on content
                     Container(
                       constraints: BoxConstraints(
@@ -134,7 +133,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             SizedBox(height: 20.h),
           ],
         ),

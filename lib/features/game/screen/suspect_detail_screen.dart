@@ -83,7 +83,6 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(

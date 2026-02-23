@@ -52,8 +52,8 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   Widget build(BuildContext context) {
     final timerController =
         Get.isRegistered<GameTimerController>()
-            ? Get.find<GameTimerController>()
-            : Get.put(GameTimerController(), permanent: true)
+              ? Get.find<GameTimerController>()
+              : Get.put(GameTimerController(), permanent: true)
           ..startTimer();
 
     final evidenceController = Get.find<EvidenceController>();
@@ -84,7 +84,6 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(
@@ -149,7 +148,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                                   if (selectedTab.value == 0) {
                                     return _buildCluesTab(evidenceController);
                                   } else {
-                                    return _buildAttachmentsTab(evidenceController);
+                                    return _buildAttachmentsTab(
+                                      evidenceController,
+                                    );
                                   }
                                 }),
                               ),
@@ -209,7 +210,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               (context, url) => Container(
                 color: MyColors.darkBlueColor,
                 child: Center(
-                  child: CircularProgressIndicator(color: MyColors.redButtonColor),
+                  child: CircularProgressIndicator(
+                    color: MyColors.redButtonColor,
+                  ),
                 ),
               ),
           errorWidget:
@@ -312,52 +315,57 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
           },
           child: Row(
             children: [
-               Expanded(
-            child: SingleChildScrollView(
-              // controller: scrollController,
-              child: Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Personal Information Fields
-                    _buildInfoField(
-                      'Clue Name:',
-                      evidence.evidenceName ?? evidence.evidenceNameAr ?? 'Unknown',
+              Expanded(
+                child: SingleChildScrollView(
+                  // controller: scrollController,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 8.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Personal Information Fields
+                        _buildInfoField(
+                          'Clue Name:',
+                          evidence.evidenceName ??
+                              evidence.evidenceNameAr ??
+                              'Unknown',
+                        ),
+                        SizedBox(height: 6.h),
+                        _buildInfoField(
+                          'Discovery Date:',
+                          evidence.createdAt != null
+                              ? DateFormat(
+                                'dd MMM yyyy',
+                              ).format(evidence.createdAt!)
+                              : 'N/A',
+                        ),
+
+                        SizedBox(height: 12.h),
+
+                        // Descriptive Paragraph
+                        Text(
+                          evidence.description ??
+                              evidence.descriptionAr ??
+                              'No biography available',
+                          style: AppTextStyles.bodyTextRegular16().copyWith(
+                            fontSize: 6.sp,
+                            color: MyColors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 6.h),
-                    _buildInfoField(
-                      'Discovery Date:',
-                      evidence.createdAt != null
-                          ? DateFormat('dd MMM yyyy').format(evidence.createdAt!)
-                          : 'N/A',
-                    ),
-                  
-                    SizedBox(height: 12.h),
-          
-                    // Descriptive Paragraph
-                    Text(
-                      evidence.description ??
-                          evidence.descriptionAr ??
-                          'No biography available',
-                      style: AppTextStyles.bodyTextRegular16().copyWith(
-                        fontSize: 6.sp,
-                        color: MyColors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
             ],
           ),
         );
       },
     );
   }
+
   Widget _buildInfoField(String label, String value) {
     return Row(
       children: [
@@ -503,7 +511,16 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                 itemBuilder: (context, index) {
                   final v = all[index];
                   return GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VideoPlayerScreen(videoUrl: v.mediaUrl ?? ''))),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => VideoPlayerScreen(
+                                  videoUrl: v.mediaUrl ?? '',
+                                ),
+                          ),
+                        ),
                     child: Container(
                       width: 60.w,
                       margin: EdgeInsets.only(right: 10.w),
@@ -511,11 +528,40 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.r),
-                            child: (v.thumbnailUrl ?? '').isNotEmpty
-                                ? CachedNetworkImage(imageUrl: v.thumbnailUrl!, width: double.infinity, height: double.infinity, fit: BoxFit.cover, placeholder: (_, __) => Container(color: MyColors.darkBlueColor), errorWidget: (_, __, ___) => Container(color: MyColors.darkBlueColor))
-                                : Container(color: MyColors.darkBlueColor, child: Icon(Icons.play_circle_outline, color: MyColors.white, size: 30.sp)),
+                            child:
+                                (v.thumbnailUrl ?? '').isNotEmpty
+                                    ? CachedNetworkImage(
+                                      imageUrl: v.thumbnailUrl!,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                      placeholder:
+                                          (_, __) => Container(
+                                            color: MyColors.darkBlueColor,
+                                          ),
+                                      errorWidget:
+                                          (_, __, ___) => Container(
+                                            color: MyColors.darkBlueColor,
+                                          ),
+                                    )
+                                    : Container(
+                                      color: MyColors.darkBlueColor,
+                                      child: Icon(
+                                        Icons.play_circle_outline,
+                                        color: MyColors.white,
+                                        size: 30.sp,
+                                      ),
+                                    ),
                           ),
-                          Positioned.fill(child: Center(child: Icon(Icons.play_arrow_outlined, color: MyColors.white.withValues(alpha: 0.5), size: 30.sp))),
+                          Positioned.fill(
+                            child: Center(
+                              child: Icon(
+                                Icons.play_arrow_outlined,
+                                color: MyColors.white.withValues(alpha: 0.5),
+                                size: 30.sp,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -543,13 +589,35 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                 itemBuilder: (context, index) {
                   final img = all[index];
                   return GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ImagePreviewScreen(imageUrl: img.mediaUrl ?? ''))),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => ImagePreviewScreen(
+                                  imageUrl: img.mediaUrl ?? '',
+                                ),
+                          ),
+                        ),
                     child: Container(
                       width: 60.w,
                       margin: EdgeInsets.only(right: 10.w),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8.r),
-                        child: CachedNetworkImage(imageUrl: img.mediaUrl ?? 'https://picsum.photos/200', width: double.infinity, height: double.infinity, fit: BoxFit.cover, placeholder: (_, __) => Container(color: MyColors.darkBlueColor), errorWidget: (_, __, ___) => Container(color: MyColors.darkBlueColor, child: Icon(Icons.error, color: MyColors.white))),
+                        child: CachedNetworkImage(
+                          imageUrl: img.mediaUrl ?? 'https://picsum.photos/200',
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder:
+                              (_, __) =>
+                                  Container(color: MyColors.darkBlueColor),
+                          errorWidget:
+                              (_, __, ___) => Container(
+                                color: MyColors.darkBlueColor,
+                                child: Icon(Icons.error, color: MyColors.white),
+                              ),
+                        ),
                       ),
                     ),
                   );
@@ -576,19 +644,50 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                 itemBuilder: (context, index) {
                   final doc = all[index];
                   return GestureDetector(
-                    onTap: () { if (doc.mediaUrl?.isNotEmpty ?? false) Navigator.push(context, MaterialPageRoute(builder: (_) => PDFViewerScreen(pdfUrl: doc.mediaUrl!))); },
+                    onTap: () {
+                      if (doc.mediaUrl?.isNotEmpty ?? false)
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => PDFViewerScreen(pdfUrl: doc.mediaUrl!),
+                          ),
+                        );
+                    },
                     child: Container(
                       width: 60.w,
                       margin: EdgeInsets.only(right: 10.w),
-                      decoration: BoxDecoration(color: MyColors.white, borderRadius: BorderRadius.circular(10.r)),
+                      decoration: BoxDecoration(
+                        color: MyColors.white,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
                       child: Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.r), gradient: RadialGradient(colors: [Colors.black.withValues(alpha: 0), Colors.black.withValues(alpha: 0.2)])),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.r),
+                          gradient: RadialGradient(
+                            colors: [
+                              Colors.black.withValues(alpha: 0),
+                              Colors.black.withValues(alpha: 0.2),
+                            ],
+                          ),
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SvgPicture.asset(MyIcons.file),
                             SizedBox(height: 8.h),
-                            Text(doc.attachmentNameEn ?? doc.attachmentNameAr ?? 'Document ${index + 1}', style: AppTextStyles.heading2().copyWith(fontSize: 6.sp, color: MyColors.BlueColor), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            Text(
+                              doc.attachmentNameEn ??
+                                  doc.attachmentNameAr ??
+                                  'Document ${index + 1}',
+                              style: AppTextStyles.heading2().copyWith(
+                                fontSize: 6.sp,
+                                color: MyColors.BlueColor,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
                       ),
@@ -619,10 +718,27 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                   return Container(
                     width: 60.w,
                     margin: EdgeInsets.only(right: 10.w),
-                    decoration: BoxDecoration(color: MyColors.white, borderRadius: BorderRadius.circular(10.r)),
+                    decoration: BoxDecoration(
+                      color: MyColors.white,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
                     child: Container(
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.r), gradient: RadialGradient(colors: [Colors.black.withValues(alpha: 0), Colors.black.withValues(alpha: 0.2)])),
-                      child: AudioPlayerWidget(audioUrl: audio.mediaUrl ?? '', title: audio.attachmentNameEn ?? audio.attachmentNameAr ?? 'Audio ${index + 1}'),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        gradient: RadialGradient(
+                          colors: [
+                            Colors.black.withValues(alpha: 0),
+                            Colors.black.withValues(alpha: 0.2),
+                          ],
+                        ),
+                      ),
+                      child: AudioPlayerWidget(
+                        audioUrl: audio.mediaUrl ?? '',
+                        title:
+                            audio.attachmentNameEn ??
+                            audio.attachmentNameAr ??
+                            'Audio ${index + 1}',
+                      ),
                     ),
                   );
                 },

@@ -61,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   // Top Bar
                   HomeHeader(
-                    onChromTap: () {},
                     actionButtons: Row(
                       children: [
                         GestureDetector(

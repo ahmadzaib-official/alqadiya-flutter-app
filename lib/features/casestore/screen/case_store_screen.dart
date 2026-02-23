@@ -35,7 +35,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
     super.initState();
     // Access GameController to trigger initialization and getGamesList() API call
     gameController = Get.find<GameController>();
-gameController.getGamesList();
+    gameController.getGamesList();
     // Add listener to scroll controller
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -80,7 +80,6 @@ gameController.getGamesList();
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(

@@ -32,7 +32,6 @@ class NotificationsListScreen extends StatelessWidget {
                 children: [
                   // Header
                   HomeHeader(
-                    onChromTap: () {},
                     title: Text(
                       'Notifications'.tr,
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),

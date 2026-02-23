@@ -1,6 +1,7 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/services/auth_guard.dart';
+import 'package:alqadiya_game/core/services/screen_cast_service.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +13,12 @@ import 'package:get/get.dart';
 class HomeHeader extends StatelessWidget {
   const HomeHeader({
     super.key,
-    required this.onChromTap,
     this.onProfileTap,
     required this.actionButtons,
     this.title,
     this.showDivider = true,
   });
   final VoidCallback? onProfileTap;
-  final VoidCallback onChromTap;
   final Widget actionButtons;
   final Widget? title;
   final bool showDivider;
@@ -27,6 +26,7 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userController = Get.find<UserController>();
+    final castService = Get.find<ScreenCastService>();
 
     return Obx(
       () => Column(
@@ -60,8 +60,33 @@ class HomeHeader extends StatelessWidget {
                   ),
                   SizedBox(width: 5.w),
                   GestureDetector(
-                    onTap: onChromTap,
-                    child: SvgPicture.asset(MyIcons.chromecast),
+                    onTap: () {
+                      // Use cast service to show picker
+                      castService.showCastPicker();
+                    },
+                    child: Stack(
+                      children: [
+                        SvgPicture.asset(MyIcons.chromecast),
+                        // Show indicator when connected
+                        if (castService.isConnected.value)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              width: 6.sp,
+                              height: 6.sp,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: MyColors.backgroundColor,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ],
               ),

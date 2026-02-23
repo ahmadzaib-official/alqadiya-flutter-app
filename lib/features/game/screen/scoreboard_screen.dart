@@ -79,7 +79,6 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
                 child: HomeHeader(
-                  onChromTap: () {},
                   title: Row(
                     children: [
                       Text(
@@ -506,7 +505,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                           50.r,
                                         ),
                                         child:
-                                            (player.userPhotoUrl?.isNotEmpty ?? false)
+                                            (player.userPhotoUrl?.isNotEmpty ??
+                                                    false)
                                                 ? CachedNetworkImage(
                                                   imageUrl:
                                                       player.userPhotoUrl ?? "",

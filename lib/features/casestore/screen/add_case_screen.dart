@@ -36,7 +36,6 @@ class AddCaseScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
                 child: HomeHeader(
-                  onChromTap: () {},
                   title: Text(
                     'Add the case'.tr,
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),

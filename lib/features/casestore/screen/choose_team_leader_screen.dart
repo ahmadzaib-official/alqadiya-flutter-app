@@ -47,7 +47,6 @@ class ChooseTeamLeaderScreen extends StatelessWidget {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(

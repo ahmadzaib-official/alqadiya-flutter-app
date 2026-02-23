@@ -593,6 +593,16 @@ const Map<String, String> lnAr = {
   'Game status': 'حالة اللعبة',
   'Got it': 'فهمت',
 
+  // Screen casting translations
+  'Cast to Device': 'البث إلى الجهاز',
+  'Scanning for devices...': 'البحث عن الأجهزة...',
+  'No devices found': 'لم يتم العثور على أجهزة',
+  'Make sure your casting device is on the same network':
+      'تأكد من أن جهاز البث على نفس الشبكة',
+  'Cast Error': 'خطأ في البث',
+  'Stop Scanning': 'إيقاف البحث',
+  'Scan Again': 'البحث مرة أخرى',
+
   // Language selection hardcoded text
   'عربي': 'عربي',
 

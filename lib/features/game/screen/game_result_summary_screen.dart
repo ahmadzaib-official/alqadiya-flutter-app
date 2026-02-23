@@ -123,11 +123,12 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
       child: Opacity(
         opacity: _isSharing ? 0.5 : 1.0,
         child: GestureDetector(
-          onTap: _isSharing
-              ? null
-              : () async {
-                  await _shareResult();
-                },
+          onTap:
+              _isSharing
+                  ? null
+                  : () async {
+                    await _shareResult();
+                  },
           child: Container(
             padding: EdgeInsets.symmetric(vertical: isSoloMode ? 10.h : 12.h),
             decoration: BoxDecoration(
@@ -143,9 +144,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                     height: 14.sp,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        MyColors.white,
-                      ),
+                      valueColor: AlwaysStoppedAnimation<Color>(MyColors.white),
                     ),
                   )
                 else
@@ -157,11 +156,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                     ),
                   ),
                 SizedBox(width: 8.w),
-                Icon(
-                  Icons.share,
-                  size: 14.sp,
-                  color: MyColors.brightRedColor,
-                ),
+                Icon(Icons.share, size: 14.sp, color: MyColors.brightRedColor),
               ],
             ),
           ),
@@ -197,16 +192,16 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Text(
                       'Game Result Summary'.tr,
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                     ),
                     actionButtons: GestureDetector(
-                      onTap: () => Get.offNamedUntil(
-                        AppRoutes.homescreen,
-                        (route) => false,
-                      ),
+                      onTap:
+                          () => Get.offNamedUntil(
+                            AppRoutes.homescreen,
+                            (route) => false,
+                          ),
                       child: SvgPicture.asset(MyIcons.arrowbackrounded),
                     ),
                   ),
@@ -224,7 +219,8 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                       // - If multiple teams exist -> team mode (scoreboard with 2 cards)
                       // - Else fall back to solo mode checks
                       final isTeamMode = gameResultController.isTeamMode;
-                      final isSoloMode = !isTeamMode &&
+                      final isSoloMode =
+                          !isTeamMode &&
                           (gameController.gameSession.value?.mode == 'solo' ||
                               gameResultController.isSoloModeFromData);
 
@@ -243,7 +239,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                       if (gameResult == null) {
                         return Center(
                           child: Text(
-                            'No results available'.tr, 
+                            'No results available'.tr,
                             style: AppTextStyles.heading1().copyWith(
                               fontSize: 8.sp,
                               color: MyColors.white.withValues(alpha: 0.5),
@@ -260,8 +256,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                               'No team results available'.tr,
                               style: AppTextStyles.heading1().copyWith(
                                 fontSize: 8.sp,
-                                color:
-                                    MyColors.white.withValues(alpha: 0.5),
+                                color: MyColors.white.withValues(alpha: 0.5),
                               ),
                             ),
                           );
@@ -299,15 +294,12 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                   horizontal: 6.w,
                                 ),
                                 decoration: BoxDecoration(
-                                  color:
-                                      MyColors.black.withValues(alpha: 0.2),
+                                  color: MyColors.black.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
                                       padding: EdgeInsets.symmetric(
@@ -317,8 +309,9 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                         color: MyColors.black.withValues(
                                           alpha: 0.2,
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(80.r),
+                                        borderRadius: BorderRadius.circular(
+                                          80.r,
+                                        ),
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -328,18 +321,18 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                             'The winner'.tr,
                                             style: AppTextStyles.heading2()
                                                 .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white
-                                                  .withValues(alpha: 0.5),
-                                            ),
+                                                  fontSize: 6.sp,
+                                                  color: MyColors.white
+                                                      .withValues(alpha: 0.5),
+                                                ),
                                           ),
                                           Text(
                                             ' ${gameResultController.winnerTeamName ?? ''}',
                                             style: AppTextStyles.heading1()
                                                 .copyWith(
-                                              fontSize: 8.sp,
-                                              color: MyColors.white,
-                                            ),
+                                                  fontSize: 8.sp,
+                                                  color: MyColors.white,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -349,8 +342,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                     SizedBox(height: 16.h),
                                     GestureDetector(
                                       onTap: () {
-                                        Get.offAllNamed(
-                                            AppRoutes.homescreen);
+                                        Get.offAllNamed(AppRoutes.homescreen);
                                       },
                                       child: Container(
                                         padding: EdgeInsets.symmetric(
@@ -360,17 +352,18 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                           color: MyColors.white.withValues(
                                             alpha: 0.05,
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(80.r),
+                                          borderRadius: BorderRadius.circular(
+                                            80.r,
+                                          ),
                                         ),
                                         child: Center(
                                           child: Text(
                                             'Back to the Main Page'.tr,
                                             style: AppTextStyles.heading1()
                                                 .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white,
-                                            ),
+                                                  fontSize: 6.sp,
+                                                  color: MyColors.white,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -428,8 +421,9 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                         color: MyColors.black.withValues(
                                           alpha: 0.2,
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(80.r),
+                                        borderRadius: BorderRadius.circular(
+                                          80.r,
+                                        ),
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -439,9 +433,9 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                             'Game Completed'.tr,
                                             style: AppTextStyles.heading1()
                                                 .copyWith(
-                                              fontSize: 8.sp,
-                                              color: MyColors.white,
-                                            ),
+                                                  fontSize: 8.sp,
+                                                  color: MyColors.white,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -461,17 +455,18 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                                           color: MyColors.white.withValues(
                                             alpha: 0.05,
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(80.r),
+                                          borderRadius: BorderRadius.circular(
+                                            80.r,
+                                          ),
                                         ),
                                         child: Center(
                                           child: Text(
                                             'Back to the Main Page'.tr,
                                             style: AppTextStyles.heading1()
                                                 .copyWith(
-                                              fontSize: 6.sp,
-                                              color: MyColors.white,
-                                            ),
+                                                  fontSize: 6.sp,
+                                                  color: MyColors.white,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -506,8 +501,6 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                             ),
                           ),
                         );
-                     
-                     
                       }
                     }),
                   ),
@@ -536,15 +529,17 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
     bool isWinner = false,
   }) {
     final playersData = result['players'];
-    final List<Map<String, dynamic>> players = playersData is List
-        ? playersData
-            .map(
-              (item) => item is Map<String, dynamic>
-                  ? item
-                  : Map<String, dynamic>.from(item as Map),
-            )
-            .toList()
-        : <Map<String, dynamic>>[];
+    final List<Map<String, dynamic>> players =
+        playersData is List
+            ? playersData
+                .map(
+                  (item) =>
+                      item is Map<String, dynamic>
+                          ? item
+                          : Map<String, dynamic>.from(item as Map),
+                )
+                .toList()
+            : <Map<String, dynamic>>[];
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
@@ -556,15 +551,16 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isWinner
-                ? [
-                    MyColors.greenColor.withValues(alpha: 0.1),
-                    MyColors.greenColor,
-                  ]
-                : [
-                    MyColors.redButtonColor.withValues(alpha: 0.1),
-                    MyColors.redButtonColor,
-                  ],
+            colors:
+                isWinner
+                    ? [
+                      MyColors.greenColor.withValues(alpha: 0.1),
+                      MyColors.greenColor,
+                    ]
+                    : [
+                      MyColors.redButtonColor.withValues(alpha: 0.1),
+                      MyColors.redButtonColor,
+                    ],
           ),
         ),
       ),
@@ -577,81 +573,90 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                 width: (15.w * players.length) - ((players.length - 1) * 8.w),
                 height: 15.w,
                 child: Stack(
-                  children: players.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final player = entry.value;
-                    final isLeader = player['isLeader'] as bool? ?? false;
-                    return Positioned(
-                      left: index * (15.w - 8.w),
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 15.w,
-                            height: 15.w,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: MyColors.darkBlueColor,
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50.r),
-                              child: (player['avatar'] as String? ?? '')
-                                      .isNotEmpty
-                                  ? CachedNetworkImage(
-                                      imageUrl: player['avatar'] as String,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => Container(
-                                        color: MyColors.darkBlueColor,
-                                        child: Icon(
-                                          Icons.person,
-                                          size: 12.sp,
-                                          color: MyColors.white
-                                              .withValues(alpha: 0.5),
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                        color: MyColors.darkBlueColor,
-                                        child: Icon(
-                                          Icons.person,
-                                          size: 12.sp,
-                                          color: MyColors.white
-                                              .withValues(alpha: 0.5),
-                                        ),
-                                      ),
-                                    )
-                                  : Container(
-                                      color: MyColors.darkBlueColor,
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 12.sp,
-                                        color:
-                                            MyColors.white.withValues(alpha: 0.5),
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          if (isLeader)
-                            Positioned(
-                              top: -2,
-                              right: -2,
-                              child: Container(
-                                width: 8.w,
-                                height: 8.w,
+                  children:
+                      players.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final player = entry.value;
+                        final isLeader = player['isLeader'] as bool? ?? false;
+                        return Positioned(
+                          left: index * (15.w - 8.w),
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 15.w,
+                                height: 15.w,
                                 decoration: BoxDecoration(
-                                  color: MyColors.greenColor,
                                   shape: BoxShape.circle,
+                                  color: MyColors.darkBlueColor,
                                 ),
-                                child: Icon(
-                                  Icons.check,
-                                  size: 6.sp,
-                                  color: MyColors.white,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  child:
+                                      (player['avatar'] as String? ?? '')
+                                              .isNotEmpty
+                                          ? CachedNetworkImage(
+                                            imageUrl:
+                                                player['avatar'] as String,
+                                            fit: BoxFit.cover,
+                                            placeholder:
+                                                (context, url) => Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
+                                            errorWidget:
+                                                (
+                                                  context,
+                                                  url,
+                                                  error,
+                                                ) => Container(
+                                                  color: MyColors.darkBlueColor,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 12.sp,
+                                                    color: MyColors.white
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
+                                          )
+                                          : Container(
+                                            color: MyColors.darkBlueColor,
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 12.sp,
+                                              color: MyColors.white.withValues(
+                                                alpha: 0.5,
+                                              ),
+                                            ),
+                                          ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                              if (isLeader)
+                                Positioned(
+                                  top: -2,
+                                  right: -2,
+                                  child: Container(
+                                    width: 8.w,
+                                    height: 8.w,
+                                    decoration: BoxDecoration(
+                                      color: MyColors.greenColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.check,
+                                      size: 6.sp,
+                                      color: MyColors.white,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                 ),
               ),
               SizedBox(width: 8.w),
@@ -715,11 +720,35 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
-                  child: (result['avatar'] as String? ?? '').isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: result['avatar'] as String,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
+                  child:
+                      (result['avatar'] as String? ?? '').isNotEmpty
+                          ? CachedNetworkImage(
+                            imageUrl: result['avatar'] as String,
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (context, url) => Container(
+                                  color: MyColors.darkBlueColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20.sp,
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                ),
+                            errorWidget:
+                                (context, url, error) => Container(
+                                  color: MyColors.darkBlueColor,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20.sp,
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                ),
+                          )
+                          : Container(
                             color: MyColors.darkBlueColor,
                             child: Icon(
                               Icons.person,
@@ -727,23 +756,6 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
                               color: MyColors.white.withValues(alpha: 0.5),
                             ),
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            color: MyColors.darkBlueColor,
-                            child: Icon(
-                              Icons.person,
-                              size: 20.sp,
-                              color: MyColors.white.withValues(alpha: 0.5),
-                            ),
-                          ),
-                        )
-                      : Container(
-                          color: MyColors.darkBlueColor,
-                          child: Icon(
-                            Icons.person,
-                            size: 20.sp,
-                            color: MyColors.white.withValues(alpha: 0.5),
-                          ),
-                        ),
                 ),
               ),
               SizedBox(width: 8.w),

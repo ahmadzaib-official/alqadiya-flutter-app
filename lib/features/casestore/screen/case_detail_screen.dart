@@ -52,7 +52,6 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
                 child: HomeHeader(
-                  onChromTap: () {},
                   title: Text(
                     controller.gameDetail.value.title ?? "",
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -324,13 +323,18 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                             onTap: () {
                                               AuthGuard.executeIfAuthenticated(
                                                 title: 'Purchase Case'.tr,
-                                                message: 'Please sign in to purchase this case'.tr,
-                                                action: () => Get.toNamed(
-                                                  AppRoutes.addCaseScreen,
-                                                  arguments: {
-                                                    'game': controller.gameDetail,
-                                                  },
-                                                ),
+                                                message:
+                                                    'Please sign in to purchase this case'
+                                                        .tr,
+                                                action:
+                                                    () => Get.toNamed(
+                                                      AppRoutes.addCaseScreen,
+                                                      arguments: {
+                                                        'game':
+                                                            controller
+                                                                .gameDetail,
+                                                      },
+                                                    ),
                                               );
                                             },
                                             child: Container(

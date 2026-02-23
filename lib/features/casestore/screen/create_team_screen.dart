@@ -60,7 +60,6 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(
@@ -101,7 +100,8 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                     builder: (context, constraints) {
                       return SingleChildScrollView(
                         padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+                          bottom:
+                              MediaQuery.of(context).viewInsets.bottom + 20.h,
                         ),
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
@@ -119,17 +119,19 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                                     padding: EdgeInsets.all(12.sp),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20.r),
-                                      color: MyColors.black.withValues(alpha: 0.1),
+                                      color: MyColors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
                                     ),
                                     alignment: Alignment.center,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'First Team'.tr,
-                                          style: AppTextStyles.heading1().copyWith(
-                                            fontSize: 8.sp,
-                                          ),
+                                          style: AppTextStyles.heading1()
+                                              .copyWith(fontSize: 8.sp),
                                         ),
                                         SizedBox(height: 40.h),
                                         CustomTextfield(
@@ -142,7 +144,9 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                                           label: 'Name of the team'.tr,
                                           hintText: 'Name of the team'.tr,
                                           borderColor: MyColors.white,
-                                          color: MyColors.white.withValues(alpha: 0.1),
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.1,
+                                          ),
                                           controller: firstTeamNameController,
                                           suffix: Icon(Icons.people_outline),
                                           keyboardType: TextInputType.name,
@@ -160,17 +164,19 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                                     padding: EdgeInsets.all(12.sp),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20.r),
-                                      color: MyColors.black.withValues(alpha: 0.1),
+                                      color: MyColors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
                                     ),
                                     alignment: Alignment.center,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Second Team'.tr,
-                                          style: AppTextStyles.heading1().copyWith(
-                                            fontSize: 8.sp,
-                                          ),
+                                          style: AppTextStyles.heading1()
+                                              .copyWith(fontSize: 8.sp),
                                         ),
                                         SizedBox(height: 40.h),
                                         CustomTextfield(
@@ -183,7 +189,9 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                                           label: 'Name of the team'.tr,
                                           hintText: 'Name of the team'.tr,
                                           borderColor: MyColors.white,
-                                          color: MyColors.white.withValues(alpha: 0.1),
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.1,
+                                          ),
                                           controller: secondTeamNameController,
                                           suffix: Icon(Icons.people_outline),
                                           keyboardType: TextInputType.name,
@@ -197,16 +205,24 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                                   buttonWidth: 50.w,
                                   buttonText: 'Next'.tr,
                                   onTap: () {
-                                    if (firstTeamNameController.text.isNotEmpty &&
-                                        secondTeamNameController.text.isNotEmpty) {
+                                    if (firstTeamNameController
+                                            .text
+                                            .isNotEmpty &&
+                                        secondTeamNameController
+                                            .text
+                                            .isNotEmpty) {
                                       Get.find<GameController>().createTeams(
-                                        firstTeamName: firstTeamNameController.text,
-                                        secondTeamName: secondTeamNameController.text,
+                                        firstTeamName:
+                                            firstTeamNameController.text,
+                                        secondTeamName:
+                                            secondTeamNameController.text,
                                       );
                                     } else {
                                       CustomSnackbar.show(
-                                        message: 'Please enter both team names'.tr,
-                                        backgroundColor: MyColors.redButtonColor,
+                                        message:
+                                            'Please enter both team names'.tr,
+                                        backgroundColor:
+                                            MyColors.redButtonColor,
                                       );
                                     }
                                   },
