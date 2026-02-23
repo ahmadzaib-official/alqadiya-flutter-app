@@ -1,3 +1,4 @@
+import 'dart:developer' show log;
 import 'dart:io';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -80,7 +82,12 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 10.w),
                     // Right Column - Support and Guidance
-                    Expanded(child: _buildSupportSection(settingsController, userController)),
+                    Expanded(
+                      child: _buildSupportSection(
+                        settingsController,
+                        userController,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -274,11 +281,7 @@ class SettingsScreen extends StatelessWidget {
               final url = Uri.parse('http://51.112.131.120/privacy-policy');
               try {
                 if (await canLaunchUrl(url)) {
-                  await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  );
-                
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
                 }
               } catch (e) {
                 print('Could not launch URL: $e');
@@ -298,7 +301,10 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSupportSection(SettingsController controller, UserController userController) {
+  Widget _buildSupportSection(
+    SettingsController controller,
+    UserController userController,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 6.w),
       decoration: BoxDecoration(
@@ -329,7 +335,10 @@ class SettingsScreen extends StatelessWidget {
                   if (phoneNumber.isEmpty) return;
 
                   // Clean the number - remove spaces, dashes, etc. Keep only digits and +
-                  final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+                  final cleanNumber = phoneNumber.replaceAll(
+                    RegExp(r'[^\d+]'),
+                    '',
+                  );
 
                   // Try WhatsApp scheme first (works on both iOS and Android when WhatsApp is installed)
                   final whatsappUrl = 'whatsapp://send?phone=$cleanNumber';
@@ -360,7 +369,10 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 5.w,
+                    vertical: 12.h,
+                  ),
                   decoration: BoxDecoration(
                     color: MyColors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(4.r),
@@ -404,7 +416,10 @@ class SettingsScreen extends StatelessWidget {
                   if (phoneNumber.isEmpty) return;
 
                   // Clean the number - remove spaces, dashes, etc. Keep only digits and +
-                  final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+                  final cleanNumber = phoneNumber.replaceAll(
+                    RegExp(r'[^\d+]'),
+                    '',
+                  );
                   final url = 'tel:$cleanNumber';
 
                   try {
@@ -508,7 +523,11 @@ class SettingsScreen extends StatelessWidget {
                     Spacer(flex: 1),
                     Get.locale?.languageCode == 'en'
                         ? SvgPicture.asset(MyIcons.arrow_right)
-                        : Icon(Icons.arrow_forward_ios, size: 6.sp,color: const Color.fromARGB(255, 214, 213, 213),),
+                        : Icon(
+                          Icons.arrow_forward_ios,
+                          size: 6.sp,
+                          color: const Color.fromARGB(255, 214, 213, 213),
+                        ),
                     Spacer(flex: 1),
                   ],
                 ),
@@ -557,6 +576,18 @@ class SettingsScreen extends StatelessWidget {
                   DeviceOrientation.portraitUp,
                   DeviceOrientation.portraitDown,
                 ]);
+                if (userController.user.value?.authProvider == 'google') {
+                  final GoogleSignIn _googleSignIn = GoogleSignIn();
+                  final isSignedIn = await _googleSignIn.isSignedIn();
+
+                  if (isSignedIn) {
+                    await _googleSignIn.signOut();
+                    await _googleSignIn.disconnect();
+                    log('Google sign out successful');
+                  } else {
+                    log('User not signed in to Google');
+                  }
+                }
                 Get.offAllNamed(AppRoutes.sigin);
               },
               child: Container(
@@ -736,7 +767,9 @@ class SettingsScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 border: Border(
                                   right: BorderSide(
-                                    color: MyColors.white.withValues(alpha: 0.2),
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     width: 1,
                                   ),
                                 ),
@@ -753,10 +786,13 @@ class SettingsScreen extends StatelessWidget {
                                   SizedBox(width: 2.w),
                                   Text(
                                     '+965',
-                                    style: AppTextStyles.labelMedium14().copyWith(
-                                      color: MyColors.white.withValues(alpha: 0.7),
-                                      fontSize: 6.sp,
-                                    ),
+                                    style: AppTextStyles.labelMedium14()
+                                        .copyWith(
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.7,
+                                          ),
+                                          fontSize: 6.sp,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -766,7 +802,7 @@ class SettingsScreen extends StatelessWidget {
                               LengthLimitingTextInputFormatter(9),
                             ],
                           ),
-                          
+
                           // SizedBox(height: 12.h),
                           // // Email Field
                           // DenseTextField(
@@ -1008,7 +1044,8 @@ class SettingsScreen extends StatelessWidget {
 
                   // Confirmation message
                   Text(
-                    'Are you sure you want to delete your account? This action cannot be undone.'.tr,
+                    'Are you sure you want to delete your account? This action cannot be undone.'
+                        .tr,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodyTextMedium16().copyWith(
                       fontSize: 7.sp,
