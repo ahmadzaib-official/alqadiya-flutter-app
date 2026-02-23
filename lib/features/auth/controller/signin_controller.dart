@@ -31,7 +31,7 @@ class SignInController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
     serverClientId:
-        '843907454182-ev03tc82bdqick4m6aaf7avgq1eq5ikh.apps.googleusercontent.com',
+        '1017677830312-cusd7nfe94oedgtrulg4c79uktougqs1.apps.googleusercontent.com',
   );
 
   Future<void> enableLandscapeMode() async {
@@ -97,39 +97,46 @@ class SignInController extends GetxController {
           await verifyPhoneNumber();
           return;
         }
-        if (response.data['userId'] != null &&
-            response.data['accessToken'] != null) {
-          String userId = response.data['userId'];
-          String assesToken = response.data['accessToken'];
-          await Get.find<Preferences>().setString(AppStrings.userId, userId);
-          await Get.find<Preferences>().setString(
-            AppStrings.accessToken,
-            assesToken,
+        if (response.data['role'] != null && response.data['role'] == 'admin') {
+          // show
+          CustomSnackbar.showError(
+            'Phone number not found. Please contact support.',
           );
-
-          // Store refresh token if provided
-          if (response.data['refreshToken'] != null) {
+        } else {
+          if (response.data['userId'] != null &&
+              response.data['accessToken'] != null) {
+            String userId = response.data['userId'];
+            String assesToken = response.data['accessToken'];
+            await Get.find<Preferences>().setString(AppStrings.userId, userId);
             await Get.find<Preferences>().setString(
-              AppStrings.refreshToken,
-              response.data['refreshToken'],
+              AppStrings.accessToken,
+              assesToken,
             );
+
+            // Store refresh token if provided
+            if (response.data['refreshToken'] != null) {
+              await Get.find<Preferences>().setString(
+                AppStrings.refreshToken,
+                response.data['refreshToken'],
+              );
+            }
+
+            // Register FCM token with backend after successful login
+            await NotificationService.registerDeviceToken();
           }
 
-          // Register FCM token with backend after successful login
-          await NotificationService.registerDeviceToken();
+          if (Get.context != null)
+            Navigator.pop(Get.context!); // Close progress dialog
+          Get.find<Preferences>().remove(AppStrings.isGuest);
+          // await SystemChrome.setPreferredOrientations([
+          //   DeviceOrientation.landscapeLeft,
+          //   DeviceOrientation.landscapeRight,
+          // ]);
+
+          // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+          Get.offAllNamed(AppRoutes.homescreen);
+          // clearField();
         }
-
-        if (Get.context != null)
-          Navigator.pop(Get.context!); // Close progress dialog
-        Get.find<Preferences>().remove(AppStrings.isGuest);
-        // await SystemChrome.setPreferredOrientations([
-        //   DeviceOrientation.landscapeLeft,
-        //   DeviceOrientation.landscapeRight,
-        // ]);
-
-        // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-        Get.offAllNamed(AppRoutes.homescreen);
-        // clearField();
       }
     } catch (e) {
       // if (Get.context != null)
