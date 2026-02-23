@@ -249,14 +249,17 @@ const Map<String, String> enUS = {
       'Server error occurred. Please try again later',
   'Phone Number': 'Phone Number',
   'Leave Game?': 'Leave Game?',
-  "Are you sure you want to delete your account? This action cannot be undone.": "Are you sure you want to delete your account? This action cannot be undone.",
+  "Are you sure you want to delete your account? This action cannot be undone.":
+      "Are you sure you want to delete your account? This action cannot be undone.",
   'Are you sure you want to leave the game?':
       'Are you sure you want to leave the game?',
   'Yes': 'Yes',
   'No': 'No',
-  'Waiting for the host to start the game...': 'Waiting for the host to start the game...',
+  'Waiting for the host to start the game...':
+      'Waiting for the host to start the game...',
   'Drag and drop players into teams.': 'Drag and drop players into teams.',
-  'Share this code with friends to join.': 'Share this code with friends to join.',
+  'Share this code with friends to join.':
+      'Share this code with friends to join.',
   'Game Result': 'Game Result',
   'Team score': 'Team score',
   "Main Page": "Main Page",
@@ -264,7 +267,8 @@ const Map<String, String> enUS = {
   "Game Code": "Game Code",
   "My purchases": "My purchases",
   "FAQ & Support": "FAQ & Support",
-  "Has the game started?\nYou\'ll only be on the scoreboard.": "Has the game started?\nYou\'ll only be on the scoreboard.",
+  "Has the game started?\nYou\'ll only be on the scoreboard.":
+      "Has the game started?\nYou\'ll only be on the scoreboard.",
   "Create teams": "Create teams",
   "Second Team": "Second Team",
   "First Team": "First Team",
@@ -584,6 +588,12 @@ const Map<String, String> enUS = {
   'Difficulty': 'Difficulty',
   'Duration': 'Duration',
   'minutes': 'minutes',
+
+  // Tutorial screen translations
+  'Time taken to play': 'Time taken to play',
+  'Your Points here': 'Your Points here',
+  'Game status': 'Game status',
+
   // Language selection hardcoded text
   'عربي': 'عربي',
 

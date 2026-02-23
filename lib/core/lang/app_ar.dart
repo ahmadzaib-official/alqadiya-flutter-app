@@ -241,7 +241,8 @@ const Map<String, String> lnAr = {
   'Pay now': 'ادفع الآن',
 
   'KD': 'د.ك',
-  "Are you sure you want to delete your account? This action cannot be undone.":'هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+  "Are you sure you want to delete your account? This action cannot be undone.":
+      'هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
   'English': 'الإنجليزية',
   'Arabic': 'العربية',
   'Error:': 'خطأ:',
@@ -291,8 +292,8 @@ const Map<String, String> lnAr = {
   'Game Code': 'رمز اللعبة',
   'My purchases': 'مشترياتي',
   'FAQ & Support': 'الأسئلة الشائعة والدعم',
-  'Has the game started?\nYou\'ll only be on the scoreboard.': 'هل بدأت اللعبة؟\nستظهر فقط في لوحة النتائج.',
-
+  'Has the game started?\nYou\'ll only be on the scoreboard.':
+      'هل بدأت اللعبة؟\nستظهر فقط في لوحة النتائج.',
 
   // Game-specific translations
   'Scoreboard': 'لوحة النتائج',
@@ -363,9 +364,11 @@ const Map<String, String> lnAr = {
   'Done': 'تم',
   'Skip': 'تخطي',
   'Search': 'بحث',
-  'Waiting for the host to start the game...': 'انتظار مضيف اللعبة لبدء اللعبة...',
+  'Waiting for the host to start the game...':
+      'انتظار مضيف اللعبة لبدء اللعبة...',
   'Drag and drop players into teams.': 'اسحب واسقط اللاعبين في الفرق.',
-  'Share this code with friends to join.': 'شارك هذا الكود مع الأصدقاء للانضمام.',
+  'Share this code with friends to join.':
+      'شارك هذا الكود مع الأصدقاء للانضمام.',
   'Game Result': 'نتيجة اللعبة',
   'Team score': 'نقاط الفريق',
   'Create teams': 'إنشاء فرق',
@@ -583,6 +586,11 @@ const Map<String, String> lnAr = {
   'Accuracy': 'الدقة',
   'Hints used': 'التلميحات المستخدمة',
   'Suspect choosen': 'المشتبه به المختار',
+
+  // Tutorial screen translations
+  'Time taken to play': 'الوقت المستغرق للعب',
+  'Your Points here': 'نقاطك هنا',
+  'Game status': 'حالة اللعبة',
 
   // Language selection hardcoded text
   'عربي': 'عربي',
