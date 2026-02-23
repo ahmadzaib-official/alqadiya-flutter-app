@@ -5,12 +5,29 @@ import 'package:alqadiya_game/my_app.dart' show MyApp;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
+
+// Top-level function to handle background messages
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('Handling background message: ${message.messageId}');
+  print('Background message data: ${message.data}');
+
+  // You can show a notification here if needed
+  if (message.notification != null) {
+    print('Background notification: ${message.notification?.title}');
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await Firebase.initializeApp();
+
+    // Set up background message handler
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -24,10 +41,10 @@ void main() async {
     ),
   );
   await Services().initServices();
-  // Initialize local notifications with enhanced setup
+
+  // Initialize notifications properly
   if (!kIsWeb) {
-    await NotificationService.localNotiInit();
-    await NotificationService.getDeviceToken();
+    await NotificationService.initNotifications();
   }
 
   final locale = await LocalizationService.getCurrentLocale();
