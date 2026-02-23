@@ -1,6 +1,6 @@
 class ServerConfig {
-  static const baseUrl = "http://51.112.131.120/api/";
-//   static const baseUrl = "http://192.168.1.10:4000/";
+  // static const baseUrl = "http://51.112.131.120/api/";
+  static const baseUrl = "http://192.168.1.48:4000/";
   // Below are the all api that are use in our system
   static const login = "${baseUrl}auth/signIn";
   static const register = "${baseUrl}auth/signUp";
@@ -34,6 +34,9 @@ class ServerConfig {
   static const teams = "${baseUrl}teams";
   static const assignMembers = "${baseUrl}teams/assign-members";
   static String getReceipt(String id) => "${baseUrl}transactions/$id/receipt";
+
+  // Device Token Registration
+  static const registerDeviceToken = "${baseUrl}users/device-token";
 
   // Cutscenes
   static String getCutscenesByGame(String gameId) =>

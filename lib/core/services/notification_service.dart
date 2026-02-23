@@ -3,6 +3,8 @@ import 'dart:developer' show log;
 import 'dart:io' show Platform;
 import 'dart:typed_data';
 import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/repository/device_token_repository.dart';
+import 'package:alqadiya_game/core/services/device_info_service.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,26 @@ class NotificationService {
 
   String? fCMToken;
 
-  // Enhanced device token retrieval
+  /// Public method to manually register/update device token with backend
+  /// Call this after user login or when you need to ensure token is registered
+  static Future<void> registerDeviceToken() async {
+    try {
+      final pref = Get.find<Preferences>();
+      final fcmToken = pref.getString(AppStrings.fcmToken);
+
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        log('Manually registering existing FCM token with backend');
+        await _registerTokenWithBackend(fcmToken);
+      } else {
+        log('No FCM token found, requesting new token');
+        await getDeviceToken();
+      }
+    } catch (e) {
+      log('Error in manual token registration: $e');
+    }
+  }
+
+  // Enhanced device token retrieval and registration
   static Future<String?> getDeviceToken({int maxRetries = 3}) async {
     try {
       final Preferences pref = Get.find<Preferences>();
@@ -36,7 +57,14 @@ class NotificationService {
 
         String? token = await FirebaseMessaging.instance.getToken();
         log("FCM Device token : $token");
-        await pref.setString(AppStrings.fcmToken, token);
+
+        if (token != null) {
+          await pref.setString(AppStrings.fcmToken, token);
+
+          // Register token with backend
+          await _registerTokenWithBackend(token);
+        }
+
         return token;
       } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
         log('User denied permission');
@@ -60,6 +88,45 @@ class NotificationService {
       } else {
         return null;
       }
+    }
+  }
+
+  /// Register FCM token with backend
+  static Future<void> _registerTokenWithBackend(String fcmToken) async {
+    try {
+      // Check if user is authenticated
+      final pref = Get.find<Preferences>();
+      final accessToken = pref.getString(AppStrings.accessToken);
+
+      if (accessToken == null || accessToken.isEmpty) {
+        log('User not authenticated, skipping token registration');
+        return;
+      }
+
+      // Get device info
+      final deviceType = DeviceInfoService.getDeviceType();
+      final deviceId = await DeviceInfoService.getDeviceId();
+
+      log('Registering device token with backend...');
+      log('Device Type: $deviceType');
+      log('Device ID: $deviceId');
+
+      // Call repository to register token
+      final repository = DeviceTokenRepository();
+      final response = await repository.registerDeviceToken(
+        deviceToken: fcmToken,
+        deviceType: deviceType,
+        deviceId: deviceId,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('Device token registered successfully with backend');
+      } else {
+        log('Failed to register device token: ${response.statusCode}');
+      }
+    } catch (e) {
+      log('Error registering device token with backend: $e');
+      // Don't throw - token registration failure shouldn't break the app
     }
   }
 
@@ -109,6 +176,18 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('onMessage() -> data: ${message.data}');
       onNotificationClick(message: message);
+    });
+
+    // Listen for FCM token refresh
+    FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) async {
+      log('FCM Token refreshed: $newToken');
+
+      // Save new token locally
+      final pref = Get.find<Preferences>();
+      await pref.setString(AppStrings.fcmToken, newToken);
+
+      // Register new token with backend
+      await _registerTokenWithBackend(newToken);
     });
 
     log('Firebase messaging listeners set up successfully');

@@ -3,6 +3,7 @@ import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/core/debug/debug_point.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/network/api_fetch.dart';
+import 'package:alqadiya_game/core/services/notification_service.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class SignInController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
     serverClientId:
-        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
+        '843907454182-ev03tc82bdqick4m6aaf7avgq1eq5ikh.apps.googleusercontent.com',
   );
 
   Future<void> enableLandscapeMode() async {
@@ -113,6 +114,9 @@ class SignInController extends GetxController {
               response.data['refreshToken'],
             );
           }
+
+          // Register FCM token with backend after successful login
+          await NotificationService.registerDeviceToken();
         }
 
         if (Get.context != null)
@@ -173,6 +177,10 @@ class SignInController extends GetxController {
             true,
           );
           Get.find<Preferences>().remove(AppStrings.isGuest);
+
+          // Register FCM token with backend after successful login
+          await NotificationService.registerDeviceToken();
+
           // Navigate to dashboard
           Get.offAllNamed(AppRoutes.homescreen);
         }
@@ -223,6 +231,9 @@ class SignInController extends GetxController {
             AppStrings.accessToken,
             assesToken,
           );
+
+          // Register FCM token with backend after successful login
+          await NotificationService.registerDeviceToken();
         }
 
         if (Get.context != null)

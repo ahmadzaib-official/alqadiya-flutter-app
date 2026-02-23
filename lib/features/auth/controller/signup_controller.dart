@@ -27,7 +27,7 @@ class SignupController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
     serverClientId:
-        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
+        '843907454182-ev03tc82bdqick4m6aaf7avgq1eq5ikh.apps.googleusercontent.com',
   );
   @override
   void onClose() {
