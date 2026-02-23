@@ -330,6 +330,11 @@ String _extractErrorMessage(DioException e) {
 }
 
 void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
+  // Skip error display for device-token endpoint
+  if (e.requestOptions.path.contains('device-token')) {
+    return;
+  }
+
   if (errorMessage == 'Phone number not verified'.tr) {
     Future.delayed(Duration.zero, () {
       Get.find<SignInController>().verifyPhoneNumber();
