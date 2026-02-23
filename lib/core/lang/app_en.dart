@@ -593,6 +593,7 @@ const Map<String, String> enUS = {
   'Time taken to play': 'Time taken to play',
   'Your Points here': 'Your Points here',
   'Game status': 'Game status',
+  'Got it': 'Got it',
 
   // Language selection hardcoded text
   'عربي': 'عربي',

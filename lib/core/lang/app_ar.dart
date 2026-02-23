@@ -591,6 +591,7 @@ const Map<String, String> lnAr = {
   'Time taken to play': 'الوقت المستغرق للعب',
   'Your Points here': 'نقاطك هنا',
   'Game status': 'حالة اللعبة',
+  'Got it': 'فهمت',
 
   // Language selection hardcoded text
   'عربي': 'عربي',
