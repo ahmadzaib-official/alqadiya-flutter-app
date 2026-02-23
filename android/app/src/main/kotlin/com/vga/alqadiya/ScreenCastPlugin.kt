@@ -32,7 +32,9 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         override fun onSessionStarted(session: CastSession, sessionId: String) {
             castSession = session
             val device = session.castDevice
-            notifyDeviceConnected(device)
+            if (device != null) {
+                notifyDeviceConnected(device)
+            }
         }
         
         override fun onSessionEnded(session: CastSession, error: Int) {
@@ -157,7 +159,10 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 sessionManager?.let { sm ->
                     val currentSession = sm.currentCastSession
                     if (currentSession != null && currentSession.isConnected) {
-                        notifyDeviceFound(currentSession.castDevice)
+                        val device = currentSession.castDevice
+                        if (device != null) {
+                            notifyDeviceFound(device)
+                        }
                     }
                 }
             }, 1000)
