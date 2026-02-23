@@ -109,7 +109,8 @@ class NotificationsListScreen extends StatelessWidget {
                             SizedBox(height: 10.h),
                             // Mark as read button - only show if there are unread notifications
                             Obx(() {
-                              if (!notificationsController.hasUnreadNotifications) {
+                              if (!notificationsController
+                                  .hasUnreadNotifications) {
                                 return SizedBox.shrink(); // Hide button if all read
                               }
                               return GestureDetector(
@@ -122,7 +123,9 @@ class NotificationsListScreen extends StatelessWidget {
                                     vertical: 12.h,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: MyColors.white.withValues(alpha: 0.05),
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.05,
+                                    ),
                                     borderRadius: BorderRadius.circular(4.r),
                                     boxShadow: [
                                       BoxShadow(
@@ -278,7 +281,11 @@ class NotificationsListScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 1),
-                  SvgPicture.asset(MyIcons.arrow_right),
+                  // Flip arrow direction for RTL languages
+                  Transform.flip(
+                    flipX: Directionality.of(context) == TextDirection.rtl,
+                    child: SvgPicture.asset(MyIcons.arrow_right),
+                  ),
                   Spacer(flex: 1),
                 ],
               ),
