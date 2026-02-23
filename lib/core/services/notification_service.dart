@@ -1,7 +1,6 @@
 import 'dart:convert' show jsonEncode;
 import 'dart:developer' show log;
 import 'dart:io' show Platform;
-import 'dart:typed_data';
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/repository/device_token_repository.dart';
 import 'package:alqadiya_game/core/services/device_info_service.dart';
@@ -221,13 +220,12 @@ class NotificationService {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS settings with call category
+    // iOS settings
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
           requestAlertPermission: true,
           requestBadgePermission: true,
           requestSoundPermission: true,
-          requestCriticalPermission: true,
         );
 
     // Common initialization settings
@@ -249,20 +247,12 @@ class NotificationService {
           >()
           ?.requestNotificationsPermission();
     } else if (Platform.isIOS) {
-      // Setup iOS notification categories
-      await _setupIOSNotificationCategories();
-
       // Request notification permission for iOS
       final bool? permissionGranted = await _flutterLocalNotificationPlugin
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
           >()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-            critical: true,
-          );
+          ?.requestPermissions(alert: true, badge: true, sound: true);
 
       if (!(permissionGranted ?? false)) {
         return;
@@ -285,19 +275,6 @@ class NotificationService {
             >();
 
     if (androidImplementation != null) {
-      // Call notification channel
-      AndroidNotificationChannel callChannel = AndroidNotificationChannel(
-        'incoming_calls',
-        'Incoming Calls',
-        description: 'Notifications for incoming calls',
-        importance: Importance.max,
-        playSound: true,
-        // sound: RawResourceAndroidNotificationSound('call_ringtone'),
-        enableVibration: true,
-        vibrationPattern: Int64List.fromList([0, 1000, 500, 1000]),
-        showBadge: true,
-      );
-
       // Regular notification channel
       const AndroidNotificationChannel generalChannel =
           AndroidNotificationChannel(
@@ -309,56 +286,8 @@ class NotificationService {
             enableVibration: true,
           );
 
-      await androidImplementation.createNotificationChannel(callChannel);
       await androidImplementation.createNotificationChannel(generalChannel);
     }
-  }
-
-  // Setup iOS notification categories
-  static Future<void> _setupIOSNotificationCategories() async {
-    final IOSFlutterLocalNotificationsPlugin? iosImplementation =
-        _flutterLocalNotificationPlugin
-            .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin
-            >();
-
-    if (iosImplementation != null) {
-      // Define call notification category with actions
-      final DarwinNotificationCategory callCategory =
-          DarwinNotificationCategory(
-            'call_category',
-            actions: <DarwinNotificationAction>[
-              DarwinNotificationAction.plain(
-                'accept_call',
-                'Accept',
-                options: <DarwinNotificationActionOption>{
-                  DarwinNotificationActionOption.foreground,
-                },
-              ),
-              DarwinNotificationAction.plain(
-                'decline_call',
-                'Decline',
-                options: <DarwinNotificationActionOption>{
-                  DarwinNotificationActionOption.destructive,
-                },
-              ),
-            ],
-            options: <DarwinNotificationCategoryOption>{
-              DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
-            },
-          );
-
-      await iosImplementation.initialize(
-        settings: DarwinInitializationSettings(
-          notificationCategories: [callCategory],
-        ),
-      );
-    }
-  }
-
-  // Method to manually cancel call notification
-  static Future<void> cancelCallNotification() async {
-    await _flutterLocalNotificationPlugin.cancel(id: 0);
   }
 
   // Handle notification tap
