@@ -46,6 +46,12 @@ class NotificationService {
         return null;
       }
     } catch (e) {
+      // Silently handle SERVICE_NOT_AVAILABLE errors (common in emulators)
+      if (e.toString().contains('SERVICE_NOT_AVAILABLE')) {
+        log("Firebase service unavailable (emulator/no Google Play Services)");
+        return null;
+      }
+
       log("Failed to get device token: $e");
       if (maxRetries > 0) {
         log("Retrying after 10 seconds...");
@@ -134,7 +140,7 @@ class NotificationService {
   static Future localNotiInit() async {
     // Android settings with proper channel configuration
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/launcher_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS settings with call category
     final DarwinInitializationSettings initializationSettingsDarwin =
