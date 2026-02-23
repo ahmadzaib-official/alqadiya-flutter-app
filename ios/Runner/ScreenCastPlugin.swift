@@ -98,8 +98,9 @@ public class ScreenCastPlugin: NSObject, FlutterPlugin {
                 return
             }
             
-            // Get the root view controller
-            guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
+            // Get the root view controller using modern API
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let rootViewController = windowScene.windows.first?.rootViewController else {
                 result(FlutterError(code: "NO_VIEW_CONTROLLER", message: "Root view controller not available", details: nil))
                 return
             }
@@ -109,11 +110,20 @@ public class ScreenCastPlugin: NSObject, FlutterPlugin {
             routePickerView.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
             routePickerView.tintColor = .white
             routePickerView.activeTintColor = .systemBlue
+            routePickerView.prioritizesVideoDevices = true
+            
+            // Add to view hierarchy temporarily
+            rootViewController.view.addSubview(routePickerView)
             
             // Find the button and trigger it
             for view in routePickerView.subviews {
                 if let button = view as? UIButton {
                     button.sendActions(for: .touchUpInside)
+                    
+                    // Remove after a delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        routePickerView.removeFromSuperview()
+                    }
                     break
                 }
             }

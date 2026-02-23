@@ -4,9 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.mediarouter.app.MediaRouteActionProvider
+import androidx.mediarouter.app.MediaRouteButton
+import androidx.mediarouter.app.MediaRouteDialogFactory
 import androidx.mediarouter.media.MediaRouteSelector
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.CastDevice
+import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManager
@@ -153,9 +160,8 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             // Just notify that scanning has started
             result.success(true)
             
-            // Simulate finding devices (in real implementation, this would be automatic)
+            // Check for available cast devices
             Handler(Looper.getMainLooper()).postDelayed({
-                // Check for available cast devices
                 sessionManager?.let { sm ->
                     val currentSession = sm.currentCastSession
                     if (currentSession != null && currentSession.isConnected) {
@@ -215,16 +221,25 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
     
     private fun showCastPicker(result: Result) {
-        try {
-            activity?.let { act ->
-                // Show the Cast dialog
-                castContext?.let { ctx ->
-                    // This will show the native Cast picker
+        Handler(Looper.getMainLooper()).post {
+            try {
+                activity?.let { act ->
+                    // Create a MediaRouteButton and trigger its click
+                    val mediaRouteButton = MediaRouteButton(act)
+                    
+                    // Set up the button with Cast selector
+                    castContext?.let { ctx ->
+                        CastButtonFactory.setUpMediaRouteButton(act, mediaRouteButton)
+                    }
+                    
+                    // Programmatically click the button to show the dialog
+                    mediaRouteButton.performClick()
+                    
                     result.success(true)
-                }
-            } ?: result.error("NO_ACTIVITY", "Activity not available", null)
-        } catch (e: Exception) {
-            result.error("PICKER_ERROR", e.message, null)
+                } ?: result.error("NO_ACTIVITY", "Activity not available", null)
+            } catch (e: Exception) {
+                result.error("PICKER_ERROR", "Failed to show cast picker: ${e.message}", null)
+            }
         }
     }
     
