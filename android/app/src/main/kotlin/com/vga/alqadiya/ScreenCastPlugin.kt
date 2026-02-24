@@ -218,18 +218,26 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         Handler(Looper.getMainLooper()).post {
             try {
                 activity?.let { act ->
-                    // Create a MediaRouteButton and trigger its click
-                    val mediaRouteButton = MediaRouteButton(act)
-                    
-                    // Set up the button with Cast selector
                     castContext?.let { ctx ->
-                        CastButtonFactory.setUpMediaRouteButton(act, mediaRouteButton)
-                    }
-                    
-                    // Programmatically click the button to show the dialog
-                    mediaRouteButton.performClick()
-                    
-                    result.success(true)
+                        // Show the Cast dialog using the session manager
+                        try {
+                            // Create a MediaRouteButton and trigger its click
+                            val mediaRouteButton = MediaRouteButton(act)
+                            CastButtonFactory.setUpMediaRouteButton(act, mediaRouteButton)
+                            
+                            // Show the dialog
+                            mediaRouteButton.showDialog()
+                            
+                            result.success(true)
+                        } catch (e: Exception) {
+                            // Fallback: try performClick
+                            val mediaRouteButton = MediaRouteButton(act)
+                            CastButtonFactory.setUpMediaRouteButton(act, mediaRouteButton)
+                            mediaRouteButton.performClick()
+                            
+                            result.success(true)
+                        }
+                    } ?: result.error("CAST_NOT_INITIALIZED", "Cast context not initialized", null)
                 } ?: result.error("NO_ACTIVITY", "Activity not available", null)
             } catch (e: Exception) {
                 result.error("PICKER_ERROR", "Failed to show cast picker: ${e.message}", null)
