@@ -4,13 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.mediarouter.app.MediaRouteActionProvider
 import androidx.mediarouter.app.MediaRouteButton
-import androidx.mediarouter.app.MediaRouteDialogFactory
-import androidx.mediarouter.media.MediaRouteSelector
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.CastDevice
 import com.google.android.gms.cast.framework.CastButtonFactory
