@@ -760,14 +760,7 @@ class _GameScreenState extends State<GameScreen> {
                 color: MyColors.white,
               ),
             ),
-            if (hints.length > 1)
-              Text(
-                '(${hints.length}) ',
-                style: AppTextStyles.captionSemiBold10().copyWith(
-                  fontSize: 6.sp,
-                  color: MyColors.white.withValues(alpha: 0.7),
-                ),
-              ),
+
             if (totalPointsCost > 0)
               Text(
                 '(-$totalPointsCost ${'Points'.tr})',

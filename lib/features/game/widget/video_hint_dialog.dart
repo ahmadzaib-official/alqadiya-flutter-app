@@ -30,7 +30,7 @@ class VideoEvidenceDialog extends StatefulWidget {
 
 class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   int _currentHintIndex = 0;
-  bool _showText = false;
+  bool _allHintsViewed = false; // Track if all hints have been viewed
   VideoPlayerStateController? _videoController;
   AudioPlayerController? _audioController;
   String? _videoControllerTag;
@@ -100,6 +100,10 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     return hint.pointsCost ?? 0;
   }
 
+  int _getTotalPoints() {
+    return widget.hints.fold<int>(0, (sum, hint) => sum + _getHintPoints(hint));
+  }
+
   void _disposeCurrentControllers() {
     // Dispose current controllers completely
     if (_videoControllerTag != null &&
@@ -118,19 +122,30 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     _audioControllerTag = null;
   }
 
-  void _goToNextHint() {
-    if (_currentHintIndex < widget.hints.length - 1) {
+  void _handleContinueButton() {
+    if (_allHintsViewed) {
+      // All hints viewed and text shown - close dialog
+      Navigator.of(context).pop();
+      widget.onContinue?.call();
+    } else if (_currentHintIndex < widget.hints.length - 1) {
+      // More hints to show - go to next hint
+      _goToNextHint();
+    } else {
+      // Last hint viewed - show the "hint used" text
       _disposeCurrentControllers();
       setState(() {
-        _currentHintIndex++;
-        _showText = false;
+        _allHintsViewed = true;
       });
-      _initializeControllersForCurrentHint();
-    } else {
-      // All hints viewed
-      Navigator.of(context).pop();
       widget.onAllHintsViewed?.call();
     }
+  }
+
+  void _goToNextHint() {
+    _disposeCurrentControllers();
+    setState(() {
+      _currentHintIndex++;
+    });
+    _initializeControllersForCurrentHint();
   }
 
   @override
@@ -231,7 +246,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   Widget _buildContent() {
     // Calculate max available height: 90% screen - header (~50h) - buttons (~80h) - padding (~32h)
     final maxAvailableHeight = (0.9.sh - 162.h).clamp(100.h, 500.h);
-    final preferredHeight = _showText ? 20.h : _getContentHeight();
+    final preferredHeight = _allHintsViewed ? 20.h : _getContentHeight();
     final contentHeight =
         preferredHeight > maxAvailableHeight
             ? maxAvailableHeight
@@ -240,17 +255,17 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: maxAvailableHeight,
-        minHeight: _showText ? 20.h : 0,
+        minHeight: _allHintsViewed ? 20.h : 0,
       ),
       child: Container(
         width: double.infinity,
         height: contentHeight,
-        margin: EdgeInsets.symmetric(horizontal: _showText ? 5.w : 12.w),
+        margin: EdgeInsets.symmetric(horizontal: _allHintsViewed ? 5.w : 12.w),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.r),
           clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: _showText ? _buildTextContent() : _buildMediaContent(),
+          child: _allHintsViewed ? _buildTextContent() : _buildMediaContent(),
         ),
       ),
     );
@@ -609,17 +624,15 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   Widget _buildTextContent() {
     if (widget.hints.isEmpty) return SizedBox.shrink();
 
-    final currentHint = widget.hints[_currentHintIndex];
-    final hintPoints = _getHintPoints(currentHint);
-    final hasMoreHints = _currentHintIndex < widget.hints.length - 1;
+    final totalPoints = _getTotalPoints();
 
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Text(
-          hasMoreHints
-              ? 'Hint used - score will be affected (-$hintPoints points). Tap continue for next hint.'
-              : 'Hint used - score will be affected (-$hintPoints points).',
+          widget.hints.length > 1
+              ? 'All hints used - score will be affected (-$totalPoints points total).'
+              : 'Hint used - score will be affected (-$totalPoints points).',
           style: AppTextStyles.bodyTextMedium16().copyWith(
             fontSize: 6.sp,
             color: MyColors.white.withValues(alpha: 0.5),
@@ -633,27 +646,14 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   Widget _buildContinueButton() {
     final hasMoreHints = _currentHintIndex < widget.hints.length - 1;
     final buttonText =
-        _showText
-            ? (hasMoreHints ? 'Next Hint'.tr : 'Continue'.tr)
-            : 'Continue'.tr;
+        _allHintsViewed
+            ? 'Continue'.tr
+            : (hasMoreHints ? 'Next Hint'.tr : 'Continue'.tr);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: GestureDetector(
-        onTap: () {
-          if (_showText) {
-            if (hasMoreHints) {
-              _goToNextHint();
-            } else {
-              Navigator.of(context).pop();
-              widget.onContinue?.call();
-            }
-          } else {
-            setState(() {
-              _showText = true;
-            });
-          }
-        },
+        onTap: _handleContinueButton,
         child: Container(
           alignment: Alignment.center,
           width: 100.w,
@@ -683,26 +683,11 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildCloseButton() {
-    final hasMoreHints = _currentHintIndex < widget.hints.length - 1;
-
     return Positioned(
       top: -10,
       right: -10,
       child: GestureDetector(
-        onTap: () {
-          if (_showText) {
-            if (hasMoreHints) {
-              _goToNextHint();
-            } else {
-              Navigator.of(context).pop();
-              widget.onContinue?.call();
-            }
-          } else {
-            setState(() {
-              _showText = true;
-            });
-          }
-        },
+        onTap: _handleContinueButton,
         child: SvgPicture.asset(MyIcons.close_brown_rounded),
       ),
     );
