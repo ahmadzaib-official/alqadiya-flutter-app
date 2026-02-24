@@ -48,7 +48,7 @@ class HomeHeader extends StatelessWidget {
                           );
                         },
                     child: CircleAvatar(
-                      backgroundColor: MyColors.redButtonColor,
+                      backgroundColor: MyColors.darkBlueColor,
                       backgroundImage:
                           userController.user.value?.photoUrl != null
                               ? CachedNetworkImageProvider(

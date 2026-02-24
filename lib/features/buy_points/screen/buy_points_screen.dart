@@ -68,7 +68,7 @@ class BuyPointsScreen extends StatelessWidget {
                             );
                           },
                           child: CircleAvatar(
-                            backgroundColor: MyColors.redButtonColor,
+                            backgroundColor: MyColors.darkBlueColor,
                             backgroundImage:
                                 user!.photoUrl != null
                                     ? CachedNetworkImageProvider(
