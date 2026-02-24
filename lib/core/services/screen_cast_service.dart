@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:alqadiya_game/widgets/screen_mirror_guide_dialog.dart';
 
 /// Screen casting service for mirroring app content to external displays
 /// Supports both native casting (Chromecast, AirPlay) and screen mirroring
@@ -293,10 +292,7 @@ class ScreenCastService extends GetxService {
     Get.dialog(CastDeviceDialog(service: this), barrierDismissible: true);
   }
 
-  /// Show screen mirroring guide
-  void showMirrorGuide() {
-    Get.dialog(ScreenMirrorGuideDialog(), barrierDismissible: true);
-  }
+
 }
 
 /// Cast device model
