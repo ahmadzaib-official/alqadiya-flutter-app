@@ -19,11 +19,6 @@ import FirebaseMessaging
     
     GeneratedPluginRegistrant.register(with: self)
     
-    // Register Screen Cast Plugin
-    if let registrar = self.registrar(forPlugin: "ScreenCastPlugin") {
-      ScreenCastPlugin.register(with: registrar)
-    }
-    
     // Request notification permissions
     application.registerForRemoteNotifications()
     
