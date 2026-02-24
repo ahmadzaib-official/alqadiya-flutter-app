@@ -19,6 +19,12 @@ import FirebaseMessaging
     
     GeneratedPluginRegistrant.register(with: self)
     
+    // Register Screen Cast Plugin manually
+    if let controller = self.window?.rootViewController as? FlutterViewController {
+      let registrar = self.registrar(forPlugin: "ScreenCastPlugin")!
+      ScreenCastPlugin.register(with: registrar)
+    }
+    
     // Request notification permissions
     application.registerForRemoteNotifications()
     
