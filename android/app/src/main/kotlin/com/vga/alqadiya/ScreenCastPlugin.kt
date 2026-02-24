@@ -2,11 +2,15 @@ package com.vga.alqadiya
 
 import android.app.Activity
 import android.content.Context
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.mediarouter.app.MediaRouteButton
+import androidx.mediarouter.media.MediaControlIntent
+import androidx.mediarouter.media.MediaRouteSelector
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.CastDevice
+import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
@@ -28,6 +32,28 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var castContext: CastContext? = null
     private var sessionManager: SessionManager? = null
     private var castSession: CastSession? = null
+    private var mediaRouteSelector: MediaRouteSelector? = null
+    private var isScanning = false
+    
+    private val mediaRouterCallback = object : MediaRouter.Callback() {
+        override fun onRouteAdded(router: MediaRouter, route: MediaRouter.RouteInfo) {
+            super.onRouteAdded(router, route)
+            if (isScanning && route.matchesSelector(mediaRouteSelector!!)) {
+                notifyRouteFound(route)
+            }
+        }
+        
+        override fun onRouteChanged(router: MediaRouter, route: MediaRouter.RouteInfo) {
+            super.onRouteChanged(router, route)
+            if (isScanning && route.matchesSelector(mediaRouteSelector!!)) {
+                notifyRouteFound(route)
+            }
+        }
+        
+        override fun onRouteRemoved(router: MediaRouter, route: MediaRouter.RouteInfo) {
+            super.onRouteRemoved(router, route)
+        }
+    }
     
     private val sessionManagerListener = object : SessionManagerListener<CastSession> {
         override fun onSessionStarted(session: CastSession, sessionId: String) {
@@ -88,6 +114,7 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
     
     override fun onDetachedFromActivity() {
+        stopScanning(null)
         sessionManager?.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
         activity = null
     }
@@ -109,6 +136,13 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 
                 activity?.let { act ->
                     mediaRouter = MediaRouter.getInstance(act)
+                    
+                    // Build the media route selector for Cast devices
+                    mediaRouteSelector = MediaRouteSelector.Builder()
+                        .addControlCategory(CastMediaControlIntent.categoryForCast(
+                            castContext?.castOptions?.receiverApplicationId ?: "CC1AD845"
+                        ))
+                        .build()
                 }
             }
         } catch (e: Exception) {
@@ -148,32 +182,55 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
     
-    private fun startScanning(result: Result) {
+    private fun startScanning(result: Result?) {
         try {
-            // Scanning is automatic with Google Cast
-            // Just notify that scanning has started
-            result.success(true)
+            if (isScanning) {
+                result?.success(true)
+                return
+            }
             
-            // Check for available cast devices
-            Handler(Looper.getMainLooper()).postDelayed({
-                sessionManager?.let { sm ->
-                    val currentSession = sm.currentCastSession
-                    if (currentSession != null && currentSession.isConnected) {
-                        val device = currentSession.castDevice
-                        if (device != null) {
-                            notifyDeviceFound(device)
+            mediaRouter?.let { router ->
+                mediaRouteSelector?.let { selector ->
+                    // Add callback with CALLBACK_FLAG_REQUEST_DISCOVERY to actively scan
+                    router.addCallback(
+                        selector,
+                        mediaRouterCallback,
+                        MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY or MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN
+                    )
+                    
+                    isScanning = true
+                    
+                    // Immediately notify about currently available routes
+                    Handler(Looper.getMainLooper()).post {
+                        val routes = router.getRoutes()
+                        for (route in routes) {
+                            if (route.matchesSelector(selector) && !route.isDefaultOrBluetooth) {
+                                notifyRouteFound(route)
+                            }
                         }
                     }
-                }
-            }, 1000)
+                    
+                    result?.success(true)
+                } ?: result?.error("NO_SELECTOR", "Media route selector not initialized", null)
+            } ?: result?.error("NO_ROUTER", "Media router not initialized", null)
         } catch (e: Exception) {
-            result.error("SCAN_ERROR", e.message, null)
+            result?.error("SCAN_ERROR", e.message, null)
         }
     }
     
-    private fun stopScanning(result: Result) {
-        // Scanning stops automatically
-        result.success(true)
+    private fun stopScanning(result: Result?) {
+        try {
+            if (!isScanning) {
+                result?.success(true)
+                return
+            }
+            
+            mediaRouter?.removeCallback(mediaRouterCallback)
+            isScanning = false
+            result?.success(true)
+        } catch (e: Exception) {
+            result?.error("STOP_SCAN_ERROR", e.message, null)
+        }
     }
     
     private fun connectToDevice(deviceId: String?, deviceName: String?, result: Result) {
@@ -245,16 +302,28 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
     
-    private fun notifyDeviceFound(device: CastDevice) {
-        val deviceMap = mapOf(
-            "id" to device.deviceId,
-            "name" to device.friendlyName,
-            "type" to "chromecast",
-            "isAvailable" to true
-        )
-        
-        Handler(Looper.getMainLooper()).post {
-            channel.invokeMethod("onDeviceFound", deviceMap)
+    private fun notifyRouteFound(route: MediaRouter.RouteInfo) {
+        try {
+            val bundle = route.extras
+            val deviceMap = mutableMapOf<String, Any>(
+                "id" to route.id,
+                "name" to route.name,
+                "type" to "chromecast",
+                "isAvailable" to route.isEnabled
+            )
+            
+            // Try to get Cast device info if available
+            val castDevice = CastDevice.getFromBundle(bundle)
+            if (castDevice != null) {
+                deviceMap["id"] = castDevice.deviceId
+                deviceMap["name"] = castDevice.friendlyName ?: route.name
+            }
+            
+            Handler(Looper.getMainLooper()).post {
+                channel.invokeMethod("onDeviceFound", deviceMap)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
     
@@ -283,3 +352,7 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 }
+
+// Extension to check if route is default or bluetooth
+private val MediaRouter.RouteInfo.isDefaultOrBluetooth: Boolean
+    get() = isDefault || isBluetooth

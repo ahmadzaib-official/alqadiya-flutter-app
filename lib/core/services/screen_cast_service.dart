@@ -23,6 +23,10 @@ class ScreenCastService extends GetxService {
   void onInit() {
     super.onInit();
     _setupMethodCallHandler();
+    // Auto-start scanning when service initializes
+    Future.delayed(const Duration(milliseconds: 500), () {
+      startScanning();
+    });
   }
 
   @override
