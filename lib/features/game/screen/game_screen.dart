@@ -708,35 +708,31 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildHintButton(QuestionModel question) {
-    final hint = question.hints.firstOrNull;
-    final pointsCost = hint?.pointsCost ?? 0;
+    final hints = question.hints;
+    if (hints.isEmpty) return SizedBox.shrink();
+
+    final totalPointsCost = hints.fold<int>(
+      0,
+      (sum, hint) => sum + (hint.pointsCost ?? 0),
+    );
 
     return GestureDetector(
       onTap: () {
-        if (hint == null) return;
-
         setState(() {
           hintUsed = true;
         });
 
-        // Handle hint button tap
-        final hintType = hint.hintType?.toLowerCase();
-        final mediaUrl = hint.mediaUrl ?? '';
-
+        // Show dialog with all hints
         showDialog(
           context: context,
           barrierDismissible: true,
           builder:
               (_) => VideoEvidenceDialog(
-                videoUrl: hintType == 'video' ? mediaUrl : null,
-                imageUrl: hintType == 'image' ? mediaUrl : null,
-                audioUrl: hintType == 'audio' ? mediaUrl : null,
-                documentUrl: hintType == 'document' ? mediaUrl : null,
-                hintType: hint.hintType,
-                title: hint.hintName ?? 'Hint'.tr,
+                hints: hints,
                 onContinue: () {},
-                showHintText: hint.hintDescription != null,
-                hintPoints: hint.pointsCost ?? 2,
+                onAllHintsViewed: () {
+                  // All hints have been viewed
+                },
               ),
         );
       },
@@ -758,15 +754,23 @@ class _GameScreenState extends State<GameScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Hint '.tr,
+              hints.length > 1 ? 'Hints '.tr : 'Hint '.tr,
               style: AppTextStyles.heading1().copyWith(
                 fontSize: 6.sp,
                 color: MyColors.white,
               ),
             ),
-            if (pointsCost > 0)
+            if (hints.length > 1)
               Text(
-                '(-$pointsCost ${'Points'.tr})',
+                '(${hints.length}) ',
+                style: AppTextStyles.captionSemiBold10().copyWith(
+                  fontSize: 6.sp,
+                  color: MyColors.white.withValues(alpha: 0.7),
+                ),
+              ),
+            if (totalPointsCost > 0)
+              Text(
+                '(-$totalPointsCost ${'Points'.tr})',
                 style: AppTextStyles.captionSemiBold10().copyWith(
                   fontSize: 6.sp,
                   color: MyColors.white.withValues(alpha: 0.5),
