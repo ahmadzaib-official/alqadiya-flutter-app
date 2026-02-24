@@ -61,8 +61,13 @@ class HomeHeader extends StatelessWidget {
                   SizedBox(width: 5.w),
                   GestureDetector(
                     onTap: () {
-                      // Use cast service to show picker
-                      castService.showCastPicker();
+                      // If connected, show mirror guide
+                      // If not connected, show picker
+                      if (castService.isConnected.value) {
+                        castService.showMirrorGuide();
+                      } else {
+                        castService.showCastPicker();
+                      }
                     },
                     child: Stack(
                       children: [

@@ -151,14 +151,6 @@ class ScreenCastService extends GetxService {
   Future<void> showCastPicker() async {
     try {
       await _channel.invokeMethod('showCastPicker');
-
-      // After showing picker, wait a bit then check if connected
-      Future.delayed(const Duration(seconds: 2), () {
-        if (isConnected.value) {
-          // Show mirroring guide when connected
-          showMirrorGuide();
-        }
-      });
     } on PlatformException catch (e) {
       log('Error showing cast picker: ${e.message}');
       // Fallback to custom dialog
@@ -255,6 +247,11 @@ class ScreenCastService extends GetxService {
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
+
+      // Show mirror guide after connection
+      Future.delayed(const Duration(seconds: 2), () {
+        showMirrorGuide();
+      });
     } catch (e) {
       log('Error handling device connected: $e');
     }
