@@ -203,6 +203,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SvgPicture.asset(
             MyIcons.bulb,
