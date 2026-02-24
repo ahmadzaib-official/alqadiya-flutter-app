@@ -11,6 +11,9 @@ import androidx.mediarouter.media.MediaRouteSelector
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.CastDevice
 import com.google.android.gms.cast.CastMediaControlIntent
+import com.google.android.gms.cast.MediaInfo
+import com.google.android.gms.cast.MediaLoadRequestData
+import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
@@ -176,6 +179,22 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "showCastPicker" -> {
                 showCastPicker(result)
             }
+            "loadMedia" -> {
+                val mediaUrl = call.argument<String>("mediaUrl")
+                val title = call.argument<String>("title")
+                val contentType = call.argument<String>("contentType") ?: "video/mp4"
+                loadMedia(mediaUrl, title, contentType, result)
+            }
+            "play" -> {
+                play(result)
+            }
+            "pause" -> {
+                pause(result)
+            }
+            "seek" -> {
+                val position = call.argument<Long>("position") ?: 0L
+                seek(position, result)
+            }
             else -> {
                 result.notImplemented()
             }
@@ -254,9 +273,14 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     
     private fun startMirroring(result: Result) {
         try {
-            // Screen mirroring is handled automatically when connected
-            val isConnected = castSession?.isConnected ?: false
-            result.success(isConnected)
+            val session = castSession
+            if (session != null && session.isConnected) {
+                // For media casting, we need a media URL
+                // This will be provided by the Flutter side
+                result.success(true)
+            } else {
+                result.success(false)
+            }
         } catch (e: Exception) {
             result.error("MIRROR_ERROR", e.message, null)
         }
@@ -349,6 +373,107 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun notifyCastError(error: String) {
         Handler(Looper.getMainLooper()).post {
             channel.invokeMethod("onCastError", error)
+        }
+    }
+    
+    private fun loadMedia(mediaUrl: String?, title: String?, contentType: String, result: Result) {
+        if (mediaUrl == null) {
+            result.error("NO_URL", "Media URL is required", null)
+            return
+        }
+        
+        try {
+            val session = castSession
+            if (session == null || !session.isConnected) {
+                result.error("NOT_CONNECTED", "Not connected to a cast device", null)
+                return
+            }
+            
+            val remoteMediaClient = session.remoteMediaClient
+            if (remoteMediaClient == null) {
+                result.error("NO_MEDIA_CLIENT", "Remote media client not available", null)
+                return
+            }
+            
+            // Build media metadata
+            val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE)
+            metadata.putString(MediaMetadata.KEY_TITLE, title ?: "Video")
+            
+            // Build media info
+            val mediaInfo = MediaInfo.Builder(mediaUrl)
+                .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                .setContentType(contentType)
+                .setMetadata(metadata)
+                .build()
+            
+            // Load media
+            val request = MediaLoadRequestData.Builder()
+                .setMediaInfo(mediaInfo)
+                .setAutoplay(true)
+                .build()
+            
+            val pendingResult = remoteMediaClient.load(request)
+            
+            // Handle result asynchronously
+            Handler(Looper.getMainLooper()).postDelayed({
+                try {
+                    if (remoteMediaClient.isPlaying || remoteMediaClient.isBuffering) {
+                        result.success(true)
+                    } else {
+                        result.success(false)
+                    }
+                } catch (e: Exception) {
+                    result.success(true) // Assume success if we can't check status
+                }
+            }, 1000)
+            
+        } catch (e: Exception) {
+            result.error("LOAD_ERROR", e.toString(), null)
+        }
+    }
+    
+    private fun play(result: Result) {
+        try {
+            val remoteMediaClient = castSession?.remoteMediaClient
+            if (remoteMediaClient == null) {
+                result.error("NO_MEDIA_CLIENT", "Remote media client not available", null)
+                return
+            }
+            
+            remoteMediaClient.play()
+            result.success(true)
+        } catch (e: Exception) {
+            result.error("PLAY_ERROR", e.message, null)
+        }
+    }
+    
+    private fun pause(result: Result) {
+        try {
+            val remoteMediaClient = castSession?.remoteMediaClient
+            if (remoteMediaClient == null) {
+                result.error("NO_MEDIA_CLIENT", "Remote media client not available", null)
+                return
+            }
+            
+            remoteMediaClient.pause()
+            result.success(true)
+        } catch (e: Exception) {
+            result.error("PAUSE_ERROR", e.message, null)
+        }
+    }
+    
+    private fun seek(position: Long, result: Result) {
+        try {
+            val remoteMediaClient = castSession?.remoteMediaClient
+            if (remoteMediaClient == null) {
+                result.error("NO_MEDIA_CLIENT", "Remote media client not available", null)
+                return
+            }
+            
+            remoteMediaClient.seek(position)
+            result.success(true)
+        } catch (e: Exception) {
+            result.error("SEEK_ERROR", e.message, null)
         }
     }
 }

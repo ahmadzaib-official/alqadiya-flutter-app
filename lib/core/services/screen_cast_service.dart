@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:alqadiya_game/widgets/screen_mirror_guide_dialog.dart';
 
 /// Screen casting service for mirroring app content to external displays
 /// Supports both native casting (Chromecast, AirPlay) and screen mirroring
@@ -157,6 +158,62 @@ class ScreenCastService extends GetxService {
     }
   }
 
+  /// Load media to cast device
+  Future<bool> loadMedia({
+    required String mediaUrl,
+    String? title,
+    String contentType = 'video/mp4',
+  }) async {
+    try {
+      if (!isConnected.value) {
+        _showError('Not connected to a cast device');
+        return false;
+      }
+
+      final result = await _channel.invokeMethod('loadMedia', {
+        'mediaUrl': mediaUrl,
+        'title': title,
+        'contentType': contentType,
+      });
+
+      log('Media loaded to cast device: $result');
+      return result == true;
+    } on PlatformException catch (e) {
+      log('Error loading media: ${e.message}');
+      _showError('Failed to load media: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Play media on cast device
+  Future<void> play() async {
+    try {
+      await _channel.invokeMethod('play');
+    } on PlatformException catch (e) {
+      log('Error playing: ${e.message}');
+    }
+  }
+
+  /// Pause media on cast device
+  Future<void> pause() async {
+    try {
+      await _channel.invokeMethod('pause');
+    } on PlatformException catch (e) {
+      log('Error pausing: ${e.message}');
+    }
+  }
+
+  /// Seek to position on cast device
+  Future<void> seek(Duration position) async {
+    try {
+      await _channel.invokeMethod('seek', {
+        'position': position.inMilliseconds,
+      });
+    } on PlatformException catch (e) {
+      log('Error seeking: ${e.message}');
+    }
+  }
+
   /// Handle device found callback
   void _handleDeviceFound(dynamic arguments) {
     try {
@@ -234,6 +291,11 @@ class ScreenCastService extends GetxService {
   /// Show custom cast device selection dialog
   void _showCustomCastDialog() {
     Get.dialog(CastDeviceDialog(service: this), barrierDismissible: true);
+  }
+
+  /// Show screen mirroring guide
+  void showMirrorGuide() {
+    Get.dialog(ScreenMirrorGuideDialog(), barrierDismissible: true);
   }
 }
 
