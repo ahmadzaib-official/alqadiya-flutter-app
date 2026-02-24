@@ -195,6 +195,9 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val position = call.argument<Long>("position") ?: 0L
                 seek(position, result)
             }
+            "startScreenMirroring" -> {
+                startScreenMirroring(result)
+            }
             else -> {
                 result.notImplemented()
             }
@@ -474,6 +477,32 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             result.success(true)
         } catch (e: Exception) {
             result.error("SEEK_ERROR", e.message, null)
+        }
+    }
+    
+    private fun startScreenMirroring(result: Result) {
+        Handler(Looper.getMainLooper()).post {
+            try {
+                activity?.let { act ->
+                    // Try to open Cast settings where user can enable screen mirroring
+                    try {
+                        val intent = android.content.Intent(android.provider.Settings.ACTION_CAST_SETTINGS)
+                        act.startActivity(intent)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        // Fallback: try to open general settings
+                        try {
+                            val intent = android.content.Intent(android.provider.Settings.ACTION_SETTINGS)
+                            act.startActivity(intent)
+                            result.success(true)
+                        } catch (e2: Exception) {
+                            result.error("SETTINGS_ERROR", "Could not open settings: ${e2.message}", null)
+                        }
+                    }
+                } ?: result.error("NO_ACTIVITY", "Activity not available", null)
+            } catch (e: Exception) {
+                result.error("MIRROR_ERROR", e.message, null)
+            }
         }
     }
 }

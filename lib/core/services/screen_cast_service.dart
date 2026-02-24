@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:alqadiya_game/widgets/screen_mirror_guide_dialog.dart';
 
 /// Screen casting service for mirroring app content to external displays
 /// Supports both native casting (Chromecast, AirPlay) and screen mirroring
@@ -150,6 +151,14 @@ class ScreenCastService extends GetxService {
   Future<void> showCastPicker() async {
     try {
       await _channel.invokeMethod('showCastPicker');
+
+      // After showing picker, wait a bit then check if connected
+      Future.delayed(const Duration(seconds: 2), () {
+        if (isConnected.value) {
+          // Show mirroring guide when connected
+          showMirrorGuide();
+        }
+      });
     } on PlatformException catch (e) {
       log('Error showing cast picker: ${e.message}');
       // Fallback to custom dialog
@@ -292,7 +301,21 @@ class ScreenCastService extends GetxService {
     Get.dialog(CastDeviceDialog(service: this), barrierDismissible: true);
   }
 
+  /// Show screen mirroring guide
+  void showMirrorGuide() {
+    Get.dialog(const ScreenMirrorGuideDialog(), barrierDismissible: true);
+  }
 
+  /// Attempt to start screen mirroring (opens settings on Android)
+  Future<bool> startScreenMirroring() async {
+    try {
+      final result = await _channel.invokeMethod('startScreenMirroring');
+      return result == true;
+    } on PlatformException catch (e) {
+      log('Error starting screen mirroring: ${e.message}');
+      return false;
+    }
+  }
 }
 
 /// Cast device model
