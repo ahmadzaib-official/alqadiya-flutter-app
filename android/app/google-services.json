@@ -1,50 +1,34 @@
 {
   "project_info": {
-    "project_number": "1017677830312",
-    "project_id": "alqadiya-bb7f8",
-    "storage_bucket": "alqadiya-bb7f8.firebasestorage.app"
+    "project_number": "535207093673",
+    "project_id": "al-qadiya",
+    "storage_bucket": "al-qadiya.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1017677830312:android:c648d8b0a2d45134a34a9d",
+        "mobilesdk_app_id": "1:535207093673:android:b62df52ce3f2eeffd090b8",
         "android_client_info": {
           "package_name": "com.vga.alqadiya"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1017677830312-vtnni7h2fgm9fs57u5qobmr6gebt34e5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vga.alqadiya",
-            "certificate_hash": "2fb273d1ad44c8c387235ea710b28865c4824668"
-          }
-        },
-        {
-          "client_id": "1017677830312-cusd7nfe94oedgtrulg4c79uktougqs1.apps.googleusercontent.com",
+          "client_id": "535207093673-cssrqf59k80pa3n42g4dhmfhedo4tpru.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBLxyFWGnLTSzXFz_NF5_qiRrzy1l01Bdk"
+          "current_key": "AIzaSyAk31LIbet1EtJmv6Nkn3hfo1DALv1XbcU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1017677830312-cusd7nfe94oedgtrulg4c79uktougqs1.apps.googleusercontent.com",
+              "client_id": "535207093673-cssrqf59k80pa3n42g4dhmfhedo4tpru.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "1017677830312-7v3lv4cd7k6fic9l8a7pbmgesslnu4s9.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.vga.alqadiya",
-                "app_store_id": "6754502195"
-              }
             }
           ]
         }

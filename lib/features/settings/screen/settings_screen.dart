@@ -581,7 +581,12 @@ class SettingsScreen extends StatelessWidget {
 
                   if (isSignedIn) {
                     await _googleSignIn.signOut();
-                    await _googleSignIn.disconnect();
+                    try {
+                      await _googleSignIn.disconnect();
+                    } catch (e) {
+                      log('Google disconnect failed: \$e');
+                      // Continue with logout even if disconnect fails
+                    }
                     log('Google sign out successful');
                   } else {
                     log('User not signed in to Google');

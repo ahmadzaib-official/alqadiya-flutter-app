@@ -30,8 +30,7 @@ class SignInController extends GetxController {
   final confirmPassword = TextEditingController();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    serverClientId:
-        '1017677830312-cusd7nfe94oedgtrulg4c79uktougqs1.apps.googleusercontent.com',
+  
   );
 
   Future<void> enableLandscapeMode() async {
