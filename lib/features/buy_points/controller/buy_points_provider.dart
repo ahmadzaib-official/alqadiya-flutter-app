@@ -39,7 +39,7 @@ class BuyPointsController extends GetxController {
   /// Purchase points package
   Future<void> purchasePoints(int packageIndex) async {
     if (packageIndex >= 0 && packageIndex < pointPackages.length) {
-      // TODO: Implement actual purchase logic
+
       // This would typically involve:
       // 1. Payment processing
       // 2. API call to add points to user account

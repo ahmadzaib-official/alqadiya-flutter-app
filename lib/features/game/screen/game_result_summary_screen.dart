@@ -98,6 +98,7 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
           name: 'game_result.png',
         );
 
+        // ignore: deprecated_member_use
         await Share.shareXFiles(
           [file],
           text: 'Check out my game result on Alqadiya!'.tr,

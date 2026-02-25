@@ -3,7 +3,7 @@ import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/widgets/auth_heading.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
-import 'package:flutter/material.dart' hide TooltipPositionDelegate;
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';

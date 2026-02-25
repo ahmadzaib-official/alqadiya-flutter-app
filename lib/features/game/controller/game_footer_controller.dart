@@ -115,12 +115,12 @@ class GameFooterController extends GetxController {
 
       if (sessionMode == 'solo') {
         // Solo mode - get individual score
-        final player = scoreboard.teams?.firstOrNull?.players?.firstOrNull;
+        final player = scoreboard.teams.firstOrNull?.players.firstOrNull;
         return player?.individualScore;
       } else {
         // Team mode - get team score (first team for now)
         // In team mode, we might want to show the current user's team score
-        final team = scoreboard.teams?.firstOrNull;
+        final team = scoreboard.teams.firstOrNull;
         return team?.teamScore;
       }
     } catch (e) {

@@ -283,7 +283,7 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     final selectedAnswer = question.answers[selectedAnswerIndex.value!];
-    if (selectedAnswer == null || selectedAnswer.id == null) {
+    if ( selectedAnswer.id == null) {
       CustomSnackbar.showError('Invalid answer selected'.tr);
       return;
     }
@@ -637,8 +637,7 @@ class _GameScreenState extends State<GameScreen> {
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      if (question.hints != null &&
-                                          question.hints!.isNotEmpty)
+                                      if (question.hints.isNotEmpty)
                                         _buildHintButton(question),
                                       SizedBox(width: 8.h),
                                       // Question Text
@@ -784,8 +783,7 @@ class _GameScreenState extends State<GameScreen> {
   ) {
     final question = currentQuestion;
     if (question == null ||
-        question.answers == null ||
-        question.answers!.isEmpty) {
+        question.answers.isEmpty) {
       return Center(
         child: Text(
           'No answers available'.tr,

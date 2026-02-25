@@ -1,6 +1,5 @@
 import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/network/dio_helper.dart';
-import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
 
 /// Support contact model

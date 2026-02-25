@@ -45,6 +45,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Initialize payment controller
     final paymentController = Get.find<PaymentController>();
     return PopScope(
+      // ignore: deprecated_member_use
       onPopInvoked: (didPop) async {
         if (didPop) {
           // Force landscape

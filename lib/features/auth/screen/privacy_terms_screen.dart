@@ -131,6 +131,7 @@ class _PrivacyTermsScreenState extends State<PrivacyTermsScreen>
           controller: tabController,
           indicatorColor: MyColors.redButtonColor,
           labelColor: Colors.white,
+          // ignore: deprecated_member_use
           unselectedLabelColor: Colors.white.withOpacity(0.6),
           labelStyle: AppTextStyles.labelMedium14(),
           unselectedLabelStyle: AppTextStyles.labelMedium14(),
@@ -214,6 +215,7 @@ class _PrivacyTermsScreenState extends State<PrivacyTermsScreen>
                   Text(
                     'Please wait while we load the content'.tr,
                     style: AppTextStyles.captionRegular12().copyWith(
+                      // ignore: deprecated_member_use
                       color: Colors.white.withOpacity(0.7),
                     ),
                     textAlign: TextAlign.center,

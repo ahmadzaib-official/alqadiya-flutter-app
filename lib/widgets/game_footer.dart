@@ -5,7 +5,6 @@ import 'package:alqadiya_game/widgets/custom_icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 /// Game footer widget with game-related action buttons
 class GameFooter extends StatelessWidget {

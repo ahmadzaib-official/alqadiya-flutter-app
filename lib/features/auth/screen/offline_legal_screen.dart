@@ -38,9 +38,11 @@ class OfflineLegalScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: MyColors.redButtonColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
+                  // ignore: deprecated_member_use
                   color: MyColors.redButtonColor.withOpacity(0.3),
                 ),
               ),
@@ -101,6 +103,7 @@ class OfflineLegalScreen extends StatelessWidget {
                     label: Text('Go Back'.tr),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
+                      // ignore: deprecated_member_use
                       side: BorderSide(color: Colors.white.withOpacity(0.3)),
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                       shape: RoundedRectangleBorder(
@@ -218,6 +221,7 @@ class OfflineLegalScreen extends StatelessWidget {
         Text(
           content,
           style: AppTextStyles.bodyTextRegular16().copyWith(
+            // ignore: deprecated_member_use
             color: Colors.white.withOpacity(0.8),
             fontSize: 14.sp,
             height: 1.5,
