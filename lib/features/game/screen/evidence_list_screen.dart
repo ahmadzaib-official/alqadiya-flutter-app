@@ -745,4 +745,5 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               ),
     );
   }
+
 }

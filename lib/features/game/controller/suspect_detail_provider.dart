@@ -9,9 +9,16 @@ class SuspectDetailController extends GetxController {
   /// Set selected main tab
   void setSelectedMainTab(int tab) {
     if (selectedMainTab.value != tab) {
+      // Store the old tab value before changing
+      int oldTab = selectedMainTab.value;
       selectedMainTab.value = tab;
-      // Reset attachment type when switching tabs
-      if (tab != 1) {
+      // Reset attachment type when switching AWAY from investigation tab
+      // to ensure clean state when entering other tabs
+      if (oldTab == 2) { // if we were in investigation tab
+        selectedAttachmentType.value = null;
+      }
+      // Also reset when switching to attachments tab to show grid view
+      if (tab == 1) { // if we're switching to attachments tab
         selectedAttachmentType.value = null;
       }
     }

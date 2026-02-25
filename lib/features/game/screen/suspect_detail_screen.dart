@@ -272,7 +272,22 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     } else if (controller.selectedMainTab.value == 1) {
       return _buildAttachments(controller, suspectController);
     } else if (controller.selectedMainTab.value == 2) {
-      return _buildInvestigationReport(controller, suspectController);
+      // Check if we're showing a specific attachment type within investigation
+      if (controller.selectedAttachmentType.value != null) {
+        if (controller.selectedAttachmentType.value == 'Audio') {
+          return _buildAudioList(controller, suspectController);
+        } else if (controller.selectedAttachmentType.value == 'Videos') {
+          return _buildVideosList(controller, suspectController);
+        } else if (controller.selectedAttachmentType.value == 'Images') {
+          return _buildImagesList(controller, suspectController);
+        } else if (controller.selectedAttachmentType.value == 'Documents') {
+          return _buildDocumentsList(controller, suspectController);
+        } else {
+          return _buildInvestigationReport(controller, suspectController);
+        }
+      } else {
+        return _buildInvestigationReport(controller, suspectController);
+      }
     }
     return _buildPersonalInformation(suspectController);
   }
@@ -1097,9 +1112,12 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                         (context) => PDFViewerScreen(pdfUrl: report.mediaUrl!),
                   ),
                 );
-              } else if (isAudio) {
-                suspectController.setSelectedMainTab(1);
+              } else if (isAudio && report.mediaUrl != null && report.mediaUrl!.isNotEmpty) {
+                // Show audio list in the investigation tab
                 suspectController.setSelectedAttachmentType('Audio');
+              } else if (report.attachmentType?.toLowerCase() == 'video' && report.mediaUrl != null && report.mediaUrl!.isNotEmpty) {
+                // Show video list in the investigation tab
+                suspectController.setSelectedAttachmentType('Videos');
               }
             },
             child: Container(

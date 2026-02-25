@@ -28,8 +28,8 @@ class DioHelper {
       receiveDataWhenStatusError: true,
       contentType: 'application/json',
       headers: isAuthRequired ? defaultHeaders : null,
-      sendTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+      // sendTimeout: const Duration(seconds: 10),
+      // receiveTimeout: const Duration(seconds: 10),
     );
   }
 
