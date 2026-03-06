@@ -23,6 +23,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -141,8 +142,7 @@ class SettingsScreen extends StatelessWidget {
             _buildInfoRow(
               'Phone:'.tr,
               controller.user.value?.phoneNumber != null
-                  ? '+965${controller.user.value?.phoneNumber ?? ""}'
-                  // ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
+                  ? _formatPhoneNumber(controller.user.value?.phoneNumber?.toString() ?? "")
                   : "N/A".tr,
             ),
             if (controller.user.value?.email != null &&
@@ -218,6 +218,8 @@ class SettingsScreen extends StatelessWidget {
               child: Text(
                 value,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left, // Force left alignment for phone numbers
+                textDirection: TextDirection.ltr, // Force LTR for phone numbers
                 style: AppTextStyles.heading1().copyWith(
                   fontSize: 6.sp,
                   color: MyColors.white,
@@ -1156,5 +1158,22 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
     );
+  }
+
+  /// Format phone number with proper country code handling and RTL support
+  String _formatPhoneNumber(String phoneNumber) {
+    if (phoneNumber.isEmpty) return "N/A";
+    
+    // Remove any existing + or country code prefixes to avoid duplication
+    String cleanNumber = phoneNumber.replaceAll(RegExp(r'^\+?965'), '');
+    
+    // Remove any trailing + signs (RTL issue)
+    cleanNumber = cleanNumber.replaceAll(RegExp(r'\+$'), '');
+    
+    // Remove any non-digit characters
+    cleanNumber = cleanNumber.replaceAll(RegExp(r'[^\d]'), '');
+    
+    // Always format as +965XXXXXXXX for consistent display
+    return '+965$cleanNumber';
   }
 }

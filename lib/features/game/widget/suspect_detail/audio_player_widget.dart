@@ -40,6 +40,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   @override
   void dispose() {
+    // Stop playback before disposing
+    _audioController.pause();
     // Remove controller when widget is disposed
     if (Get.isRegistered<AudioPlayerController>(tag: _controllerTag)) {
       Get.delete<AudioPlayerController>(tag: _controllerTag);

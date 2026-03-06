@@ -1,6 +1,9 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
+// import 'package:alqadiya_game/core/routes/app_routes.dart';
+// import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
+import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/payment/controller/payment_provider.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
 import 'package:alqadiya_game/widgets/custom_textfield.dart';
@@ -21,6 +24,14 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   final _discountController = TextEditingController();
+  late final UserController userController;
+  VoidCallback? onProfileTap;
+
+  @override
+  void initState() {
+    super.initState();
+    userController = Get.find<UserController>();
+  }
 
   @override
   void dispose() {
@@ -70,12 +81,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Profile avatar
-                    CircleAvatar(
-                      backgroundColor: MyColors.redButtonColor,
-                      backgroundImage: CachedNetworkImageProvider(
-                        "https://picsum.photos/200?random=1",
-                      ),
-                      radius: 20.sp,
+                    GestureDetector(
+                      onTap:
+                          () {
+                            // AuthGuard.executeIfAuthenticated(
+                            //   title: 'Profile Access'.tr,
+                            //   message: 'Please sign in to view your profile'.tr,
+                            //   action: () => Get.toNamed(AppRoutes.settingsScreen),
+                            // );
+                          },
+                      child: Obx(() {
+                        return CircleAvatar(
+                          backgroundColor: MyColors.darkBlueColor,
+                          backgroundImage: userController.user.value?.photoUrl != null
+                              ? CachedNetworkImageProvider(
+                                  userController.user.value!.photoUrl!,
+                                )
+                              : const AssetImage(MyIcons.userImage) as ImageProvider,
+                          radius: 17.sp,
+                        );
+                      }),
                     ),
                     // Back icon
                     GestureDetector(

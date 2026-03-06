@@ -405,6 +405,7 @@ class AppPages {
       bindings: [
         BindingsBuilder(() {
           Get.lazyPut(() => PaymentController());
+          Get.lazyPut(() => UserController());
         }),
       ],
       // transition: Transition.circularReveal,

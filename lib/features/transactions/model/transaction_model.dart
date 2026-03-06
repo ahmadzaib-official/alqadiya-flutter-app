@@ -12,8 +12,8 @@ class TransactionModel {
 
   final String? id;
   final String? type;
-  final int? points;
-  final int? price;
+  final dynamic points;
+  final dynamic price;
   final String? currency;
   final String? description;
   final DateTime? createdAt;
@@ -22,8 +22,8 @@ class TransactionModel {
   TransactionModel copyWith({
     String? id,
     String? type,
-    int? points,
-    int? price,
+    dynamic points,
+    dynamic price,
     String? currency,
     String? description,
     DateTime? createdAt,
@@ -49,7 +49,7 @@ class TransactionModel {
       price: json["price"],
       currency: json["currency"],
       description: json["description"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      createdAt: DateTime.tryParse(json["createdAt"]?.toString() ?? ""),
       referenceId: json["referenceId"],
     );
   }

@@ -13,8 +13,8 @@ class TransactionReceiptModel {
 
   final String? id;
   final String? type;
-  final int? points;
-  final int? price;
+  final num? points;
+  final double? price;
   final String? currency;
   final String? description;
   final DateTime? createdAt;
@@ -24,8 +24,8 @@ class TransactionReceiptModel {
   TransactionReceiptModel copyWith({
     String? id,
     String? type,
-    int? points,
-    int? price,
+    num? points,
+    double? price,
     String? currency,
     String? description,
     DateTime? createdAt,
@@ -70,4 +70,14 @@ class TransactionReceiptModel {
     "referenceId": referenceId,
     "status": status,
   };
+
+  /// Get formatted points display string
+  String get formattedPoints {
+    if (points == null) return "0";
+    // If it's a whole number, display as integer, otherwise show decimal
+    if (points! % 1 == 0) {
+      return points!.toInt().toString();
+    }
+    return points!.toString();
+  }
 }

@@ -267,27 +267,28 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     SuspectDetailController controller,
     SuspectController suspectController,
   ) {
+    // Check if we're showing a specific attachment type within investigation
+    if (controller.selectedMainTab.value == 2 && controller.selectedAttachmentType.value != null) {
+      if (controller.selectedAttachmentType.value == 'Audio') {
+        return _buildAudioList(controller, suspectController);
+      } else if (controller.selectedAttachmentType.value == 'Videos') {
+        return _buildVideosList(controller, suspectController);
+      } else if (controller.selectedAttachmentType.value == 'Images') {
+        return _buildImagesList(controller, suspectController);
+      } else if (controller.selectedAttachmentType.value == 'Documents') {
+        return _buildDocumentsList(controller, suspectController);
+      } else {
+        return _buildInvestigationReport(controller, suspectController);
+      }
+    }
+    
+    // Regular tab content
     if (controller.selectedMainTab.value == 0) {
       return _buildPersonalInformation(suspectController);
     } else if (controller.selectedMainTab.value == 1) {
       return _buildAttachments(controller, suspectController);
     } else if (controller.selectedMainTab.value == 2) {
-      // Check if we're showing a specific attachment type within investigation
-      if (controller.selectedAttachmentType.value != null) {
-        if (controller.selectedAttachmentType.value == 'Audio') {
-          return _buildAudioList(controller, suspectController);
-        } else if (controller.selectedAttachmentType.value == 'Videos') {
-          return _buildVideosList(controller, suspectController);
-        } else if (controller.selectedAttachmentType.value == 'Images') {
-          return _buildImagesList(controller, suspectController);
-        } else if (controller.selectedAttachmentType.value == 'Documents') {
-          return _buildDocumentsList(controller, suspectController);
-        } else {
-          return _buildInvestigationReport(controller, suspectController);
-        }
-      } else {
-        return _buildInvestigationReport(controller, suspectController);
-      }
+      return _buildInvestigationReport(controller, suspectController);
     }
     return _buildPersonalInformation(suspectController);
   }
@@ -496,6 +497,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     SuspectController suspectController,
   ) {
     return Obx(() {
+      // When switching between attachment types, ensure clean state
       if (controller.selectedAttachmentType.value == null) {
         return _buildAttachmentsGrid(controller);
       } else if (controller.selectedAttachmentType.value == 'Videos') {

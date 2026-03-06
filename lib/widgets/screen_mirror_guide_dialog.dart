@@ -15,13 +15,13 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       title: Row(
         children: [
-          Icon(Icons.tv, color: MyColors.white, size: 24.sp),
-          SizedBox(width: 8.w),
+          Icon(Icons.tv, color: MyColors.white, size: 17.sp),
+          SizedBox(width: 4.w),
           Text(
             'Mirror to TV'.tr,
             style: TextStyle(
               color: MyColors.white,
-              fontSize: 18.sp,
+              fontSize: 11.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -36,7 +36,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
               'To see the entire app on your TV, enable screen mirroring:'.tr,
               style: TextStyle(
                 color: MyColors.white.withOpacity(0.9),
-                fontSize: 14.sp,
+                fontSize: 8.sp,
               ),
             ),
             SizedBox(height: 16.h),
@@ -57,7 +57,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
 
             // Tip box
             Container(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(7.w),
               decoration: BoxDecoration(
                 color: MyColors.redButtonColor.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8.r),
@@ -72,15 +72,15 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
                   Icon(
                     Icons.lightbulb_outline,
                     color: MyColors.redButtonColor,
-                    size: 20.sp,
+                    size: 13.sp,
                   ),
-                  SizedBox(width: 8.w),
+                  SizedBox(width: 4.w),
                   Expanded(
                     child: Text(
                       'Tip: Make sure your phone and TV are on the same WiFi network'
                           .tr,
                       style: TextStyle(
-                        fontSize: 12.sp,
+                        fontSize: 8.sp,
                         color: MyColors.white.withOpacity(0.9),
                       ),
                     ),
@@ -93,7 +93,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
 
             // Game tip
             Container(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
                 color: Colors.green.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8.r),
@@ -105,14 +105,14 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.people_outline, color: Colors.green, size: 20.sp),
-                  SizedBox(width: 8.w),
+                  Icon(Icons.people_outline, color: Colors.green, size: 15.sp),
+                  SizedBox(width: 4.w),
                   Expanded(
                     child: Text(
                       'Perfect for team play! Everyone can see the entire game (settings, suspects, evidence, questions) on the big screen.'
                           .tr,
                       style: TextStyle(
-                        fontSize: 12.sp,
+                        fontSize: 8.sp,
                         color: MyColors.white.withOpacity(0.9),
                       ),
                     ),
@@ -147,7 +147,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
                   'Open Settings'.tr,
                   style: TextStyle(
                     color: MyColors.white,
-                    fontSize: 14.sp,
+                    fontSize: 8.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -168,7 +168,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
             'Got it!'.tr,
             style: TextStyle(
               color: MyColors.white,
-              fontSize: 14.sp,
+              fontSize: 8.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -184,8 +184,8 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 28.w,
-            height: 28.w,
+            width: 17.w,
+            height: 17.w,
             decoration: BoxDecoration(
               color: MyColors.redButtonColor,
               shape: BoxShape.circle,
@@ -196,19 +196,19 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
                 style: TextStyle(
                   color: MyColors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
+                  fontSize: 8.sp,
                 ),
               ),
             ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: 6.w),
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(top: 4.h),
               child: Text(
                 text,
                 style: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: 9.sp,
                   color: MyColors.white.withOpacity(0.9),
                   height: 1.4,
                 ),

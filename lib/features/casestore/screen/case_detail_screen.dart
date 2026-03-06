@@ -114,7 +114,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                           height:
                                               // isPurchased ? 0.45.sh :
                                               0.65.sh,
-                                          fit: BoxFit.fill,
+                                          fit: BoxFit.cover,
                                           placeholder:
                                               (context, url) =>
                                                   Shimmer.fromColors(

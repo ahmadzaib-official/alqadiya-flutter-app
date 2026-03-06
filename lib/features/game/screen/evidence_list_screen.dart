@@ -472,6 +472,11 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                   color: MyColors.white,
                 ),
               ),
+              Spacer(),
+              GestureDetector(
+                onTap: () => selectedAttachmentType.value = null,
+                child: SvgPicture.asset(MyIcons.arrowbackNoBackground),
+              ),
             ],
           ),
           SizedBox(height: 5.h),
