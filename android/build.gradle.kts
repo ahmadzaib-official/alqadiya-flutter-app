@@ -1,19 +1,3 @@
-
-buildscript {
-    val kotlin_version by extra("2.1.0")
-
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.2.0")
-        classpath("com.google.gms:google-services:4.3.15")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-    }
-}
-
 allprojects {
     repositories {
         google()
