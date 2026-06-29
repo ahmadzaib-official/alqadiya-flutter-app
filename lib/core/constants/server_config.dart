@@ -1,4 +1,5 @@
 class ServerConfig {
+  // static const baseUrl = "http://192.168.1.55:4000/";
   static const baseUrl = "http://13.205.204.190/api/";
   // static const baseUrl = "http://192.168.1.10:4000/";
   // Below are the all api that are use in our system

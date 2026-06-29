@@ -1,4 +1,4 @@
-import 'dart:convert' show jsonEncode;
+import 'dart:convert';
 import 'dart:developer' show log;
 import 'dart:io' show Platform;
 import 'package:alqadiya_game/core/constants/app_strings.dart';
@@ -9,6 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:alqadiya_game/core/routes/app_routes.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _flutterLocalNotificationPlugin =
@@ -204,13 +205,99 @@ class NotificationService {
     bool openRoute = false,
     RemoteMessage? message,
   }) async {
-    // Non-call notifications fall back to notifications tab (if provided)
-    if (message != null && message.notification != null) {
-      showSimpleNotification(
+    if (message == null) return;
+
+    // Show local notification for foreground messages
+    if (!openRoute && message.notification != null) {
+      await showSimpleNotification(
         title: message.notification!.title ?? "",
         body: message.notification!.body ?? "",
         payload: jsonEncode(message.data),
       );
+      return;
+    }
+
+    // Handle navigation when notification is tapped (openRoute = true)
+    if (openRoute) {
+      await _handleNotificationNavigation(message);
+    }
+  }
+
+  /// Handle navigation based on notification data payload
+  static Future<void> _handleNotificationNavigation(
+    RemoteMessage message,
+  ) async {
+    try {
+      final data = message.data;
+
+      // Extract notification type from data payload
+      final String? notificationType = data['type'] ?? data['notificationType'];
+      final String? notificationId = data['id'] ?? data['notificationId'];
+
+      log(
+        'Navigating from notification - type: $notificationType, id: $notificationId',
+      );
+
+      // Navigate based on notification type
+      if (notificationType != null) {
+        switch (notificationType) {
+          case 'notification':
+          case 'general':
+            // Navigate to notification detail screen
+            if (notificationId != null) {
+              Get.toNamed(
+                AppRoutes.notificationDetailScreen,
+                arguments: {'id': notificationId},
+              );
+            } else {
+              Get.toNamed(AppRoutes.notificationsListScreen);
+            }
+            break;
+
+          case 'case':
+          case 'case_update':
+            // Navigate to case detail
+            if (notificationId != null) {
+              Get.toNamed(
+                AppRoutes.caseDetailScreen,
+                arguments: {'caseId': notificationId},
+              );
+            } else {
+              Get.toNamed(AppRoutes.caseStoreScreen);
+            }
+            break;
+
+          case 'game':
+          case 'game_invite':
+            // Navigate to game screen
+            Get.toNamed(AppRoutes.gameScreen);
+            break;
+
+          case 'payment':
+          case 'transaction':
+            // Navigate to transactions
+            Get.toNamed(AppRoutes.transactionsListScreen);
+            break;
+
+          case 'points':
+          case 'buy_points':
+            // Navigate to buy points
+            Get.toNamed(AppRoutes.buyPointsScreen);
+            break;
+
+          default:
+            // Default: navigate to notifications list
+            Get.toNamed(AppRoutes.notificationsListScreen);
+            break;
+        }
+      } else {
+        // No type specified, navigate to notifications list
+        Get.toNamed(AppRoutes.notificationsListScreen);
+      }
+    } catch (e) {
+      log('Error handling notification navigation: $e');
+      // Fallback to notifications list
+      Get.toNamed(AppRoutes.notificationsListScreen);
     }
   }
 
@@ -290,10 +377,70 @@ class NotificationService {
     }
   }
 
-  // Handle notification tap
+  // Handle notification tap from local notification
   static void onNotificationTap(NotificationResponse response) {
-    // Handle notification tap logic here
-    log('Notification tapped: ${response.payload}');
+    log('Local notification tapped: ${response.payload}');
+
+    if (response.payload != null && response.payload!.isNotEmpty) {
+      try {
+        final Map<String, dynamic> data = jsonDecode(response.payload!);
+        final String? notificationType =
+            data['type'] ?? data['notificationType'];
+        final String? notificationId = data['id'] ?? data['notificationId'];
+
+        log(
+          'Navigating from local notification - type: $notificationType, id: $notificationId',
+        );
+
+        // Navigate based on notification type
+        if (notificationType != null) {
+          switch (notificationType) {
+            case 'notification':
+            case 'general':
+              if (notificationId != null) {
+                Get.toNamed(
+                  AppRoutes.notificationDetailScreen,
+                  arguments: {'id': notificationId},
+                );
+              } else {
+                Get.toNamed(AppRoutes.notificationsListScreen);
+              }
+              break;
+            case 'case':
+            case 'case_update':
+              if (notificationId != null) {
+                Get.toNamed(
+                  AppRoutes.caseDetailScreen,
+                  arguments: {'caseId': notificationId},
+                );
+              } else {
+                Get.toNamed(AppRoutes.caseStoreScreen);
+              }
+              break;
+            case 'game':
+            case 'game_invite':
+              Get.toNamed(AppRoutes.gameScreen);
+              break;
+            case 'payment':
+            case 'transaction':
+              Get.toNamed(AppRoutes.transactionsListScreen);
+              break;
+            case 'points':
+            case 'buy_points':
+              Get.toNamed(AppRoutes.buyPointsScreen);
+              break;
+            default:
+              Get.toNamed(AppRoutes.notificationsListScreen);
+              break;
+          }
+        } else {
+          Get.toNamed(AppRoutes.notificationsListScreen);
+        }
+      } catch (e) {
+        log('Error parsing notification payload: $e');
+        Get.toNamed(AppRoutes.notificationsListScreen);
+      }
+    }
   }
 
   // Enhanced simple notification

@@ -17,6 +17,7 @@ const Map<String, String> enUS = {
       'The case combines immersive storytelling with\ninvestigative gameplay.',
   'onboardingHeader2': 'Story-driven criminal\ninvestigation game',
   'Welcome to\nBAZAR': 'Welcome to\nBAZAR',
+  "Points available in the balance": "Points available in the balance",
   'Discover\nChalets': "Discover\nChalets",
   'Earn & Redeem\nRewards': 'Earn & Redeem\nRewards',
   'Book dreamy chalets, earn rewards, and unlock exclusive add-ons — all in one app.':

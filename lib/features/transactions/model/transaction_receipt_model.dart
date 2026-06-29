@@ -49,8 +49,8 @@ class TransactionReceiptModel {
     return TransactionReceiptModel(
       id: json["id"],
       type: json["type"],
-      points: json["points"],
-      price: json["price"],
+      points: json["points"] is num ? (json["points"] as num) : null,
+      price: json["price"] is num ? (json["price"] as num).toDouble() : null,
       currency: json["currency"],
       description: json["description"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),

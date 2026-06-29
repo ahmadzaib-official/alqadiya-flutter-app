@@ -5,6 +5,7 @@ import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/payment/controller/payment_provider.dart';
+import 'package:alqadiya_game/features/payment/model/payment_method_model.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
 import 'package:alqadiya_game/widgets/custom_textfield.dart';
 import 'package:alqadiya_game/widgets/gradient_box_border.dart';
@@ -31,6 +32,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     userController = Get.find<UserController>();
+    // The paymentController.fetchPaymentMethods() will auto-select the first method once loaded.
   }
 
   @override
@@ -82,22 +84,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   children: [
                     // Profile avatar
                     GestureDetector(
-                      onTap:
-                          () {
-                            // AuthGuard.executeIfAuthenticated(
-                            //   title: 'Profile Access'.tr,
-                            //   message: 'Please sign in to view your profile'.tr,
-                            //   action: () => Get.toNamed(AppRoutes.settingsScreen),
-                            // );
-                          },
+                      onTap: () {
+                        // AuthGuard.executeIfAuthenticated(
+                        //   title: 'Profile Access'.tr,
+                        //   message: 'Please sign in to view your profile'.tr,
+                        //   action: () => Get.toNamed(AppRoutes.settingsScreen),
+                        // );
+                      },
                       child: Obx(() {
                         return CircleAvatar(
                           backgroundColor: MyColors.darkBlueColor,
-                          backgroundImage: userController.user.value?.photoUrl != null
-                              ? CachedNetworkImageProvider(
-                                  userController.user.value!.photoUrl!,
-                                )
-                              : const AssetImage(MyIcons.userImage) as ImageProvider,
+                          backgroundImage:
+                              userController.user.value?.photoUrl != null
+                                  ? CachedNetworkImageProvider(
+                                    userController.user.value!.photoUrl!,
+                                  )
+                                  : const AssetImage(MyIcons.userImage)
+                                      as ImageProvider,
                           radius: 17.sp,
                         );
                       }),
@@ -230,116 +233,115 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-Widget _buildPaymentMethodSection(PaymentController controller) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Payment Method'.tr,
-        style: AppTextStyles.heading1().copyWith(fontSize: 13.sp),
-      ),
-      SizedBox(height: 10.h),
-      Obx(() {
-        if (controller.isLoading.value) {
-          return Center(
-            child: CircularProgressIndicator(color: MyColors.redButtonColor),
-          );
+  Widget _buildPaymentMethodSection(PaymentController controller) {
+    return Obx(
+      () {
+        if (controller.selectedPaymentMethod.value == null && controller.paymentMethods.isNotEmpty) {
+          Future.microtask(() {
+            controller.selectedPaymentMethod.value = controller.paymentMethods.first;
+          });
         }
-        if (controller.paymentMethods.isEmpty) {
-          return Text(
-            "No payment methods available".tr,
-            style: AppTextStyles.bodyTextMedium16().copyWith(
-              color: Colors.white,
-            ),
-          );
-        }
-
+        
         return Column(
-          children:
-              controller.paymentMethods.asMap().entries.map((entry) {
-                final index = entry.key;
-                final method = entry.value;
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Payment Method'.tr,
+              style: AppTextStyles.heading1().copyWith(fontSize: 13.sp),
+            ),
+            SizedBox(height: 10.h),
+            Column(
+              children: List.generate(controller.paymentMethods.length, (index) {
+                final method = controller.paymentMethods[index];
+                final isSelected =
+                    controller.selectedPaymentMethod.value?.id == method.id;
+  
+                Widget paymentImage;
+                String lowerName = method.name?.toLowerCase() ?? '';
+                String lowerId = method.id?.toLowerCase() ?? '';
                 
-                return Obx(() {
-                  final isSelected =
-                      controller.selectedPaymentMethod.value == method;
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 10.h),
-                    child: GestureDetector(
-                      onTap: () => controller.selectPaymentMethod(method),
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 15.w,
-                          vertical: 12.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              isSelected
-                                  ? MyColors.greenColor.withValues(alpha: 0.1)
-                                  : MyColors.redButtonColor.withValues(
-                                    alpha: 0.1,
-                                  ),
-                          borderRadius: BorderRadius.circular(80.r),
-                          border: GradientBoxBorder(
-                            gradient: LinearGradient(
-                              begin: AlignmentGeometry.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors:
-                                  isSelected
-                                      ? [
-                                        MyColors.greenColor.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        MyColors.greenColor,
-                                      ]
-                                      : [
-                                        MyColors.redButtonColor.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        MyColors.redButtonColor,
-                                      ],
-                            ),
+                if (lowerName.contains('fato') || lowerId.contains('fato')) {
+                  paymentImage = Image.asset('assets/images/fatora.png', width: 130);
+                } else if (lowerName.contains('upay') || lowerId.contains('upay')) {
+                  paymentImage = Image.asset('assets/images/upayment.png', width: 130);
+                } else if (method.iconUrl != null && method.iconUrl!.isNotEmpty) {
+                  paymentImage = CachedNetworkImage(
+                    imageUrl: method.iconUrl!, 
+                    width: 130, 
+                    errorWidget: (context, url, error) => Text(method.name ?? '', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                  );
+                } else {
+                  paymentImage = Text(method.name ?? '', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold));
+                }
+
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 10.h),
+                  child: GestureDetector(
+                    onTap: () {
+                      // Always set to this method when tapped (no toggle-off)
+                      controller.selectedPaymentMethod.value = method;
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 15.w,
+                        vertical: 12.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected
+                                ? MyColors.greenColor.withValues(alpha: 0.1)
+                                : MyColors.redButtonColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(80.r),
+                        border: GradientBoxBorder(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors:
+                                isSelected
+                                    ? [
+                                      MyColors.greenColor.withValues(alpha: 0.1),
+                                      MyColors.greenColor,
+                                    ]
+                                    : [
+                                      MyColors.redButtonColor.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      MyColors.redButtonColor,
+                                    ],
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                if (isSelected) ...[
-                                  SvgPicture.asset(
-                                    MyIcons.circle_check_outline,
-                                    height: 25.h,
-                                  ),
-                                  SizedBox(width: 10.w),
-                                ] else ...[
-                                  SizedBox(
-                                    width: 35.w,
-                                  ),
-                                ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              if (isSelected) ...[
+                                SvgPicture.asset(
+                                  MyIcons.circle_check_outline,
+                                  height: 25.h,
+                                ),
+                                SizedBox(width: 10.w),
+                              ] else ...[
+                                SizedBox(width: 35.w),
                               ],
-                            ),
-                            
-                            // Display image based on index
-                            if (index == 0)
-                              Image.asset('assets/images/fatora.png', width: 130)
-                            else if (index == 1)
-                              Image.asset('assets/images/upayment.png', width: 130)
-                            else
-                              SizedBox(), // Fallback for other indices
-                          ],
-                        ),
+                            ],
+                          ),
+                          paymentImage,
+                        ],
                       ),
                     ),
-                  );
-                });
-              }).toList(),
+                  ),
+                );
+              }),
+            ),
+          ],
         );
-      }),
-    ],
-  );
-}
+      }
+    );
+  }
+
   Widget _buildTermsCheckbox(PaymentController controller) {
     return Obx(
       () => Row(
@@ -468,18 +470,23 @@ Widget _buildPaymentMethodSection(PaymentController controller) {
                     ),
                   ),
                   Spacer(flex: 2),
-                 Get.locale?.languageCode == 'en'
-                        ? SvgPicture.asset(MyIcons.arrow_right)
-                        : Icon(Icons.arrow_forward_ios, size: 15.sp,color: Colors.white,),
+                  Get.locale?.languageCode == 'en'
+                      ? SvgPicture.asset(MyIcons.arrow_right)
+                      : Icon(
+                        Icons.arrow_forward_ios,
+                        size: 15.sp,
+                        color: Colors.white,
+                      ),
                   Spacer(flex: 1),
                 ],
               ),
             ),
           ),
-     
-     
         ],
       ),
     );
   }
 }
+                
+  
+

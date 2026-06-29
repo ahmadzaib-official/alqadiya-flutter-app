@@ -3,6 +3,8 @@ import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/core/debug/debug_point.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/network/api_fetch.dart';
+import 'package:alqadiya_game/core/network/app_exceptions.dart';
+import 'package:dio/dio.dart';
 import 'package:alqadiya_game/core/services/notification_service.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart';
@@ -28,10 +30,7 @@ class SignInController extends GetxController {
   final phorgetPhoneNumberController = TextEditingController();
   final newPassword = TextEditingController();
   final confirmPassword = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   Future<void> enableLandscapeMode() async {
     await SystemChrome.setPreferredOrientations([
@@ -90,17 +89,17 @@ class SignInController extends GetxController {
       final response = await ApiFetch().signIn(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data == 'Phone number not verified') {
-          CustomSnackbar.showError(
-            "Phone number not verified. Please verify your phone number.".tr,
-          );
+          // CustomSnackbar.showError(
+          //   "Phone number not verified. Please verify your phone number.".tr,
+          // );
           await verifyPhoneNumber();
           return;
         }
         if (response.data['role'] != null && response.data['role'] == 'admin') {
           // show
-          CustomSnackbar.showError(
-            'Phone number not found. Please contact support.',
-          );
+          // CustomSnackbar.showError(
+          //   'Phone number not found. Please contact support.',
+          // );
         } else {
           if (response.data['userId'] != null &&
               response.data['accessToken'] != null) {
@@ -137,10 +136,16 @@ class SignInController extends GetxController {
           // clearField();
         }
       }
+    } on DioException catch (e) {
+      if (e.error is AppException) {
+        CustomSnackbar.showError((e.error as AppException).message);
+      } else {
+        CustomSnackbar.showError(e.message ?? 'Unknown error occurred');
+      }
+    } on AppException catch (e) {
+      CustomSnackbar.showError(e.message);
     } catch (e) {
-      // if (Get.context != null)
-      // Navigator.pop(Get.context!);
-      CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(e.toString());
     } finally {
       isSignIn(false);
     }

@@ -36,6 +36,7 @@ const Map<String, String> lnAr = {
       'أدخل الرمز المكون من 5 أرقام المرسل إلى هاتفك لإكمال التحقق.',
   'Didn\'t Receive a Code ?': 'لم تستلم رمزًا؟',
   'Resend': 'إعادة الإرسال',
+  'Points available in the balance': "النقاط المتاحة في الرصيد ",
   'Verify': 'تحقق',
   'Verified Successfully': 'تم التحقق بنجاح',
   'Your phone number has been verified. You\'re all set to continue!':

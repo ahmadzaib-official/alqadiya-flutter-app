@@ -250,6 +250,8 @@ Future<void> _clearStorage() async {
 }
 
 AppException _handleDioError(DioException error) {
+  final errorMessage = _extractErrorMessage(error);
+  
   switch (error.type) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
@@ -259,34 +261,34 @@ AppException _handleDioError(DioException error) {
       switch (error.response?.statusCode) {
         case 400:
           return ValidationException(
-            error.response?.data['message'] ?? 'Invalid request'.tr,
+            errorMessage,
             data: error.response?.data,
           );
         case 401:
           return UnauthorizedException(
-            error.response?.data['message'] ?? 'Unauthorized'.tr,
+            errorMessage,
             data: error.response?.data,
           );
         case 403:
           return UnauthorizedException(
-            error.response?.data['message'] ?? 'Access denied'.tr,
+            errorMessage,
             data: error.response?.data,
           );
         case 404:
           return ServerException(
-            error.response?.data['message'] ?? 'Resource not found'.tr,
+            errorMessage,
             data: error.response?.data,
           );
         case 500:
         case 502:
         case 503:
           return ServerException(
-            error.response?.data['message'] ?? 'Server error'.tr,
+            errorMessage,
             data: error.response?.data,
           );
         default:
           return ServerException(
-            error.response?.data['message'] ?? 'Unknown error occurred'.tr,
+            errorMessage,
             data: error.response?.data,
           );
       }
@@ -330,8 +332,9 @@ String _extractErrorMessage(DioException e) {
 }
 
 void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
-  // Skip error display for device-token endpoint
-  if (e.requestOptions.path.contains('device-token')) {
+  // Skip error display for device-token and signIn endpoints
+  if (e.requestOptions.path.contains('device-token') || 
+      e.requestOptions.path.contains('signIn')) {
     return;
   }
 

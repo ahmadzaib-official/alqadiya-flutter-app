@@ -41,7 +41,7 @@ import 'package:alqadiya_game/features/onboard/onboarding_screen.dart';
 import 'package:alqadiya_game/features/splash/controller/splash_controller.dart';
 import 'package:alqadiya_game/features/splash/splash_screen.dart';
 import 'package:alqadiya_game/features/tutorial/screen/tutorial_screen.dart';
-import 'package:alqadiya_game/features/transactions/screen/transaction_receipt_screen.dart';
+import 'package:alqadiya_game/features/transactions/screen/%20c.dart';
 import 'package:alqadiya_game/features/notifcation/controller/notifications_provider.dart';
 import 'package:alqadiya_game/features/transactions/controller/transactions_provider.dart';
 import 'package:alqadiya_game/features/transactions/controller/transaction_receipt_controller.dart';
