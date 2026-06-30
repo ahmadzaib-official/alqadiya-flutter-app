@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart'
     show SpinkitRipple;
 import 'package:alqadiya_game/core/debug/debug_point.dart';
@@ -24,9 +25,7 @@ class SignupController extends GetxController {
   var otpCode = 0.obs;
   var isEye = false.obs;
   var isEyeConfirm = false.obs;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
   @override
   void onClose() {
     fullNameController.dispose();
@@ -265,7 +264,7 @@ class SignupController extends GetxController {
       AppRoutes.webViewScreen,
       arguments: {
         'title': 'Terms and Conditions'.tr,
-        'url': 'http://51.112.131.120/terms',
+        'url': '${ServerConfig.base}terms',
       },
     );
   }

@@ -138,11 +138,19 @@ class SignInController extends GetxController {
       }
     } on DioException catch (e) {
       if (e.error is AppException) {
+        if ((e.error as AppException).message == 'Phone number not verified') {
+          await verifyPhoneNumber();
+          return;
+        }
         CustomSnackbar.showError((e.error as AppException).message);
       } else {
         CustomSnackbar.showError(e.message ?? 'Unknown error occurred');
       }
     } on AppException catch (e) {
+      if (e.message == 'Phone number not verified') {
+        await verifyPhoneNumber();
+        return;
+      }
       CustomSnackbar.showError(e.message);
     } catch (e) {
       CustomSnackbar.showError(e.toString());

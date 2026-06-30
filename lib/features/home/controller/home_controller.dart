@@ -1,3 +1,4 @@
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class HomeController extends GetxController {
           label: 'FAQ & Support'.tr,
           onTap: () async {
             closeDrawer();
- final url = Uri.parse('http://51.112.131.120/faqs');
+            final url = Uri.parse('${ServerConfig.base}faqs');
 
             if (await canLaunchUrl(url)) {
               await launchUrl(url, mode: LaunchMode.externalApplication);

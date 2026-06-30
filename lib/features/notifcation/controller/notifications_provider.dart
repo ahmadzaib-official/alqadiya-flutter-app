@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/widgets/home_menu/home_drawer_menu.dart';
 import 'package:dio/dio.dart';
@@ -85,7 +86,7 @@ class NotificationsController extends GetxController {
           onTap: () async {
             closeDrawer();
 
-            final url = Uri.parse('http://51.112.131.120/faqs');
+            final url = Uri.parse('${ServerConfig.base}faqs');
 
             if (await canLaunchUrl(url)) {
               await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -100,19 +101,21 @@ class NotificationsController extends GetxController {
   }
 
   /// Check if there are any unread notifications
-  bool get hasUnreadNotifications => notifications.any((n) => n.isRead == false);
+  bool get hasUnreadNotifications =>
+      notifications.any((n) => n.isRead == false);
 
   /// Mark all notifications as read
   Future<void> markAllAsRead() async {
     if (!hasUnreadNotifications) return;
-    
+
     try {
       // Call API to mark all as read
       final response = await _repository.markAllAsRead();
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Update local state - mark all as read
-        notifications.value = notifications.map((n) => n.copyWith(isRead: true)).toList();
+        notifications.value =
+            notifications.map((n) => n.copyWith(isRead: true)).toList();
         notifications.refresh();
         update();
       }

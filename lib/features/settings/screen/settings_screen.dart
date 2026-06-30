@@ -2,6 +2,7 @@ import 'dart:developer' show log;
 import 'dart:io';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -277,11 +278,54 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 15.h),
-          // Terms and Privacy Policy button
+          // Terms & Conditions button
           _buildSettingsButton(
-            'Terms and Privacy Policy'.tr,
+            'Terms and Conditions'.tr,
             onTap: () async {
-              final url = Uri.parse('http://51.112.131.120/privacy-policy');
+              final url = Uri.parse('${ServerConfig.base}terms-conditions');
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              } catch (e) {
+                print('Could not launch URL: $e');
+              }
+            },
+          ),
+          SizedBox(height: 6.h),
+          // OR divider
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: MyColors.white.withValues(alpha: 0.2),
+                  thickness: 1,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                child: Text(
+                  'OR'.tr,
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 6.sp,
+                    color: MyColors.white.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Divider(
+                  color: MyColors.white.withValues(alpha: 0.2),
+                  thickness: 1,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 6.h),
+          // Privacy Policy button
+          _buildSettingsButton(
+            'Privacy Policy'.tr,
+            onTap: () async {
+              final url = Uri.parse('${ServerConfig.base}privacy-policy');
               try {
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url, mode: LaunchMode.externalApplication);
