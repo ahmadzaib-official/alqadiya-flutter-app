@@ -256,7 +256,7 @@ const Map<String, String> lnAr = {
       'هل أنت متأكد من أنك تريد مغادرة اللعبة؟',
   'Yes': 'نعم',
   'No': 'لا',
-
+  "Notifications": "الإشعارات",
   // Settings and Profile
   'Name:': 'الاسم:',
   'Phone:': 'الهاتف:',
@@ -271,7 +271,25 @@ const Map<String, String> lnAr = {
   'My points balance': 'رصيد نقاطي',
   'Buy Points': 'شراء نقاط',
   'Payment': 'الدفع',
+  'Notification Detail': 'تفاصيل الإشعار',
 
+  'Play Solo': 'العب بمفردك',
+  'Start the Game': 'ابدأ اللعبة',
+  'Create Teams': 'إنشاء فرق',
+  'Videos': 'الفيديوهات',
+  'Images': 'الصور',
+  'Audio': 'الصوت',
+  'Documents': 'الوثائق',
+
+  'Personal information': 'معلومات شخصية',
+  'Attachments': 'المرفقات',
+  'Investigation report': 'تقرير التحقيق',
+  'Clues': 'القرائن',
+  'No evidence available': 'لا توجد أدلة متاحة',
+  'No videos available': 'لا توجد فيديوهات متاحة',
+  'No images available': 'لا توجد صور متاحة',
+  'No documents available': 'لا توجد وثائق متاحة',
+  'No audio files available': 'لا توجد ملفات صوتية متاحة',
   'Order detail': 'تفاصيل الطلب',
   'Order:': 'الطلب:',
   'Order number:': 'رقم الطلب:',
@@ -466,7 +484,7 @@ const Map<String, String> lnAr = {
   'Document': 'وثيقة',
   'Image': 'صورة',
   'Video': 'فيديو',
-  'Audio': 'صوت',
+
   'Link': 'رابط',
   'Website': 'موقع ويب',
   'Page': 'صفحة',

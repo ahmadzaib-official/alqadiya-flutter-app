@@ -192,6 +192,14 @@ class NotificationsListScreen extends StatelessWidget {
     BuildContext context,
     NotificationModel notification,
   ) {
+    final isArabic = Get.locale?.languageCode == 'ar';
+    final title = isArabic 
+        ? (notification.titleInArabic?.isNotEmpty == true ? notification.titleInArabic! : notification.title ?? "") 
+        : (notification.title ?? "");
+    final body = isArabic 
+        ? (notification.bodyInArabic?.isNotEmpty == true ? notification.bodyInArabic! : notification.body ?? "") 
+        : (notification.body ?? "");
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -223,7 +231,7 @@ class NotificationsListScreen extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      notification.title ?? "",
+                      title,
                       style: AppTextStyles.heading1().copyWith(
                         fontSize: 7.sp,
                         color: MyColors.white,
@@ -234,7 +242,7 @@ class NotificationsListScreen extends StatelessWidget {
                     // Description
                     Expanded(
                       child: Text(
-                        notification.body ?? "",
+                        body,
                         style: AppTextStyles.heading2().copyWith(
                           fontSize: 6.sp,
                           color: MyColors.white.withValues(alpha: 0.5),

@@ -135,10 +135,10 @@ class SettingsScreen extends StatelessWidget {
                       ? Icon(Icons.person, size: 20.sp, color: MyColors.white)
                       : null,
             ),
-            SizedBox(height: 15.h),
+            SizedBox(height: 10.h),
             // User Information
             _buildInfoRow('Name:'.tr, controller.user.value?.fullName ?? ""),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildInfoRow(
               'Phone:'.tr,
               controller.user.value?.phoneNumber != null
@@ -149,10 +149,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             if (controller.user.value?.email != null &&
                 controller.user.value!.email!.isNotEmpty) ...[
-              SizedBox(height: 8.h),
+              SizedBox(height: 6.h),
               _buildInfoRow('Email:'.tr, controller.user.value?.email ?? ""),
             ],
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
             // Edit profile button
             Builder(
               builder:
@@ -162,8 +162,8 @@ class SettingsScreen extends StatelessWidget {
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 12.h,
+                        horizontal: 10.w,
+                        vertical: 8.h,
                       ),
                       decoration: BoxDecoration(
                         color: MyColors.white.withValues(alpha: 0.05),
@@ -200,33 +200,26 @@ class SettingsScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 4.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              label,
-              textAlign: TextAlign.right,
-              style: AppTextStyles.bodyTextMedium16().copyWith(
-                fontSize: 6.sp,
-                color: MyColors.white.withValues(alpha: 0.7),
-              ),
+          Text(
+            label,
+            textAlign: TextAlign.right,
+            style: AppTextStyles.bodyTextMedium16().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.7),
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              width: 0.16.sw,
-              child: Text(
-                value,
-                overflow: TextOverflow.ellipsis,
-                textAlign:
-                    TextAlign.left, // Force left alignment for phone numbers
-                textDirection: TextDirection.ltr, // Force LTR for phone numbers
-                style: AppTextStyles.heading1().copyWith(
-                  fontSize: 6.sp,
-                  color: MyColors.white,
-                ),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              textAlign:
+                  TextAlign.left, // Force left alignment for phone numbers
+              textDirection: TextDirection.ltr, // Force LTR for phone numbers
+              style: AppTextStyles.heading1().copyWith(
+                fontSize: 6.sp,
+                color: MyColors.white,
               ),
             ),
           ),

@@ -32,6 +32,14 @@ class NotificationDetailScreen extends StatelessWidget {
       );
     }
 
+    final isArabic = Get.locale?.languageCode == 'ar';
+    final title = isArabic 
+        ? (notification.titleInArabic?.isNotEmpty == true ? notification.titleInArabic! : notification.title ?? "") 
+        : (notification.title ?? "");
+    final body = isArabic 
+        ? (notification.bodyInArabic?.isNotEmpty == true ? notification.bodyInArabic! : notification.body ?? "") 
+        : (notification.body ?? "");
+
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
       body: GameBackground(
@@ -91,7 +99,7 @@ class NotificationDetailScreen extends StatelessWidget {
 
                     // Title
                     Text(
-                      notification.title ?? '',
+                      title,
                       style: AppTextStyles.heading1().copyWith(
                         fontSize: 10.sp,
                         color: MyColors.white,
@@ -119,7 +127,7 @@ class NotificationDetailScreen extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.only(bottom: 20.h),
                           child: Text(
-                            notification.body ?? '',
+                            body,
                             style: AppTextStyles.bodyTextMedium16().copyWith(
                               fontSize: 7.sp,
                               color: MyColors.white.withValues(alpha: 0.8),

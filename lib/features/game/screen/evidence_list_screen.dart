@@ -227,7 +227,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   // mainAxisSize.min = tabs only as wide as their content (not full width)
 
   Widget _buildTabs() {
-    final tabs = ['Clues'.tr, 'Attachments'.tr];
+    final tabs = ['Clues', 'Attachments'];
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(tabs.length, (index) {
@@ -247,16 +247,36 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               borderRadius:
                   index == 0
                       ? BorderRadius.only(
-                        topLeft: Radius.circular(100.r),
-                        bottomLeft: Radius.circular(100.r),
+                        topLeft: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                        ),
+                        bottomLeft: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                        ),
+                        topRight: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                        ),
+                        bottomRight: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                        ),
                       )
                       : BorderRadius.only(
-                        topRight: Radius.circular(100.r),
-                        bottomRight: Radius.circular(100.r),
+                        topRight: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                        ),
+                        bottomRight: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                        ),
+                        topLeft: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                        ),
+                        bottomLeft: Radius.circular(
+                          Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                        ),
                       ),
             ),
             child: Text(
-              tabs[index],
+              tabs[index].tr,
               style: AppTextStyles.heading4().copyWith(
                 fontSize: 7.sp,
                 color:
@@ -283,19 +303,25 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
 
     if (evidenceController.evidences.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image(image: AssetImage(MyImages.mail)),
-            SizedBox(height: 20.h),
-            Text(
-              'No evidence available'.tr,
-              style: AppTextStyles.heading1().copyWith(
-                fontSize: 10.sp,
-                color: MyColors.white,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image(
+                image: AssetImage(MyImages.mail),
+                height: 0.2.sh, // Limit the height of the image to prevent overflow
+                fit: BoxFit.contain,
               ),
-            ),
-          ],
+              SizedBox(height: 20.h),
+              Text(
+                'No evidence available'.tr,
+                style: AppTextStyles.heading1().copyWith(
+                  fontSize: 10.sp,
+                  color: MyColors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -466,7 +492,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               SvgPicture.asset(icon, height: 10.sp),
               SizedBox(width: 5.w),
               Text(
-                title,
+                title.tr,
                 style: AppTextStyles.heading2().copyWith(
                   fontSize: 8.sp,
                   color: MyColors.white,
@@ -750,5 +776,4 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               ),
     );
   }
-
 }

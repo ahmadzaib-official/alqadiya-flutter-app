@@ -238,17 +238,21 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                         ? null
                         : index == 0
                         ? BorderRadius.only(
-                          topLeft: Radius.circular(100.r),
-                          bottomLeft: Radius.circular(100.r),
+                          topLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          bottomLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          topRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
+                          bottomRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
                         )
                         : BorderRadius.only(
-                          topRight: Radius.circular(100.r),
-                          bottomRight: Radius.circular(100.r),
+                          topRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          bottomRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          topLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
+                          bottomLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
                         ),
               ),
               child: Center(
                 child: Text(
-                  tabs[index],
+                  tabs[index].tr,
                   style: AppTextStyles.heading4().copyWith(
                     fontSize: 6.sp,
                     color: MyColors.white,
