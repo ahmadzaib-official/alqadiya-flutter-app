@@ -450,35 +450,58 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
 
-            if (whatsappContact != null) SizedBox(height: 10.h),
+            SizedBox(height: 10.h),
 
-            // Direct Call button
-            if (directCallContact != null)
-              _buildSettingsButton(
-                Get.locale?.languageCode == 'ar'
-                    ? directCallContact.labelAr
-                    : directCallContact.labelEn,
-                onTap: () async {
-                  final phoneNumber = directCallContact.contactValue;
-                  if (phoneNumber.isEmpty) return;
+            // Direct Call button - always show, uses whatsapp number
+            GestureDetector(
+              onTap: () async {
+                // Use whatsapp number for direct call as well
+                final phoneNumber = whatsappContact?.contactValue ?? '';
+                if (phoneNumber.isEmpty) return;
 
-                  // Clean the number - remove spaces, dashes, etc. Keep only digits and +
-                  final cleanNumber = phoneNumber.replaceAll(
-                    RegExp(r'[^\d+]'),
-                    '',
+                // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+                final cleanNumber = phoneNumber.replaceAll(
+                  RegExp(r'[^\d+]'),
+                  '',
+                );
+                final url = 'tel:$cleanNumber';
+
+                try {
+                  await launchUrl(
+                    Uri.parse(url),
+                    mode: LaunchMode.externalApplication,
                   );
-                  final url = 'tel:$cleanNumber';
-
-                  try {
-                    await launchUrl(
-                      Uri.parse(url),
-                      mode: LaunchMode.externalApplication,
-                    );
-                  } catch (e) {
-                    print('Could not launch phone call: $e');
-                  }
-                },
+                } catch (e) {
+                  print('Could not launch phone call: $e');
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: MyColors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(4.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Direct Call'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 6.sp,
+                        color: MyColors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ),
           ],
         );
       }),

@@ -29,7 +29,17 @@ class LocalizationService extends Translations {
 
   static Future<Locale> getCurrentLocale() async {
     final lang = Get.find<Preferences>().getString(AppStrings.language);
-    if (lang == null || lang.isEmpty) return fallbackLocale;
+    if (lang == null || lang.isEmpty) {
+      // Get.deviceLocale is null before GetMaterialApp initializes,
+      // so we use Flutter's native platformDispatcher which is available
+      // as long as WidgetsFlutterBinding.ensureInitialized() was called.
+      final deviceLocale =
+          WidgetsBinding.instance.platformDispatcher.locale;
+      if (deviceLocale.languageCode == 'ar') {
+        return const Locale('ar', 'SA');
+      }
+      return fallbackLocale;
+    }
     return LocalizationService()._getLocaleFromLanguage(lang);
   }
 }
