@@ -353,7 +353,6 @@ class SettingsScreen extends StatelessWidget {
       ),
       child: Obx(() {
         final whatsappContact = controller.whatsappContact;
-        final directCallContact = controller.directCallContact;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,

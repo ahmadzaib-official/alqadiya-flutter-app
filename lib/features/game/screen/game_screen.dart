@@ -120,8 +120,10 @@ class _GameScreenState extends State<GameScreen> {
         _startTimerFromGameDetails(gameController);
       }
 
-      // Fetch questions
-      questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+      questionController.getQuestionsByGame(
+        gameId: gameId,
+        language: Get.locale?.languageCode ?? 'en',
+      );
     } else {
       // Fallback: start timer with default values if game details not available
       timerController.startTimer(gameId: null);
@@ -170,10 +172,9 @@ class _GameScreenState extends State<GameScreen> {
             // Start timer with duration from game details after loading
             _startTimerFromGameDetails(gameController);
 
-            // Fetch questions
             questionController.getQuestionsByGame(
               gameId: gameId,
-              language: 'en',
+              language: Get.locale?.languageCode ?? 'en',
             );
           } else {
             // Fallback: try to get gameId from session details API
@@ -208,7 +209,10 @@ class _GameScreenState extends State<GameScreen> {
         // Fetch game details using the game ID
         await gameController.getGameDetail(gameId: gameId);
         _startTimerFromGameDetails(gameController);
-        questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+        questionController.getQuestionsByGame(
+          gameId: gameId,
+          language: Get.locale?.languageCode ?? 'en',
+        );
       } else {
         // Final fallback: start timer with default values
         timerController.startTimer(gameId: null);
@@ -283,7 +287,7 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     final selectedAnswer = question.answers[selectedAnswerIndex.value!];
-    if ( selectedAnswer.id == null) {
+    if (selectedAnswer.id == null) {
       CustomSnackbar.showError('Invalid answer selected'.tr);
       return;
     }
@@ -782,8 +786,7 @@ class _GameScreenState extends State<GameScreen> {
     int? selectedIndex,
   ) {
     final question = currentQuestion;
-    if (question == null ||
-        question.answers.isEmpty) {
+    if (question == null || question.answers.isEmpty) {
       return Center(
         child: Text(
           'No answers available'.tr,
