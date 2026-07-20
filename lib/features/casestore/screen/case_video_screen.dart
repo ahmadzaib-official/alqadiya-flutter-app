@@ -178,7 +178,6 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
                   videoController.checkAndShowControls();
                 },
                 showDivider: false,
-                onChromTap: () {},
                 actionButtons: GestureDetector(
                   onTap:
                       () async =>

@@ -64,4 +64,5 @@ class MyIcons {
   static const brown_close = 'assets/icons/brown_close.svg';
   static const green_check = 'assets/icons/green_check.svg';
   static const shopping = 'assets/icons/shopping.svg';
+  static const userImage = 'assets/icons/user.png';
 }

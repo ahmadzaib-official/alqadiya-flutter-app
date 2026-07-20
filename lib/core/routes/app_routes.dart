@@ -7,6 +7,9 @@ class AppRoutes {
   static const String verifcationSussesfulscreen = '/auth/verifyscreen';
   static const String forgotPassword = '/auth/forgotpassword';
   static const String newPasswordScreen = '/auth/newPasswordScreen';
+  static const String webViewScreen = '/auth/webview';
+  static const String privacyTermsScreen = '/auth/privacy-terms';
+  static const String offlineLegalScreen = '/auth/offline-legal';
   static const String onbordingScreen = '/onbordingScreen';
   static const String notifcationScreen = '/notifcation_screen';
   static const String submitBookingDetailes = '/submitBookingDetailes_screen';
@@ -32,6 +35,7 @@ class AppRoutes {
   static const String scoreboardScreen = '/scoreboardScreen';
   static const String gameResultSummaryScreen = '/gameResultSummaryScreen';
   static const String notificationsListScreen = '/notificationsListScreen';
+  static const String notificationDetailScreen = '/notificationDetailScreen';
   static const String transactionsListScreen = '/transactionsListScreen';
   static const String settingsScreen = '/settingsScreen';
   static const String buyPointsScreen = '/buyPointsScreen';

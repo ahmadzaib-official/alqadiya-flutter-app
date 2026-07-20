@@ -1,7 +1,7 @@
 name: alqadiya_game
 description: "A new Flutter project."
 publish_to: 'none' 
-version: 1.0.0+2
+version: 1.0.0+5
 environment:
   sdk: ^3.7.2
 
@@ -43,6 +43,11 @@ dependencies:
   cached_video_player_plus: ^4.0.4
   video_player: ^2.10.1
   logger: ^2.6.2
+  webview_flutter: ^4.10.0
+  firebase_messaging: ^15.2.10
+  flutter_local_notifications: ^20.1.0
+  device_info_plus: ^11.2.0
+
 
 
 dev_dependencies:

@@ -92,7 +92,7 @@ class GameController extends GetxController {
       }
 
       if (selectedDifficulty.value.isNotEmpty) {
-        body["difficulty"] = "[${selectedDifficulty.value.toLowerCase()}]";
+        body["difficulty"] = selectedDifficulty.value.toLowerCase();
       }
 
       if (minPoints.value > 0 || maxPoints.value < 100) {

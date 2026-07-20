@@ -68,7 +68,6 @@ class PaymentController extends GetxController {
 
   /// Verify discount code
   void verifyDiscountCode() {
-    // TODO: Implement actual discount code validation
     isDiscountVerified.value = discountCode.value.isNotEmpty;
   }
 

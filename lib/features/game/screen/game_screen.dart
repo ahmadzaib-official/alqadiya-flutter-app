@@ -120,8 +120,10 @@ class _GameScreenState extends State<GameScreen> {
         _startTimerFromGameDetails(gameController);
       }
 
-      // Fetch questions
-      questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+      questionController.getQuestionsByGame(
+        gameId: gameId,
+        language: Get.locale?.languageCode ?? 'en',
+      );
     } else {
       // Fallback: start timer with default values if game details not available
       timerController.startTimer(gameId: null);
@@ -170,10 +172,9 @@ class _GameScreenState extends State<GameScreen> {
             // Start timer with duration from game details after loading
             _startTimerFromGameDetails(gameController);
 
-            // Fetch questions
             questionController.getQuestionsByGame(
               gameId: gameId,
-              language: 'en',
+              language: Get.locale?.languageCode ?? 'en',
             );
           } else {
             // Fallback: try to get gameId from session details API
@@ -208,7 +209,10 @@ class _GameScreenState extends State<GameScreen> {
         // Fetch game details using the game ID
         await gameController.getGameDetail(gameId: gameId);
         _startTimerFromGameDetails(gameController);
-        questionController.getQuestionsByGame(gameId: gameId, language: 'en');
+        questionController.getQuestionsByGame(
+          gameId: gameId,
+          language: Get.locale?.languageCode ?? 'en',
+        );
       } else {
         // Final fallback: start timer with default values
         timerController.startTimer(gameId: null);
@@ -283,7 +287,7 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     final selectedAnswer = question.answers[selectedAnswerIndex.value!];
-    if (selectedAnswer == null || selectedAnswer.id == null) {
+    if (selectedAnswer.id == null) {
       CustomSnackbar.showError('Invalid answer selected'.tr);
       return;
     }
@@ -386,7 +390,6 @@ class _GameScreenState extends State<GameScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(
@@ -638,8 +641,7 @@ class _GameScreenState extends State<GameScreen> {
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      if (question.hints != null &&
-                                          question.hints!.isNotEmpty)
+                                      if (question.hints.isNotEmpty)
                                         _buildHintButton(question),
                                       SizedBox(width: 8.h),
                                       // Question Text
@@ -709,35 +711,31 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildHintButton(QuestionModel question) {
-    final hint = question.hints.firstOrNull;
-    final pointsCost = hint?.pointsCost ?? 0;
+    final hints = question.hints;
+    if (hints.isEmpty) return SizedBox.shrink();
+
+    final totalPointsCost = hints.fold<int>(
+      0,
+      (sum, hint) => sum + (hint.pointsCost ?? 0),
+    );
 
     return GestureDetector(
       onTap: () {
-        if (hint == null) return;
-
         setState(() {
           hintUsed = true;
         });
 
-        // Handle hint button tap
-        final hintType = hint.hintType?.toLowerCase();
-        final mediaUrl = hint.mediaUrl ?? '';
-
+        // Show dialog with all hints
         showDialog(
           context: context,
           barrierDismissible: true,
           builder:
               (_) => VideoEvidenceDialog(
-                videoUrl: hintType == 'video' ? mediaUrl : null,
-                imageUrl: hintType == 'image' ? mediaUrl : null,
-                audioUrl: hintType == 'audio' ? mediaUrl : null,
-                documentUrl: hintType == 'document' ? mediaUrl : null,
-                hintType: hint.hintType,
-                title: hint.hintName ?? 'Hint'.tr,
+                hints: hints,
                 onContinue: () {},
-                showHintText: hint.hintDescription != null,
-                hintPoints: hint.pointsCost ?? 2,
+                onAllHintsViewed: () {
+                  // All hints have been viewed
+                },
               ),
         );
       },
@@ -759,15 +757,16 @@ class _GameScreenState extends State<GameScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Hint '.tr,
+              hints.length > 1 ? 'Hints '.tr : 'Hint '.tr,
               style: AppTextStyles.heading1().copyWith(
                 fontSize: 6.sp,
                 color: MyColors.white,
               ),
             ),
-            if (pointsCost > 0)
+
+            if (totalPointsCost > 0)
               Text(
-                '(-$pointsCost ${'Points'.tr})',
+                '(-$totalPointsCost ${'Points'.tr})',
                 style: AppTextStyles.captionSemiBold10().copyWith(
                   fontSize: 6.sp,
                   color: MyColors.white.withValues(alpha: 0.5),
@@ -787,9 +786,7 @@ class _GameScreenState extends State<GameScreen> {
     int? selectedIndex,
   ) {
     final question = currentQuestion;
-    if (question == null ||
-        question.answers == null ||
-        question.answers!.isEmpty) {
+    if (question == null || question.answers.isEmpty) {
       return Center(
         child: Text(
           'No answers available'.tr,

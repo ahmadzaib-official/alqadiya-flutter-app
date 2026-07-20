@@ -74,12 +74,16 @@ class HomeDrawerMenu extends StatelessWidget {
                       children: [
                         SvgPicture.asset(item.icon, width: 28.w, height: 28.h),
                         SizedBox(width: 10.w),
-                        Text(
-                          item.label,
-                          style: AppTextStyles.labelMedium14().copyWith(
-                            color: MyColors.white.withValues(alpha: 0.9),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 7.sp,
+                        Expanded(
+                          child: Text(
+                            item.label,
+                            style: AppTextStyles.labelMedium14().copyWith(
+                              color: MyColors.white.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 7.sp,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                       ],

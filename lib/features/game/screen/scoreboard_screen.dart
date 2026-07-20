@@ -79,7 +79,6 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
                 child: HomeHeader(
-                  onChromTap: () {},
                   title: Row(
                     children: [
                       Text(
@@ -448,6 +447,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
   Widget _buildTeamCard(BuildContext context, Team team) {
     final players = team.players;
+    final scoreboardController = Get.find<ScoreboardController>();
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
@@ -505,8 +505,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                           50.r,
                                         ),
                                         child:
-                                            (player.userPhotoUrl as String)
-                                                    .isNotEmpty
+                                            (player.userPhotoUrl?.isNotEmpty ??
+                                                    false)
                                                 ? CachedNetworkImage(
                                                   imageUrl:
                                                       player.userPhotoUrl ?? "",
@@ -626,7 +626,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${team.teamScore ?? 0}',
+                  '${scoreboardController.getTeamScore(team)}',
                   style: AppTextStyles.heading1().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
@@ -685,9 +685,9 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50.r),
                       child:
-                          (player.userPhotoUrl as String).isNotEmpty
+                          (player.userPhotoUrl?.isNotEmpty ?? false)
                               ? CachedNetworkImage(
-                                imageUrl: player.userPhotoUrl as String,
+                                imageUrl: player.userPhotoUrl ?? '',
                                 fit: BoxFit.cover,
                                 placeholder:
                                     (context, url) => Container(

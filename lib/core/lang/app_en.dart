@@ -3,11 +3,21 @@ const Map<String, String> enUS = {
   'start_now': 'Start Now',
   'back': 'Back',
   'next': 'Next',
+  'Recent Cases': 'Recent Cases',
+  'My Games': 'My Games',
+  'beginner': 'Beginner',
+  'easy': 'Easy',
+  'intermediate': 'Intermediate',
+  'medium': 'Medium',
+  'difficult': 'Difficult',
+  'hard': 'Hard',
+  'expert': 'Expert',
   'onboardingHeader1': 'Story-driven criminal\ninvestigation game',
   'onboardingDescription1':
       'The case combines immersive storytelling with\ninvestigative gameplay.',
   'onboardingHeader2': 'Story-driven criminal\ninvestigation game',
   'Welcome to\nBAZAR': 'Welcome to\nBAZAR',
+  "Points available in the balance": "Points available in the balance",
   'Discover\nChalets': "Discover\nChalets",
   'Earn & Redeem\nRewards': 'Earn & Redeem\nRewards',
   'Book dreamy chalets, earn rewards, and unlock exclusive add-ons — all in one app.':
@@ -162,6 +172,9 @@ const Map<String, String> enUS = {
   'Transactions': 'Transactions',
   'No transactions': 'No transactions',
   'Price ': 'Price ',
+  "Amount": "Amount",
+
+  'Purchase ': 'Purchase ',
   'Plan': 'Plan',
   'View receipt': 'View receipt',
   'No packages available': 'No packages available',
@@ -181,6 +194,7 @@ const Map<String, String> enUS = {
   'Team Da7i7': 'Team Da7i7',
   'Choose a leader for your team': 'Choose a leader for your team',
   'New Clue': 'New Clue',
+  'Don\'t have an account? Sign Up': 'Don\'t have an account? Sign Up',
   'No evidence details available': 'No evidence details available',
   'Add the case': 'Add the case',
   'Request Summary': 'Request Summary',
@@ -227,6 +241,7 @@ const Map<String, String> enUS = {
       'Secure payment and excellent customer service',
   'Pay now': 'Pay now',
   'KD': 'KD',
+  'No suspects available': 'No suspects available',
   'English': 'English',
   'Arabic': 'Arabic',
   'Error:': 'Error:',
@@ -235,24 +250,65 @@ const Map<String, String> enUS = {
       'Server error occurred. Please try again later',
   'Phone Number': 'Phone Number',
   'Leave Game?': 'Leave Game?',
+  "Are you sure you want to delete your account? This action cannot be undone.":
+      "Are you sure you want to delete your account? This action cannot be undone.",
   'Are you sure you want to leave the game?':
       'Are you sure you want to leave the game?',
   'Yes': 'Yes',
   'No': 'No',
-
+  'Waiting for the host to start the game...':
+      'Waiting for the host to start the game...',
+  'Drag and drop players into teams.': 'Drag and drop players into teams.',
+  'Share this code with friends to join.':
+      'Share this code with friends to join.',
+  'Game Result': 'Game Result',
+  'Team score': 'Team score',
+  "Main Page": "Main Page",
+  "Paste the code Game": "Paste the code Game",
+  "Game Code": "Game Code",
+  "My purchases": "My purchases",
+  "FAQ & Support": "FAQ & Support",
+  "Has the game started?\nYou\'ll only be on the scoreboard.":
+      "Has the game started?\nYou\'ll only be on the scoreboard.",
+  "Create teams": "Create teams",
+  "Second Team": "Second Team",
+  "First Team": "First Team",
+  "Name of the team": "Name of the team",
   // Settings and Profile
   'Name:': 'Name:',
   'Phone:': 'Phone:',
   'Email:': 'Email:',
+  "Notifications": "Notifications",
   'N/A': 'N/A',
   'General Settings': 'General Settings',
   'Terms and Privacy Policy': 'Terms and Privacy Policy',
   'Replay demonstration program': 'Replay demonstration program',
   'Support and guidance': 'Support and guidance',
   'Via WhatsApp': 'Via WhatsApp',
+
+  'Play Solo': 'Play Solo',
+  'Start the Game': 'Start the Game',
+  'Create Teams': 'Create Teams',
+  'Videos': 'Videos',
+  'Images': 'Images',
+  'Documents': 'Documents',
+
   'Direct Call': 'Direct Call',
+  'Personal information': 'Personal information',
+  'Attachments': 'Attachments',
+  'Investigation report': 'Investigation report',
+  'Clues': 'Clues',
+  'No evidence available': 'No evidence available',
+  'No videos available': 'No videos available',
+  'No images available': 'No images available',
+  'No documents available': 'No documents available',
+  'No audio files available': 'No audio files available',
+
   'My points balance': 'My points balance',
+
   'Buy Points': 'Buy Points',
+  'Notification Detail': 'Notification Detail',
+  'Buy points': 'Buy points',
   'Delete account': 'Delete account',
   'Logout': 'Logout',
   'Enter full name': 'Enter full name',
@@ -262,8 +318,13 @@ const Map<String, String> enUS = {
   'Delete Account': 'Delete Account',
   'Delete': 'Delete',
   'Edit profile': 'Edit profile',
+  'Payment': 'Payment',
   'Settings': 'Settings',
-
+  'Order detail': 'Order detail',
+  'Order:': 'Order:',
+  'Order number:': 'Order number:',
+  'Do you have a discount code?': 'Do you have a discount code?',
+  'Discount code': 'Discount code',
   // Game-specific translations
   'Scoreboard': 'Scoreboard',
   'Timer': 'Timer',
@@ -546,18 +607,28 @@ const Map<String, String> enUS = {
   'Accuracy': 'Accuracy',
   'Hints used': 'Hints used',
   'Suspect choosen': 'Suspect chosen',
+  'Difficulty': 'Difficulty',
+  'Duration': 'Duration',
+  'minutes': 'minutes',
+
+  // Tutorial screen translations
+  'Time taken to play': 'Time taken to play',
+  'Your Points here': 'Your Points here',
+  'Game status': 'Game status',
+  'Got it': 'Got it',
+
+  // Screen casting translations
+  'Cast to Device': 'Cast to Device',
+  'Scanning for devices...': 'Scanning for devices...',
+  'No devices found': 'No devices found',
+  'Make sure your casting device is on the same network':
+      'Make sure your casting device is on the same network',
+  'Cast Error': 'Cast Error',
+  'Stop Scanning': 'Stop Scanning',
+  'Scan Again': 'Scan Again',
 
   // Language selection hardcoded text
   'عربي': 'عربي',
-
-  // Difficulty levels
-  'beginner': 'beginner',
-  'easy': 'easy',
-  'intermediate': 'intermediate',
-  'medium': 'medium',
-  'difficult': 'difficult',
-  'hard': 'hard',
-  'expert': 'expert',
 
   // Network error messages
   'Authentication failed': 'Authentication failed',

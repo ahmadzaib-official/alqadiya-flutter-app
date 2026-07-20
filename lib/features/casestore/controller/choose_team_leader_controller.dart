@@ -236,45 +236,41 @@ class ChooseTeamLeaderController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final scoreboard = ScoreboardModel.fromJson(response.data);
 
-        if (scoreboard.teams != null) {
-          print('Scoreboard has ${scoreboard.teams!.length} teams');
-          // Find the team in scoreboard
-          final teamScore = scoreboard.teams!.firstWhereOrNull(
-            (t) => t.teamId == teamId,
+        print('Scoreboard has ${scoreboard.teams.length} teams');
+        // Find the team in scoreboard
+        final teamScore = scoreboard.teams.firstWhereOrNull(
+          (t) => t.teamId == teamId,
+        );
+
+        if (teamScore != null) {
+          print(
+            'Found team in scoreboard with ${teamScore.players.length} players',
           );
-
-          if (teamScore != null && teamScore.players != null) {
-            print(
-              'Found team in scoreboard with ${teamScore.players!.length} players',
+          final gameController = Get.find<GameController>();
+          return teamScore.players.map((player) {
+            // Find member in session players to get image URL
+            final member = gameController.sessionPlayers.firstWhereOrNull(
+              (m) => m.userId == player.userId || m.id == player.userId,
             );
-            final gameController = Get.find<GameController>();
-            return teamScore.players!.map((player) {
-              // Find member in session players to get image URL
-              final member = gameController.sessionPlayers.firstWhereOrNull(
-                (m) => m.userId == player.userId || m.id == player.userId,
-              );
 
-              // Use fallback image if userPhotoURL is empty or null
-              String imageUrl = member?.userPhotoURL ?? "";
-              if (imageUrl.isEmpty) {
-                imageUrl =
-                    "https://picsum.photos/200?random=${player.userId?.hashCode ?? 1}";
-              }
+            // Use fallback image if userPhotoURL is empty or null
+            String imageUrl = member?.userPhotoURL ?? "";
+            if (imageUrl.isEmpty) {
+              imageUrl =
+                  "https://picsum.photos/200?random=${player.userId?.hashCode ?? 1}";
+            }
 
-              print('Player: ${player.userName}, Image: $imageUrl');
-              return TeamLeader(
-                id: player.userId ?? '',
-                name: player.userName ?? 'Unknown',
-                imageUrl: imageUrl,
-              );
-            }).toList();
-          } else {
-            print('Team not found in scoreboard or no players');
-          }
+            print('Player: ${player.userName}, Image: $imageUrl');
+            return TeamLeader(
+              id: player.userId ?? '',
+              name: player.userName ?? 'Unknown',
+              imageUrl: imageUrl,
+            );
+          }).toList();
         } else {
-          print('Scoreboard has no teams');
+          print('Team not found in scoreboard or no players');
         }
-      } else {
+            } else {
         print('Scoreboard API returned status: ${response.statusCode}');
       }
     } catch (e) {

@@ -41,6 +41,7 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
         await LeaveDialog.showAndNavigateHome(context);
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: MyColors.backgroundColor,
         body: Obx(
           () => GameBackground(
@@ -59,7 +60,6 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(
@@ -96,107 +96,143 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
                 ),
                 // Body
                 Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Case Image
-                      Container(
-                        height: 0.45.sh,
-                        padding: EdgeInsets.all(12.sp),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.r),
-                          color: MyColors.black.withValues(alpha: 0.1),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                          bottom:
+                              MediaQuery.of(context).viewInsets.bottom + 20.h,
                         ),
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'First Team'.tr,
-                              style: AppTextStyles.heading1().copyWith(
-                                fontSize: 8.sp,
-                              ),
-                            ),
-                            SizedBox(height: 40.h),
-                            CustomTextfield(
-                              width: 0.25.sw,
-                              fieldTextSize: 7,
-                              hintFontSize: 7,
-                              horizentalContentPadding: 2,
-                              labelVisible: false,
-                              maxLines: 1,
-                              label: 'Name of the team'.tr,
-                              hintText: 'Name of the team'.tr,
-                              borderColor: MyColors.white,
-                              color: MyColors.white.withValues(alpha: 0.1),
-                              controller: firstTeamNameController,
-                              suffix: Icon(Icons.people_outline),
-                              keyboardType: TextInputType.name,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: IntrinsicHeight(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // First Team
+                                Flexible(
+                                  child: Container(
+                                    height: 0.45.sh,
+                                    padding: EdgeInsets.all(12.sp),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.r),
+                                      color: MyColors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'First Team'.tr,
+                                          style: AppTextStyles.heading1()
+                                              .copyWith(fontSize: 8.sp),
+                                        ),
+                                        SizedBox(height: 40.h),
+                                        CustomTextfield(
+                                          width: 0.25.sw,
+                                          fieldTextSize: 7,
+                                          hintFontSize: 7,
+                                          horizentalContentPadding: 2,
+                                          labelVisible: false,
+                                          maxLines: 1,
+                                          label: 'Name of the team'.tr,
+                                          hintText: 'Name of the team'.tr,
+                                          borderColor: MyColors.white,
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                          controller: firstTeamNameController,
+                                          suffix: Icon(Icons.people_outline),
+                                          keyboardType: TextInputType.name,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
 
-                      // Right Content
-                      Container(
-                        height: 0.45.sh,
-                        padding: EdgeInsets.all(12.sp),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.r),
-                          color: MyColors.black.withValues(alpha: 0.1),
-                        ),
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-
-                          children: [
-                            Text(
-                              'Second Team'.tr,
-                              style: AppTextStyles.heading1().copyWith(
-                                fontSize: 8.sp,
-                              ),
+                                // Second Team
+                                Flexible(
+                                  child: Container(
+                                    height: 0.45.sh,
+                                    padding: EdgeInsets.all(12.sp),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.r),
+                                      color: MyColors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Second Team'.tr,
+                                          style: AppTextStyles.heading1()
+                                              .copyWith(fontSize: 8.sp),
+                                        ),
+                                        SizedBox(height: 40.h),
+                                        CustomTextfield(
+                                          width: 0.25.sw,
+                                          fieldTextSize: 7,
+                                          hintFontSize: 7,
+                                          maxLines: 1,
+                                          horizentalContentPadding: 2,
+                                          labelVisible: false,
+                                          label: 'Name of the team'.tr,
+                                          hintText: 'Name of the team'.tr,
+                                          borderColor: MyColors.white,
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                          controller: secondTeamNameController,
+                                          suffix: Icon(Icons.people_outline),
+                                          keyboardType: TextInputType.name,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                StartPlayButton(
+                                  buttonWidth: 50.w,
+                                  buttonText: 'Next'.tr,
+                                  onTap: () {
+                                    if (firstTeamNameController
+                                            .text
+                                            .isNotEmpty &&
+                                        secondTeamNameController
+                                            .text
+                                            .isNotEmpty) {
+                                      Get.find<GameController>().createTeams(
+                                        firstTeamName:
+                                            firstTeamNameController.text,
+                                        secondTeamName:
+                                            secondTeamNameController.text,
+                                      );
+                                    } else {
+                                      CustomSnackbar.show(
+                                        message:
+                                            'Please enter both team names'.tr,
+                                        backgroundColor:
+                                            MyColors.redButtonColor,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 40.h),
-                            CustomTextfield(
-                              width: 0.25.sw,
-                              fieldTextSize: 7,
-                              hintFontSize: 7,
-                              maxLines: 1,
-                              horizentalContentPadding: 2,
-                              labelVisible: false,
-                              label: 'Name of the team'.tr,
-                              hintText: 'Name of the team'.tr,
-                              borderColor: MyColors.white,
-                              color: MyColors.white.withValues(alpha: 0.1),
-                              controller: secondTeamNameController,
-                              suffix: Icon(Icons.people_outline),
-                              keyboardType: TextInputType.name,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 8.w),
-                      StartPlayButton(
-                        buttonWidth: 50.w,
-                        buttonText: 'Next'.tr,
-                        onTap: () {
-                          if (firstTeamNameController.text.isNotEmpty &&
-                              secondTeamNameController.text.isNotEmpty) {
-                            Get.find<GameController>().createTeams(
-                              firstTeamName: firstTeamNameController.text,
-                              secondTeamName: secondTeamNameController.text,
-                            );
-                          } else {
-                            CustomSnackbar.show(
-                              message: 'Please enter both team names'.tr,
-                              backgroundColor: MyColors.redButtonColor,
-                            );
-                          }
-                        },
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ],

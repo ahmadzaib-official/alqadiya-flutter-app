@@ -16,6 +16,7 @@ class TeamContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<Player>(
+      // ignore: deprecated_member_use
       onAccept: (player) {
         // Find which team the player is currently in
         for (var t in controller.teams) {

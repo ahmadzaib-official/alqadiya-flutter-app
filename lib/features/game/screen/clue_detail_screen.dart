@@ -79,7 +79,6 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(

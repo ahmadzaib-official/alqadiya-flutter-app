@@ -3,6 +3,9 @@ import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/core/debug/debug_point.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/network/api_fetch.dart';
+import 'package:alqadiya_game/core/network/app_exceptions.dart';
+import 'package:dio/dio.dart';
+import 'package:alqadiya_game/core/services/notification_service.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +30,7 @@ class SignInController extends GetxController {
   final phorgetPhoneNumberController = TextEditingController();
   final newPassword = TextEditingController();
   final confirmPassword = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    serverClientId:
-        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   Future<void> enableLandscapeMode() async {
     await SystemChrome.setPreferredOrientations([
@@ -90,47 +89,71 @@ class SignInController extends GetxController {
       final response = await ApiFetch().signIn(body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data == 'Phone number not verified') {
-          CustomSnackbar.showError(
-            "Phone number not verified. Please verify your phone number.".tr,
-          );
+          // CustomSnackbar.showError(
+          //   "Phone number not verified. Please verify your phone number.".tr,
+          // );
           await verifyPhoneNumber();
           return;
         }
-        if (response.data['userId'] != null &&
-            response.data['accessToken'] != null) {
-          String userId = response.data['userId'];
-          String assesToken = response.data['accessToken'];
-          await Get.find<Preferences>().setString(AppStrings.userId, userId);
-          await Get.find<Preferences>().setString(
-            AppStrings.accessToken,
-            assesToken,
-          );
-
-          // Store refresh token if provided
-          if (response.data['refreshToken'] != null) {
+        if (response.data['role'] != null && response.data['role'] == 'admin') {
+          // show
+          // CustomSnackbar.showError(
+          //   'Phone number not found. Please contact support.',
+          // );
+        } else {
+          if (response.data['userId'] != null &&
+              response.data['accessToken'] != null) {
+            String userId = response.data['userId'];
+            String assesToken = response.data['accessToken'];
+            await Get.find<Preferences>().setString(AppStrings.userId, userId);
             await Get.find<Preferences>().setString(
-              AppStrings.refreshToken,
-              response.data['refreshToken'],
+              AppStrings.accessToken,
+              assesToken,
             );
+
+            // Store refresh token if provided
+            if (response.data['refreshToken'] != null) {
+              await Get.find<Preferences>().setString(
+                AppStrings.refreshToken,
+                response.data['refreshToken'],
+              );
+            }
+
+            // Register FCM token with backend after successful login
+            await NotificationService.registerDeviceToken();
           }
+
+          if (Get.context != null)
+            Navigator.pop(Get.context!); // Close progress dialog
+          Get.find<Preferences>().remove(AppStrings.isGuest);
+          // await SystemChrome.setPreferredOrientations([
+          //   DeviceOrientation.landscapeLeft,
+          //   DeviceOrientation.landscapeRight,
+          // ]);
+
+          // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+          Get.offAllNamed(AppRoutes.homescreen);
+          // clearField();
         }
-
-        if (Get.context != null)
-          Navigator.pop(Get.context!); // Close progress dialog
-        Get.find<Preferences>().remove(AppStrings.isGuest);
-        // await SystemChrome.setPreferredOrientations([
-        //   DeviceOrientation.landscapeLeft,
-        //   DeviceOrientation.landscapeRight,
-        // ]);
-
-        // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-        Get.offAllNamed(AppRoutes.homescreen);
-        // clearField();
       }
+    } on DioException catch (e) {
+      if (e.error is AppException) {
+        if ((e.error as AppException).message == 'Phone number not verified') {
+          await verifyPhoneNumber();
+          return;
+        }
+        CustomSnackbar.showError((e.error as AppException).message);
+      } else {
+        CustomSnackbar.showError(e.message ?? 'Unknown error occurred');
+      }
+    } on AppException catch (e) {
+      if (e.message == 'Phone number not verified') {
+        await verifyPhoneNumber();
+        return;
+      }
+      CustomSnackbar.showError(e.message);
     } catch (e) {
-      // if (Get.context != null)
-      // Navigator.pop(Get.context!);
-      CustomSnackbar.showError("${'Failed to sign in:'.tr} ${e.toString()}");
+      CustomSnackbar.showError(e.toString());
     } finally {
       isSignIn(false);
     }
@@ -173,6 +196,10 @@ class SignInController extends GetxController {
             true,
           );
           Get.find<Preferences>().remove(AppStrings.isGuest);
+
+          // Register FCM token with backend after successful login
+          await NotificationService.registerDeviceToken();
+
           // Navigate to dashboard
           Get.offAllNamed(AppRoutes.homescreen);
         }
@@ -223,6 +250,9 @@ class SignInController extends GetxController {
             AppStrings.accessToken,
             assesToken,
           );
+
+          // Register FCM token with backend after successful login
+          await NotificationService.registerDeviceToken();
         }
 
         if (Get.context != null)

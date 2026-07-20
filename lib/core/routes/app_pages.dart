@@ -3,6 +3,9 @@ import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/auth/forgotpassword/forgetpassword_screen.dart';
 import 'package:alqadiya_game/features/auth/forgotpassword/newPasswordScreen.dart';
 import 'package:alqadiya_game/features/auth/otp_screen.dart';
+import 'package:alqadiya_game/features/auth/screen/webview_screen.dart';
+import 'package:alqadiya_game/features/auth/screen/privacy_terms_screen.dart';
+import 'package:alqadiya_game/features/auth/screen/offline_legal_screen.dart';
 import 'package:alqadiya_game/features/auth/signin_screen.dart';
 import 'package:alqadiya_game/features/auth/signup_screen.dart';
 import 'package:alqadiya_game/features/auth/verification_successful_screen.dart';
@@ -23,6 +26,7 @@ import 'package:alqadiya_game/features/game/screen/clue_detail_screen.dart';
 import 'package:alqadiya_game/features/game/screen/scoreboard_screen.dart';
 import 'package:alqadiya_game/features/game/screen/game_result_summary_screen.dart';
 import 'package:alqadiya_game/features/notifcation/screen/notifications_list_screen.dart';
+import 'package:alqadiya_game/features/notifcation/screen/notification_detail_screen.dart';
 import 'package:alqadiya_game/features/payment/controller/payment_provider.dart';
 import 'package:alqadiya_game/features/settings/controller/settings_provider.dart';
 import 'package:alqadiya_game/features/transactions/screen/transactions_list_screen.dart';
@@ -37,7 +41,7 @@ import 'package:alqadiya_game/features/onboard/onboarding_screen.dart';
 import 'package:alqadiya_game/features/splash/controller/splash_controller.dart';
 import 'package:alqadiya_game/features/splash/splash_screen.dart';
 import 'package:alqadiya_game/features/tutorial/screen/tutorial_screen.dart';
-import 'package:alqadiya_game/features/transactions/screen/transaction_receipt_screen.dart';
+import 'package:alqadiya_game/features/transactions/screen/%20c.dart';
 import 'package:alqadiya_game/features/notifcation/controller/notifications_provider.dart';
 import 'package:alqadiya_game/features/transactions/controller/transactions_provider.dart';
 import 'package:alqadiya_game/features/transactions/controller/transaction_receipt_controller.dart';
@@ -130,6 +134,24 @@ class AppPages {
     GetPage(
       name: AppRoutes.newPasswordScreen,
       page: () => NewPasswordScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.webViewScreen,
+      page: () => const WebViewScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.privacyTermsScreen,
+      page: () => const PrivacyTermsScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
+      name: AppRoutes.offlineLegalScreen,
+      page: () => const OfflineLegalScreen(),
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),
@@ -337,6 +359,12 @@ class AppPages {
       transitionDuration: Duration(milliseconds: 600),
     ),
     GetPage(
+      name: AppRoutes.notificationDetailScreen,
+      page: () => const NotificationDetailScreen(),
+      transition: Transition.circularReveal,
+      transitionDuration: Duration(milliseconds: 600),
+    ),
+    GetPage(
       name: AppRoutes.transactionsListScreen,
       page: () => TransactionsListScreen(),
       bindings: [
@@ -377,6 +405,7 @@ class AppPages {
       bindings: [
         BindingsBuilder(() {
           Get.lazyPut(() => PaymentController());
+          Get.lazyPut(() => UserController());
         }),
       ],
       // transition: Transition.circularReveal,

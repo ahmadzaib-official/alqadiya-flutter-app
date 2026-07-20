@@ -13,70 +13,42 @@ import 'package:video_player/video_player.dart';
 
 /// Dialog to display hints with support for video, image, audio, and document types
 class VideoEvidenceDialog extends StatefulWidget {
-  final String title;
-  final String? videoUrl;
-  final String? imageUrl;
-  final String? audioUrl;
-  final String? documentUrl;
-  final String? hintType; // 'video', 'image', 'audio', 'document'
+  final List<dynamic> hints; // List of Hint objects
   final VoidCallback? onContinue;
-  final bool showHintText;
-  final int hintPoints;
+  final VoidCallback? onAllHintsViewed;
 
   const VideoEvidenceDialog({
     super.key,
-    required this.title,
-    this.videoUrl,
-    this.imageUrl,
-    this.audioUrl,
-    this.documentUrl,
-    this.hintType,
+    required this.hints,
     this.onContinue,
-    this.showHintText = false,
-    this.hintPoints = 2,
+    this.onAllHintsViewed,
   });
-
-  /// Get media URL based on hint type
-  String? get mediaUrl {
-    final type = hintType?.toLowerCase();
-    switch (type) {
-      case 'video':
-        return videoUrl;
-      case 'image':
-        return imageUrl;
-      case 'audio':
-        return audioUrl;
-      case 'document':
-        return documentUrl;
-      default:
-        // Fallback: check URLs in order
-        return videoUrl ?? imageUrl ?? audioUrl ?? documentUrl;
-    }
-  }
-
-  /// Get normalized hint type
-  String? get normalizedHintType => hintType?.toLowerCase();
 
   @override
   State<VideoEvidenceDialog> createState() => _VideoEvidenceDialogState();
 }
 
 class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
-  bool _showText = false;
-  late VideoPlayerStateController _videoController;
-  late AudioPlayerController _audioController;
-  final String _videoControllerTag =
-      'video_hint_${DateTime.now().millisecondsSinceEpoch}';
-  final String _audioControllerTag =
-      'audio_hint_${DateTime.now().millisecondsSinceEpoch}';
+  int _currentHintIndex = 0;
+  bool _allHintsViewed = false; // Track if all hints have been viewed
+  VideoPlayerStateController? _videoController;
+  AudioPlayerController? _audioController;
+  String? _videoControllerTag;
+  String? _audioControllerTag;
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
+    _initializeControllersForCurrentHint();
   }
 
-  void _initializeControllers() {
+  void _initializeControllersForCurrentHint() {
+    // Create unique tags for each hint
+    _videoControllerTag =
+        'video_hint_${_currentHintIndex}_${DateTime.now().millisecondsSinceEpoch}';
+    _audioControllerTag =
+        'audio_hint_${_currentHintIndex}_${DateTime.now().millisecondsSinceEpoch}';
+
     // Initialize video controller
     _videoController = Get.put(
       VideoPlayerStateController(),
@@ -90,28 +62,95 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     );
 
     // Initialize media based on type
+    _initializeCurrentHintMedia();
+  }
+
+  void _initializeCurrentHintMedia() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final type = widget.normalizedHintType;
-      final mediaUrl = widget.mediaUrl;
+      if (widget.hints.isEmpty ||
+          _videoController == null ||
+          _audioController == null)
+        return;
+
+      final currentHint = widget.hints[_currentHintIndex];
+      final type = _getHintType(currentHint)?.toLowerCase();
+      final mediaUrl = _getMediaUrl(currentHint);
 
       if (type == 'video' && mediaUrl != null && mediaUrl.isNotEmpty) {
-        _videoController.initializeVideo(mediaUrl);
+        _videoController!.initializeVideo(mediaUrl);
       } else if (type == 'audio' && mediaUrl != null && mediaUrl.isNotEmpty) {
-        _audioController.initializeAudio(mediaUrl);
+        _audioController!.initializeAudio(mediaUrl);
       }
     });
   }
 
-  @override
-  void dispose() {
-    if (Get.isRegistered<VideoPlayerStateController>(
-      tag: _videoControllerTag,
-    )) {
+  String? _getHintType(dynamic hint) {
+    return hint.hintType;
+  }
+
+  String? _getMediaUrl(dynamic hint) {
+    return hint.mediaUrl;
+  }
+
+  String _getHintTitle(dynamic hint) {
+    return hint.hintName ?? 'Hint'.tr;
+  }
+
+  int _getHintPoints(dynamic hint) {
+    return hint.pointsCost ?? 0;
+  }
+
+  int _getTotalPoints() {
+    return widget.hints.fold<int>(0, (sum, hint) => sum + _getHintPoints(hint));
+  }
+
+  void _disposeCurrentControllers() {
+    // Dispose current controllers completely
+    if (_videoControllerTag != null &&
+        Get.isRegistered<VideoPlayerStateController>(
+          tag: _videoControllerTag,
+        )) {
       Get.delete<VideoPlayerStateController>(tag: _videoControllerTag);
     }
-    if (Get.isRegistered<AudioPlayerController>(tag: _audioControllerTag)) {
+    if (_audioControllerTag != null &&
+        Get.isRegistered<AudioPlayerController>(tag: _audioControllerTag)) {
       Get.delete<AudioPlayerController>(tag: _audioControllerTag);
     }
+    _videoController = null;
+    _audioController = null;
+    _videoControllerTag = null;
+    _audioControllerTag = null;
+  }
+
+  void _handleContinueButton() {
+    if (_allHintsViewed) {
+      // All hints viewed and text shown - close dialog
+      Navigator.of(context).pop();
+      widget.onContinue?.call();
+    } else if (_currentHintIndex < widget.hints.length - 1) {
+      // More hints to show - go to next hint
+      _goToNextHint();
+    } else {
+      // Last hint viewed - show the "hint used" text
+      _disposeCurrentControllers();
+      setState(() {
+        _allHintsViewed = true;
+      });
+      widget.onAllHintsViewed?.call();
+    }
+  }
+
+  void _goToNextHint() {
+    _disposeCurrentControllers();
+    setState(() {
+      _currentHintIndex++;
+    });
+    _initializeControllersForCurrentHint();
+  }
+
+  @override
+  void dispose() {
+    _disposeCurrentControllers();
     super.dispose();
   }
 
@@ -153,10 +192,18 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildHeader() {
+    if (widget.hints.isEmpty) return SizedBox.shrink();
+
+    final currentHint = widget.hints[_currentHintIndex];
+    final title = _getHintTitle(currentHint);
+    final totalHints = widget.hints.length;
+    final currentHintNumber = _currentHintIndex + 1;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SvgPicture.asset(
             MyIcons.bulb,
@@ -166,16 +213,30 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
           ),
           SizedBox(width: 4.w),
           Flexible(
-            child: Text(
-              widget.title,
-              style: AppTextStyles.heading1().copyWith(
-                fontSize: 8.sp,
-                color: MyColors.white,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            child: Column(
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.heading1().copyWith(
+                    fontSize: 8.sp,
+                    color: MyColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (totalHints > 1) ...[
+                  SizedBox(height: 4.h),
+                  Text(
+                    '${'Hint'.tr} $currentHintNumber/$totalHints',
+                    style: AppTextStyles.captionRegular10().copyWith(
+                      fontSize: 6.sp,
+                      color: MyColors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
@@ -186,7 +247,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   Widget _buildContent() {
     // Calculate max available height: 90% screen - header (~50h) - buttons (~80h) - padding (~32h)
     final maxAvailableHeight = (0.9.sh - 162.h).clamp(100.h, 500.h);
-    final preferredHeight = _showText ? 20.h : _getContentHeight();
+    final preferredHeight = _allHintsViewed ? 20.h : _getContentHeight();
     final contentHeight =
         preferredHeight > maxAvailableHeight
             ? maxAvailableHeight
@@ -195,24 +256,27 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: maxAvailableHeight,
-        minHeight: _showText ? 20.h : 0,
+        minHeight: _allHintsViewed ? 20.h : 0,
       ),
       child: Container(
         width: double.infinity,
         height: contentHeight,
-        margin: EdgeInsets.symmetric(horizontal: _showText ? 5.w : 12.w),
+        margin: EdgeInsets.symmetric(horizontal: _allHintsViewed ? 5.w : 12.w),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.r)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.r),
           clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: _showText ? _buildTextContent() : _buildMediaContent(),
+          child: _allHintsViewed ? _buildTextContent() : _buildMediaContent(),
         ),
       ),
     );
   }
 
   double _getContentHeight() {
-    final type = widget.normalizedHintType;
+    if (widget.hints.isEmpty) return 200.h;
+
+    final currentHint = widget.hints[_currentHintIndex];
+    final type = _getHintType(currentHint)?.toLowerCase();
     switch (type) {
       case 'video':
         return 200.h;
@@ -228,8 +292,11 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildMediaContent() {
-    final type = widget.normalizedHintType;
-    final mediaUrl = widget.mediaUrl;
+    if (widget.hints.isEmpty) return _buildEmptyState();
+
+    final currentHint = widget.hints[_currentHintIndex];
+    final type = _getHintType(currentHint)?.toLowerCase();
+    final mediaUrl = _getMediaUrl(currentHint);
 
     if (mediaUrl == null || mediaUrl.isEmpty) {
       return _buildEmptyState();
@@ -239,42 +306,34 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
       case 'video':
         return _buildVideoContent();
       case 'image':
-        return _buildImageContent();
+        return _buildImageContent(mediaUrl);
       case 'audio':
         return _buildAudioContent();
       case 'document':
-        return _buildDocumentContent();
+        return _buildDocumentContent(mediaUrl);
       default:
-        // Fallback: try to determine type from available URLs
-        if (widget.videoUrl != null && widget.videoUrl!.isNotEmpty) {
-          return _buildVideoContent();
-        } else if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty) {
-          return _buildImageContent();
-        } else if (widget.audioUrl != null && widget.audioUrl!.isNotEmpty) {
-          return _buildAudioContent();
-        } else if (widget.documentUrl != null &&
-            widget.documentUrl!.isNotEmpty) {
-          return _buildDocumentContent();
-        }
         return _buildEmptyState();
     }
   }
 
   Widget _buildVideoContent() {
+    if (_videoController == null)
+      return _buildLoadingState('Loading video...'.tr);
+
     return Obx(() {
-      if (_videoController.isVideoLoading.value) {
+      if (_videoController!.isVideoLoading.value) {
         return _buildLoadingState('Loading video...'.tr);
       }
 
-      if (_videoController.hasError) {
+      if (_videoController!.hasError) {
         return _buildErrorState(
-          _videoController.errorMessage.value ?? 'Failed to load video'.tr,
-          onRetry: () => _videoController.retry(),
+          _videoController!.errorMessage.value ?? 'Failed to load video'.tr,
+          onRetry: () => _videoController!.retry(),
         );
       }
 
-      if (_videoController.isVideoInitialized.value &&
-          _videoController.videoController != null) {
+      if (_videoController!.isVideoInitialized.value &&
+          _videoController!.videoController != null) {
         return _buildVideoPlayer();
       }
 
@@ -283,18 +342,21 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildVideoPlayer() {
+    if (_videoController == null)
+      return _buildLoadingState('Loading video...'.tr);
+
     return Obx(
       () => Stack(
         fit: StackFit.expand,
         children: [
-          VideoPlayer(_videoController.videoController!),
+          VideoPlayer(_videoController!.videoController!),
           GestureDetector(
-            onTap: () => _videoController.togglePlayback(),
+            onTap: () => _videoController!.togglePlayback(),
             child: Container(
               color: Colors.transparent,
               child: Center(
                 child: AnimatedOpacity(
-                  opacity: _videoController.isVideoPlaying.value ? 0.0 : 1.0,
+                  opacity: _videoController!.isVideoPlaying.value ? 0.0 : 1.0,
                   duration: const Duration(milliseconds: 300),
                   child: Container(
                     padding: EdgeInsets.all(6.w),
@@ -303,7 +365,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      _videoController.isVideoPlaying.value
+                      _videoController!.isVideoPlaying.value
                           ? Icons.pause
                           : Icons.play_arrow,
                       color: Colors.white,
@@ -319,9 +381,9 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     );
   }
 
-  Widget _buildImageContent() {
+  Widget _buildImageContent(String imageUrl) {
     return CachedNetworkImage(
-      imageUrl: widget.mediaUrl!,
+      imageUrl: imageUrl,
       fit: BoxFit.cover,
       placeholder: (context, url) => _buildLoadingState('Loading image...'.tr),
       errorWidget:
@@ -330,18 +392,23 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildAudioContent() {
+    if (_audioController == null)
+      return _buildLoadingState('Loading audio...'.tr);
+
     return Obx(() {
-      if (_audioController.isLoading.value) {
+      if (_audioController!.isLoading.value) {
         return _buildLoadingState('Loading audio...'.tr);
       }
 
-      if (_audioController.hasError) {
+      if (_audioController!.hasError) {
         return _buildErrorState(
-          _audioController.errorMessage.value ?? 'Failed to load audio'.tr,
+          _audioController!.errorMessage.value ?? 'Failed to load audio'.tr,
           onRetry: () {
-            final url = widget.mediaUrl;
+            if (widget.hints.isEmpty) return;
+            final currentHint = widget.hints[_currentHintIndex];
+            final url = _getMediaUrl(currentHint);
             if (url != null && url.isNotEmpty) {
-              _audioController.initializeAudio(url);
+              _audioController!.initializeAudio(url);
             }
           },
         );
@@ -356,7 +423,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
             children: [
               // Play/Pause button
               GestureDetector(
-                onTap: () => _audioController.togglePlayPause(),
+                onTap: () => _audioController!.togglePlayPause(),
                 child: Container(
                   width: 25.w,
                   height: 25.w,
@@ -365,7 +432,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _audioController.isPlaying.value
+                    _audioController!.isPlaying.value
                         ? Icons.pause
                         : Icons.play_arrow,
                     color: Colors.white,
@@ -378,7 +445,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(2.r),
                 child: LinearProgressIndicator(
-                  value: _audioController.progress,
+                  value: _audioController!.progress,
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   minHeight: 4.h,
@@ -386,9 +453,9 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
               ),
               SizedBox(height: 8.h),
               // Duration info
-              if (_audioController.duration.value != Duration.zero)
+              if (_audioController!.duration.value != Duration.zero)
                 Text(
-                  '${_formatDuration(_audioController.position.value)} / ${_formatDuration(_audioController.duration.value)}',
+                  '${_formatDuration(_audioController!.position.value)} / ${_formatDuration(_audioController!.duration.value)}',
                   style: AppTextStyles.captionRegular10().copyWith(
                     color: Colors.white,
                     fontSize: 8.sp,
@@ -401,7 +468,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     });
   }
 
-  Widget _buildDocumentContent() {
+  Widget _buildDocumentContent(String documentUrl) {
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.all(16.w),
@@ -422,12 +489,12 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
             SizedBox(height: 10.h),
             GestureDetector(
               onTap: () {
-                final url = widget.mediaUrl;
-                if (url != null && url.isNotEmpty) {
+                if (documentUrl.isNotEmpty) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PDFViewerScreen(pdfUrl: url),
+                      builder:
+                          (context) => PDFViewerScreen(pdfUrl: documentUrl),
                     ),
                   );
                 }
@@ -556,11 +623,17 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildTextContent() {
+    if (widget.hints.isEmpty) return SizedBox.shrink();
+
+    final totalPoints = _getTotalPoints();
+
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Text(
-          'Hint used - score will be affected (-${widget.hintPoints} points).',
+          widget.hints.length > 1
+              ? 'All hints used - score will be affected (-$totalPoints points total).'
+              : 'Hint used - score will be affected (-$totalPoints points).',
           style: AppTextStyles.bodyTextMedium16().copyWith(
             fontSize: 6.sp,
             color: MyColors.white.withValues(alpha: 0.5),
@@ -572,19 +645,16 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
   }
 
   Widget _buildContinueButton() {
+    final hasMoreHints = _currentHintIndex < widget.hints.length - 1;
+    final buttonText =
+        _allHintsViewed
+            ? 'Continue'.tr
+            : (hasMoreHints ? 'Next Hint'.tr : 'Continue'.tr);
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: GestureDetector(
-        onTap: () {
-          if (_showText) {
-            Navigator.of(context).pop();
-            widget.onContinue?.call();
-          } else {
-            setState(() {
-              _showText = true;
-            });
-          }
-        },
+        onTap: _handleContinueButton,
         child: Container(
           alignment: Alignment.center,
           width: 100.w,
@@ -601,7 +671,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
             ],
           ),
           child: Text(
-            'Continue'.tr,
+            buttonText,
             style: AppTextStyles.heading1().copyWith(
               fontSize: 8.sp,
               color: MyColors.white,
@@ -618,16 +688,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
       top: -10,
       right: -10,
       child: GestureDetector(
-        onTap: () {
-          if (_showText) {
-            Navigator.of(context).pop();
-            widget.onContinue?.call();
-          } else {
-            setState(() {
-              _showText = true;
-            });
-          }
-        },
+        onTap: _handleContinueButton,
         child: SvgPicture.asset(MyIcons.close_brown_rounded),
       ),
     );

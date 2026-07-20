@@ -110,6 +110,39 @@ class ScoreboardController extends GetxController {
     return {'answered': answered, 'total': total, 'progress': progress};
   }
 
+  /// Helper to get a stable team score value.
+  ///
+  /// Some clients / responses may have `teamScore` missing or `null`,
+  /// so we fall back to:
+  /// - sum of member `individualScore`
+  /// - or sum of `questionProgress.score`
+  /// to avoid showing 0 on one device and a value on another.
+  int getTeamScore(Team team) {
+    // 1) Prefer explicit teamScore from API if present
+    if (team.teamScore != null) {
+      return team.teamScore!;
+    }
+
+    // 2) Fallback: sum of member individual scores (if available)
+    final memberScores = team.members
+        .map((m) => m.individualScore ?? 0)
+        .fold<int>(0, (sum, s) => sum + s);
+    if (memberScores > 0) {
+      return memberScores;
+    }
+
+    // 3) Fallback: sum of question progress scores
+    final questionScores = team.questionProgress
+        .map((q) => q.score ?? 0)
+        .fold<int>(0, (sum, s) => sum + s);
+    if (questionScores > 0) {
+      return questionScores;
+    }
+
+    // 4) Default
+    return 0;
+  }
+
   // Helper method to get player avatar with fallback
   String getPlayerAvatar(String? photoURL) {
     return photoURL ?? '';

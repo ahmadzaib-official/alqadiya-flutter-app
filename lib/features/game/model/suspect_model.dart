@@ -105,7 +105,7 @@ class SuspectAttachment {
   factory SuspectAttachment.fromJson(Map<String, dynamic> json) {
     return SuspectAttachment(
       id: json["id"],
-      attachmentNameEn: json["attachmentNameEn"],
+      attachmentNameEn: json["attachmentName"],
       attachmentNameAr: json["attachmentNameAr"],
       attachmentType: json["attachmentType"],
       mediaUrl: json["mediaUrl"],

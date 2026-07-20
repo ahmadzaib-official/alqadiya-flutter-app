@@ -112,6 +112,7 @@ class ApiFetch extends GetxService {
       url: url,
       requestBody: {'fileType': fileType},
       isAuthRequired: true,
+      excludeLanguage: true,
     );
     return response;
   }

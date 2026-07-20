@@ -1,0 +1,484 @@
+import 'dart:convert';
+import 'dart:developer' show log;
+import 'dart:io' show Platform;
+import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/repository/device_token_repository.dart';
+import 'package:alqadiya_game/core/services/device_info_service.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:alqadiya_game/core/routes/app_routes.dart';
+
+class NotificationService {
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  // Add static flag to prevent multiple initializations
+  static bool _isInitialized = false;
+  static bool _isListenersSet = false;
+
+  String? fCMToken;
+
+  /// Public method to manually register/update device token with backend
+  /// Call this after user login or when you need to ensure token is registered
+  static Future<void> registerDeviceToken() async {
+    try {
+      final pref = Get.find<Preferences>();
+      final fcmToken = pref.getString(AppStrings.fcmToken);
+
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        log('Manually registering existing FCM token with backend');
+        await _registerTokenWithBackend(fcmToken);
+      } else {
+        log('No FCM token found, requesting new token');
+        await getDeviceToken();
+      }
+    } catch (e) {
+      log('Error in manual token registration: $e');
+    }
+  }
+
+  // Enhanced device token retrieval and registration
+  static Future<String?> getDeviceToken({int maxRetries = 3}) async {
+    try {
+      final Preferences pref = Get.find<Preferences>();
+      NotificationSettings settings = await FirebaseMessaging.instance
+          .requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+            criticalAlert: true,
+          );
+
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        log('User granted permission');
+
+        String? token = await FirebaseMessaging.instance.getToken();
+        log("FCM Device token : $token");
+
+        if (token != null) {
+          await pref.setString(AppStrings.fcmToken, token);
+
+          // Register token with backend
+          await _registerTokenWithBackend(token);
+        }
+
+        return token;
+      } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        log('User denied permission');
+        return null;
+      } else {
+        log('Permission not determined or restricted');
+        return null;
+      }
+    } catch (e) {
+      // Silently handle SERVICE_NOT_AVAILABLE errors (common in emulators)
+      if (e.toString().contains('SERVICE_NOT_AVAILABLE')) {
+        log("Firebase service unavailable (emulator/no Google Play Services)");
+        return null;
+      }
+
+      log("Failed to get device token: $e");
+      if (maxRetries > 0) {
+        log("Retrying after 10 seconds...");
+        await Future.delayed(const Duration(seconds: 10));
+        return getDeviceToken(maxRetries: maxRetries - 1);
+      } else {
+        return null;
+      }
+    }
+  }
+
+  /// Register FCM token with backend
+  static Future<void> _registerTokenWithBackend(String fcmToken) async {
+    try {
+      // Check if user is authenticated
+      final pref = Get.find<Preferences>();
+      final accessToken = pref.getString(AppStrings.accessToken);
+
+      if (accessToken == null || accessToken.isEmpty) {
+        log('User not authenticated, skipping token registration');
+        return;
+      }
+
+      // Get device info
+      final deviceType = DeviceInfoService.getDeviceType();
+      final deviceId = await DeviceInfoService.getDeviceId();
+
+      log('Registering device token with backend...');
+      log('Device Type: $deviceType');
+      log('Device ID: $deviceId');
+
+      // Call repository to register token
+      final repository = DeviceTokenRepository();
+      final response = await repository.registerDeviceToken(
+        deviceToken: fcmToken,
+        deviceType: deviceType,
+        deviceId: deviceId,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('Device token registered successfully with backend');
+      } else {
+        log('Failed to register device token: ${response.statusCode}');
+      }
+    } catch (e) {
+      log('Error registering device token with backend: $e');
+      // Don't throw - token registration failure shouldn't break the app
+    }
+  }
+
+  static Future initNotifications() async {
+    // Prevent multiple initializations
+    if (_isInitialized) {
+      log('NotificationService already initialized, skipping...');
+      return;
+    }
+
+    _isInitialized = true;
+    log('Initializing NotificationService...');
+
+    await getDeviceToken();
+
+    // Initialize local notifications first
+    await localNotiInit();
+
+    // Set up Firebase messaging listeners only once
+    if (!_isListenersSet) {
+      await _setupFirebaseListeners();
+      _isListenersSet = true;
+    }
+  }
+
+  static Future<void> _setupFirebaseListeners() async {
+    log('Setting up Firebase messaging listeners...');
+
+    // Get initial message if the application has been opened from a terminated state
+    final RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    // Check notification data
+    if (initialMessage != null) {
+      debugPrint('getInitialMessage() -> data: ${initialMessage.data}');
+      onNotificationClick(openRoute: true, message: initialMessage);
+    }
+
+    // Listen for when user presses a notification message displayed via FCM
+    // Note: A Stream event will be sent if the app has opened from a background state (not terminated)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      debugPrint('onMessageOpenedApp() -> data: ${message.data}');
+      onNotificationClick(openRoute: true, message: message);
+    });
+
+    // Listen for incoming push notifications when app is in foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      debugPrint('onMessage() -> data: ${message.data}');
+      onNotificationClick(message: message);
+    });
+
+    // Listen for FCM token refresh
+    FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) async {
+      log('FCM Token refreshed: $newToken');
+
+      // Save new token locally
+      final pref = Get.find<Preferences>();
+      await pref.setString(AppStrings.fcmToken, newToken);
+
+      // Register new token with backend
+      await _registerTokenWithBackend(newToken);
+    });
+
+    log('Firebase messaging listeners set up successfully');
+  }
+
+  // Add method to reset initialization (useful for testing or if needed)
+  static void resetInitialization() {
+    _isInitialized = false;
+    _isListenersSet = false;
+    log('NotificationService initialization reset');
+  }
+
+  // Handle notification click. E.g: open a route..
+  static Future<void> onNotificationClick({
+    bool openRoute = false,
+    RemoteMessage? message,
+  }) async {
+    if (message == null) return;
+
+    // Show local notification for foreground messages
+    if (!openRoute && message.notification != null) {
+      await showSimpleNotification(
+        title: message.notification!.title ?? "",
+        body: message.notification!.body ?? "",
+        payload: jsonEncode(message.data),
+      );
+      return;
+    }
+
+    // Handle navigation when notification is tapped (openRoute = true)
+    if (openRoute) {
+      await _handleNotificationNavigation(message);
+    }
+  }
+
+  /// Handle navigation based on notification data payload
+  static Future<void> _handleNotificationNavigation(
+    RemoteMessage message,
+  ) async {
+    try {
+      final data = message.data;
+
+      // Extract notification type from data payload
+      final String? notificationType = data['type'] ?? data['notificationType'];
+      final String? notificationId = data['id'] ?? data['notificationId'];
+
+      log(
+        'Navigating from notification - type: $notificationType, id: $notificationId',
+      );
+
+      // Navigate based on notification type
+      if (notificationType != null) {
+        switch (notificationType) {
+          case 'notification':
+          case 'general':
+            // Navigate to notification detail screen
+            if (notificationId != null) {
+              Get.toNamed(
+                AppRoutes.notificationDetailScreen,
+                arguments: {'id': notificationId},
+              );
+            } else {
+              Get.toNamed(AppRoutes.notificationsListScreen);
+            }
+            break;
+
+          case 'case':
+          case 'case_update':
+            // Navigate to case detail
+            if (notificationId != null) {
+              Get.toNamed(
+                AppRoutes.caseDetailScreen,
+                arguments: {'caseId': notificationId},
+              );
+            } else {
+              Get.toNamed(AppRoutes.caseStoreScreen);
+            }
+            break;
+
+          case 'game':
+          case 'game_invite':
+            // Navigate to game screen
+            Get.toNamed(AppRoutes.gameScreen);
+            break;
+
+          case 'payment':
+          case 'transaction':
+            // Navigate to transactions
+            Get.toNamed(AppRoutes.transactionsListScreen);
+            break;
+
+          case 'points':
+          case 'buy_points':
+            // Navigate to buy points
+            Get.toNamed(AppRoutes.buyPointsScreen);
+            break;
+
+          default:
+            // Default: navigate to notifications list
+            Get.toNamed(AppRoutes.notificationsListScreen);
+            break;
+        }
+      } else {
+        // No type specified, navigate to notifications list
+        Get.toNamed(AppRoutes.notificationsListScreen);
+      }
+    } catch (e) {
+      log('Error handling notification navigation: $e');
+      // Fallback to notifications list
+      Get.toNamed(AppRoutes.notificationsListScreen);
+    }
+  }
+
+  // Enhanced local notification initialization
+  static Future localNotiInit() async {
+    // Android settings with proper channel configuration
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    // iOS settings
+    final DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
+
+    // Common initialization settings
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+        );
+
+    // Platform-specific permission handling
+    if (Platform.isAndroid) {
+      // Create notification channels for Android
+      await _createNotificationChannels();
+
+      // Request notification permission for Android
+      await _flutterLocalNotificationPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.requestNotificationsPermission();
+    } else if (Platform.isIOS) {
+      // Request notification permission for iOS
+      final bool? permissionGranted = await _flutterLocalNotificationPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+
+      if (!(permissionGranted ?? false)) {
+        return;
+      }
+    }
+
+    // Initialize notifications with the settings
+    await _flutterLocalNotificationPlugin.initialize(
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: onNotificationTap,
+    );
+  }
+
+  // Create Android notification channels
+  static Future<void> _createNotificationChannels() async {
+    final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+        _flutterLocalNotificationPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
+
+    if (androidImplementation != null) {
+      // Regular notification channel
+      const AndroidNotificationChannel generalChannel =
+          AndroidNotificationChannel(
+            'general_notifications',
+            'General Notifications',
+            description: 'General app notifications',
+            importance: Importance.high,
+            playSound: true,
+            enableVibration: true,
+          );
+
+      await androidImplementation.createNotificationChannel(generalChannel);
+    }
+  }
+
+  // Handle notification tap from local notification
+  static void onNotificationTap(NotificationResponse response) {
+    log('Local notification tapped: ${response.payload}');
+
+    if (response.payload != null && response.payload!.isNotEmpty) {
+      try {
+        final Map<String, dynamic> data = jsonDecode(response.payload!);
+        final String? notificationType =
+            data['type'] ?? data['notificationType'];
+        final String? notificationId = data['id'] ?? data['notificationId'];
+
+        log(
+          'Navigating from local notification - type: $notificationType, id: $notificationId',
+        );
+
+        // Navigate based on notification type
+        if (notificationType != null) {
+          switch (notificationType) {
+            case 'notification':
+            case 'general':
+              if (notificationId != null) {
+                Get.toNamed(
+                  AppRoutes.notificationDetailScreen,
+                  arguments: {'id': notificationId},
+                );
+              } else {
+                Get.toNamed(AppRoutes.notificationsListScreen);
+              }
+              break;
+            case 'case':
+            case 'case_update':
+              if (notificationId != null) {
+                Get.toNamed(
+                  AppRoutes.caseDetailScreen,
+                  arguments: {'caseId': notificationId},
+                );
+              } else {
+                Get.toNamed(AppRoutes.caseStoreScreen);
+              }
+              break;
+            case 'game':
+            case 'game_invite':
+              Get.toNamed(AppRoutes.gameScreen);
+              break;
+            case 'payment':
+            case 'transaction':
+              Get.toNamed(AppRoutes.transactionsListScreen);
+              break;
+            case 'points':
+            case 'buy_points':
+              Get.toNamed(AppRoutes.buyPointsScreen);
+              break;
+            default:
+              Get.toNamed(AppRoutes.notificationsListScreen);
+              break;
+          }
+        } else {
+          Get.toNamed(AppRoutes.notificationsListScreen);
+        }
+      } catch (e) {
+        log('Error parsing notification payload: $e');
+        Get.toNamed(AppRoutes.notificationsListScreen);
+      }
+    }
+  }
+
+  // Enhanced simple notification
+  static Future showSimpleNotification({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+          'general_notifications',
+          'General Notifications',
+          channelDescription: 'General app notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          ticker: 'ticker',
+          playSound: true,
+          enableVibration: true,
+        );
+
+    const DarwinNotificationDetails iOSNotificationDetails =
+        DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
+
+    NotificationDetails notificationDetails = const NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: iOSNotificationDetails,
+    );
+
+    await _flutterLocalNotificationPlugin.show(
+      id: 0,
+      title: title,
+      body: body,
+      notificationDetails: notificationDetails,
+      payload: payload,
+    );
+  }
+}

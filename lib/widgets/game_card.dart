@@ -108,7 +108,7 @@ class GameCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      game.difficulty ?? 'Unknown'.tr,
+                      game.difficulty?.tr ?? 'Unknown'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 6.sp,
@@ -165,7 +165,7 @@ class GameCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 6.sp,
+                        fontSize: 5.5.sp,
                         height: 1.4, // Line height multiplier
                       ),
                       textAlign: TextAlign.center,
@@ -173,8 +173,9 @@ class GameCard extends StatelessWidget {
                   ),
                   SizedBox(height: 10.h),
 
+
                   // Buy Button
-                  if (game.isPurchased! && !game.isPlayed!) ...[
+                  if ((game.isPurchased ?? false) && !(game.isPlayed ?? false)) ...[
                     Container(
                       width: 60.w,
                       padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -208,7 +209,7 @@ class GameCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ] else if (game.isPlayed! && game.isPurchased!) ...[
+                  ] else if ((game.isPlayed ?? false) && (game.isPurchased ?? false)) ...[
                     Container(
                       width: 60.w,
                       padding: EdgeInsets.symmetric(vertical: 10.h),

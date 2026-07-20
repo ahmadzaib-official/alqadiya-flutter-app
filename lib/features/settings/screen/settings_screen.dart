@@ -1,6 +1,8 @@
+import 'dart:developer' show log;
 import 'dart:io';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -18,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,7 +44,6 @@ class SettingsScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
               child: HomeHeader(
-                onChromTap: () {},
                 title: Text(
                   'Settings'.tr,
                   style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -80,7 +82,12 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 10.w),
                     // Right Column - Support and Guidance
-                    Expanded(child: _buildSupportSection(settingsController)),
+                    Expanded(
+                      child: _buildSupportSection(
+                        settingsController,
+                        userController,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -128,23 +135,24 @@ class SettingsScreen extends StatelessWidget {
                       ? Icon(Icons.person, size: 20.sp, color: MyColors.white)
                       : null,
             ),
-            SizedBox(height: 15.h),
+            SizedBox(height: 10.h),
             // User Information
             _buildInfoRow('Name:'.tr, controller.user.value?.fullName ?? ""),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildInfoRow(
               'Phone:'.tr,
               controller.user.value?.phoneNumber != null
-                  ? '${controller.user.value?.phoneNumber ?? ""}'
-                  // ? '${controller.user.value?.callingCode ?? ""} ${controller.user.value?.phoneNumber ?? ""}'
+                  ? _formatPhoneNumber(
+                    controller.user.value?.phoneNumber?.toString() ?? "",
+                  )
                   : "N/A".tr,
             ),
             if (controller.user.value?.email != null &&
                 controller.user.value!.email!.isNotEmpty) ...[
-              SizedBox(height: 8.h),
+              SizedBox(height: 6.h),
               _buildInfoRow('Email:'.tr, controller.user.value?.email ?? ""),
             ],
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
             // Edit profile button
             Builder(
               builder:
@@ -154,8 +162,8 @@ class SettingsScreen extends StatelessWidget {
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 12.h,
+                        horizontal: 10.w,
+                        vertical: 8.h,
                       ),
                       decoration: BoxDecoration(
                         color: MyColors.white.withValues(alpha: 0.05),
@@ -192,30 +200,26 @@ class SettingsScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 4.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              label,
-              textAlign: TextAlign.right,
-              style: AppTextStyles.bodyTextMedium16().copyWith(
-                fontSize: 6.sp,
-                color: MyColors.white.withValues(alpha: 0.7),
-              ),
+          Text(
+            label,
+            textAlign: TextAlign.right,
+            style: AppTextStyles.bodyTextMedium16().copyWith(
+              fontSize: 6.sp,
+              color: MyColors.white.withValues(alpha: 0.7),
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              width: 0.16.sw,
-              child: Text(
-                value,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.heading1().copyWith(
-                  fontSize: 6.sp,
-                  color: MyColors.white,
-                ),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              textAlign:
+                  TextAlign.left, // Force left alignment for phone numbers
+              textDirection: TextDirection.ltr, // Force LTR for phone numbers
+              style: AppTextStyles.heading1().copyWith(
+                fontSize: 6.sp,
+                color: MyColors.white,
               ),
             ),
           ),
@@ -267,96 +271,232 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 15.h),
-          // Terms and Privacy Policy button
+          // Terms & Conditions button
           _buildSettingsButton(
-            'Terms and Privacy Policy'.tr,
-            onTap: () {
-              // Navigate to terms and privacy policy
+            'Terms and Conditions'.tr,
+            onTap: () async {
+              final url = Uri.parse('${ServerConfig.base}terms-conditions');
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              } catch (e) {
+                print('Could not launch URL: $e');
+              }
+            },
+          ),
+          SizedBox(height: 6.h),
+          // OR divider
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: MyColors.white.withValues(alpha: 0.2),
+                  thickness: 1,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                child: Text(
+                  'OR'.tr,
+                  style: AppTextStyles.heading2().copyWith(
+                    fontSize: 6.sp,
+                    color: MyColors.white.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Divider(
+                  color: MyColors.white.withValues(alpha: 0.2),
+                  thickness: 1,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 6.h),
+          // Privacy Policy button
+          _buildSettingsButton(
+            'Privacy Policy'.tr,
+            onTap: () async {
+              final url = Uri.parse('${ServerConfig.base}privacy-policy');
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              } catch (e) {
+                print('Could not launch URL: $e');
+              }
             },
           ),
           SizedBox(height: 10.h),
           // Replay demonstration program button
-          _buildSettingsButton(
-            'Replay demonstration program'.tr,
-            onTap: () {
-              // Navigate to tutorial/demo
-            },
-          ),
+          // _buildSettingsButton(
+          //   'Replay demonstration program'.tr,
+          //   onTap: () {
+          //     // Navigate to tutorial/demo
+          //   },
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildSupportSection(SettingsController controller) {
+  Widget _buildSupportSection(
+    SettingsController controller,
+    UserController userController,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 6.w),
       decoration: BoxDecoration(
         color: MyColors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20.r),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Support and guidance'.tr,
-            style: AppTextStyles.heading1().copyWith(
-              fontSize: 8.sp,
-              color: MyColors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 15.h),
-          // Via WhatsApp button
-          GestureDetector(
-            onTap: () async {
-              final url =
-                  'https://wa.me/1234567890'; // Replace with actual WhatsApp number
-              if (await canLaunchUrl(Uri.parse(url))) {
-                await launchUrl(Uri.parse(url));
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: MyColors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(4.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
+      child: Obx(() {
+        final whatsappContact = controller.whatsappContact;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Support and guidance'.tr,
+              style: AppTextStyles.heading1().copyWith(
+                fontSize: 8.sp,
+                color: MyColors.white,
+                fontWeight: FontWeight.w600,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Via WhatsApp'.tr,
-                    style: AppTextStyles.heading1().copyWith(
-                      fontSize: 6.sp,
-                      color: MyColors.white,
+            ),
+            SizedBox(height: 15.h),
+            // Via WhatsApp button
+            if (whatsappContact != null)
+              GestureDetector(
+                onTap: () async {
+                  final phoneNumber = whatsappContact.contactValue;
+                  if (phoneNumber.isEmpty) return;
+
+                  // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+                  final cleanNumber = phoneNumber.replaceAll(
+                    RegExp(r'[^\d+]'),
+                    '',
+                  );
+
+                  // Try WhatsApp scheme first (works on both iOS and Android when WhatsApp is installed)
+                  final whatsappUrl = 'whatsapp://send?phone=$cleanNumber';
+                  final whatsappUri = Uri.parse(whatsappUrl);
+
+                  // Try to launch WhatsApp directly
+                  try {
+                    bool launched = await launchUrl(
+                      whatsappUri,
+                      mode: LaunchMode.externalApplication,
+                    );
+
+                    // If WhatsApp scheme fails, fallback to web URL
+                    if (!launched) {
+                      final webUrl = 'https://wa.me/$cleanNumber';
+                      await launchUrl(
+                        Uri.parse(webUrl),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  } catch (e) {
+                    // If both fail, try web URL as last resort
+                    final webUrl = 'https://wa.me/$cleanNumber';
+                    await launchUrl(
+                      Uri.parse(webUrl),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 5.w,
+                    vertical: 12.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: MyColors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(4.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        offset: Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        Get.locale?.languageCode == 'ar'
+                            ? whatsappContact.labelAr
+                            : whatsappContact.labelEn,
+                        style: AppTextStyles.heading1().copyWith(
+                          fontSize: 6.sp,
+                          color: MyColors.white,
+                        ),
+                      ),
+                      SizedBox(width: 5.w),
+                      SvgPicture.asset(MyIcons.whatsapp),
+                    ],
+                  ),
+                ),
+              ),
+
+            SizedBox(height: 10.h),
+
+            // Direct Call button - always show, uses whatsapp number
+            GestureDetector(
+              onTap: () async {
+                // Use whatsapp number for direct call as well
+                final phoneNumber = whatsappContact?.contactValue ?? '';
+                if (phoneNumber.isEmpty) return;
+
+                // Clean the number - remove spaces, dashes, etc. Keep only digits and +
+                final cleanNumber = phoneNumber.replaceAll(
+                  RegExp(r'[^\d+]'),
+                  '',
+                );
+                final url = 'tel:$cleanNumber';
+
+                try {
+                  await launchUrl(
+                    Uri.parse(url),
+                    mode: LaunchMode.externalApplication,
+                  );
+                } catch (e) {
+                  print('Could not launch phone call: $e');
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: MyColors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(4.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
                     ),
-                  ),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(MyIcons.whatsapp),
-                ],
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Direct Call'.tr,
+                      style: AppTextStyles.heading1().copyWith(
+                        fontSize: 6.sp,
+                        color: MyColors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 10.h),
-          // Direct Call button
-          _buildSettingsButton(
-            'Direct Call'.tr,
-            onTap: () async {
-              final url = 'tel:+1234567890'; // Replace with actual phone number
-              if (await canLaunchUrl(Uri.parse(url))) {
-                await launchUrl(Uri.parse(url));
-              }
-            },
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
@@ -443,8 +583,13 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     Spacer(flex: 1),
-
-                    SvgPicture.asset(MyIcons.arrow_right),
+                    Get.locale?.languageCode == 'en'
+                        ? SvgPicture.asset(MyIcons.arrow_right)
+                        : Icon(
+                          Icons.arrow_forward_ios,
+                          size: 6.sp,
+                          color: const Color.fromARGB(255, 214, 213, 213),
+                        ),
                     Spacer(flex: 1),
                   ],
                 ),
@@ -493,6 +638,23 @@ class SettingsScreen extends StatelessWidget {
                   DeviceOrientation.portraitUp,
                   DeviceOrientation.portraitDown,
                 ]);
+                if (userController.user.value?.authProvider == 'google') {
+                  final GoogleSignIn _googleSignIn = GoogleSignIn();
+                  final isSignedIn = await _googleSignIn.isSignedIn();
+
+                  if (isSignedIn) {
+                    await _googleSignIn.signOut();
+                    try {
+                      await _googleSignIn.disconnect();
+                    } catch (e) {
+                      log('Google disconnect failed: \$e');
+                      // Continue with logout even if disconnect fails
+                    }
+                    log('Google sign out successful');
+                  } else {
+                    log('User not signed in to Google');
+                  }
+                }
                 Get.offAllNamed(AppRoutes.sigin);
               },
               child: Container(
@@ -666,7 +828,48 @@ class SettingsScreen extends StatelessWidget {
                             textFontSize: 10,
                             hintFontSize: 8,
                             width: 150.w,
+                            prefix: Container(
+                              margin: EdgeInsets.only(left: 4.w),
+                              padding: EdgeInsets.only(right: 6.w),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Kuwait flag emoji
+                                  Text(
+                                    '🇰🇼',
+                                    style: TextStyle(fontSize: 8.sp),
+                                  ),
+                                  SizedBox(width: 2.w),
+                                  Text(
+                                    '+965',
+                                    style: AppTextStyles.labelMedium14()
+                                        .copyWith(
+                                          color: MyColors.white.withValues(
+                                            alpha: 0.7,
+                                          ),
+                                          fontSize: 6.sp,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(9),
+                            ],
                           ),
+
                           // SizedBox(height: 12.h),
                           // // Email Field
                           // DenseTextField(
@@ -735,6 +938,10 @@ class SettingsScreen extends StatelessWidget {
                                             ? null
                                             : () async {
                                               print('Save button tapped');
+                                              // Set loading immediately - covers photo upload phase
+                                              controller
+                                                  .isUpdatingProfile
+                                                  .value = true;
                                               String? finalPhotoId = photoId;
 
                                               // Upload photo if selected
@@ -752,6 +959,10 @@ class SettingsScreen extends StatelessWidget {
                                                   );
                                                 } else {
                                                   print('Photo upload failed');
+                                                  // Reset loading since we're returning early
+                                                  controller
+                                                      .isUpdatingProfile
+                                                      .value = false;
                                                   return; // Stop if upload failed
                                                 }
                                               }
@@ -854,6 +1065,7 @@ class SettingsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+                          SizedBox(height: 8.h),
                         ],
                       ),
                     ),
@@ -1016,5 +1228,22 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
     );
+  }
+
+  /// Format phone number with proper country code handling and RTL support
+  String _formatPhoneNumber(String phoneNumber) {
+    if (phoneNumber.isEmpty) return "N/A";
+
+    // Remove any existing + or country code prefixes to avoid duplication
+    String cleanNumber = phoneNumber.replaceAll(RegExp(r'^\+?965'), '');
+
+    // Remove any trailing + signs (RTL issue)
+    cleanNumber = cleanNumber.replaceAll(RegExp(r'\+$'), '');
+
+    // Remove any non-digit characters
+    cleanNumber = cleanNumber.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Always format as +965XXXXXXXX for consistent display
+    return '+965$cleanNumber';
   }
 }

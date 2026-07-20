@@ -1,6 +1,7 @@
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DenseTextField extends StatelessWidget {
@@ -12,6 +13,8 @@ class DenseTextField extends StatelessWidget {
   final double? textFontSize;
   final double? hintFontSize;
   final double? width;
+  final Widget? prefix;
+  final List<TextInputFormatter>? inputFormatters;
 
   const DenseTextField({
     super.key,
@@ -23,6 +26,8 @@ class DenseTextField extends StatelessWidget {
     this.textFontSize,
     this.hintFontSize,
     this.width,
+    this.prefix,
+    this.inputFormatters,
   });
 
   @override
@@ -49,29 +54,37 @@ class DenseTextField extends StatelessWidget {
             border: Border.all(color: MyColors.redButtonColor, width: 1.w),
             color: MyColors.redButtonColor.withValues(alpha: 0.1),
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            style: AppTextStyles.bodyTextRegular16().copyWith(
-              color: MyColors.white,
-              fontSize: 7.sp,
-            ),
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 8.w,
-                vertical: 6.h,
+          child: Row(
+            children: [
+              if (prefix != null) prefix!,
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  inputFormatters: inputFormatters,
+                  style: AppTextStyles.bodyTextRegular16().copyWith(
+                    color: MyColors.white,
+                    fontSize: 7.sp,
+                  ),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 6.h,
+                    ),
+                    hintText: hintText,
+                    hintStyle: AppTextStyles.labelRegular14().copyWith(
+                      fontSize: (hintFontSize ?? 9).sp,
+                      color: MyColors.white.withValues(alpha: 0.5),
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                  ),
+                ),
               ),
-              hintText: hintText,
-              hintStyle: AppTextStyles.labelRegular14().copyWith(
-                fontSize: (hintFontSize ?? 9).sp,
-                color: MyColors.white.withValues(alpha: 0.5),
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-            ),
+            ],
           ),
         ),
       ],

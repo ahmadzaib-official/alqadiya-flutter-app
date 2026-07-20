@@ -161,7 +161,7 @@ class GameTimerController extends GetxController {
   /// Callback when timer reaches zero
   void _onTimerFinished() {
     // Timer finished - should handle game timeout
-    // TODO: Navigate to game result screen or show timeout dialog
+
     // Get.toNamed(AppRoutes.gameResultScreen, arguments: {'reason': 'timeout'});
   }
 

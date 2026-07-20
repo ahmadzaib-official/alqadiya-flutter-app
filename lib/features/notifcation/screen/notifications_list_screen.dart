@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
+import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/notifcation/controller/notifications_provider.dart';
@@ -31,7 +32,6 @@ class NotificationsListScreen extends StatelessWidget {
                 children: [
                   // Header
                   HomeHeader(
-                    onChromTap: () {},
                     title: Text(
                       'Notifications'.tr,
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -106,39 +106,47 @@ class NotificationsListScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 10.h),
-                            // Mark as read button
-                            GestureDetector(
-                              onTap: () {
-                                notificationsController.markAllAsRead();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20.w,
-                                  vertical: 12.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: MyColors.white.withValues(alpha: 0.05),
-                                  borderRadius: BorderRadius.circular(4.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      offset: Offset(0, 2),
-                                      blurRadius: 4,
+                            // Mark as read button - only show if there are unread notifications
+                            Obx(() {
+                              if (!notificationsController
+                                  .hasUnreadNotifications) {
+                                return SizedBox.shrink(); // Hide button if all read
+                              }
+                              return GestureDetector(
+                                onTap: () {
+                                  notificationsController.markAllAsRead();
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 12.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: MyColors.white.withValues(
+                                      alpha: 0.05,
                                     ),
-                                  ],
-                                ),
-                                child: Text(
-                                  'Mark as read'.tr,
-                                  style: AppTextStyles.heading1().copyWith(
-                                    fontSize: 7.sp,
-                                    color: MyColors.white,
-                                    fontWeight: FontWeight.w600,
+                                    borderRadius: BorderRadius.circular(4.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        offset: Offset(0, 2),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    'Mark as read'.tr,
+                                    style: AppTextStyles.heading1().copyWith(
+                                      fontSize: 7.sp,
+                                      color: MyColors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                         );
                       }),
@@ -184,6 +192,14 @@ class NotificationsListScreen extends StatelessWidget {
     BuildContext context,
     NotificationModel notification,
   ) {
+    final isArabic = Get.locale?.languageCode == 'ar';
+    final title = isArabic 
+        ? (notification.titleInArabic?.isNotEmpty == true ? notification.titleInArabic! : notification.title ?? "") 
+        : (notification.title ?? "");
+    final body = isArabic 
+        ? (notification.bodyInArabic?.isNotEmpty == true ? notification.bodyInArabic! : notification.body ?? "") 
+        : (notification.body ?? "");
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -215,7 +231,7 @@ class NotificationsListScreen extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      notification.title ?? "",
+                      title,
                       style: AppTextStyles.heading1().copyWith(
                         fontSize: 7.sp,
                         color: MyColors.white,
@@ -226,7 +242,7 @@ class NotificationsListScreen extends StatelessWidget {
                     // Description
                     Expanded(
                       child: Text(
-                        notification.body ?? "",
+                        body,
                         style: AppTextStyles.heading2().copyWith(
                           fontSize: 6.sp,
                           color: MyColors.white.withValues(alpha: 0.5),
@@ -246,7 +262,11 @@ class NotificationsListScreen extends StatelessWidget {
           // Right side - View more button
           GestureDetector(
             onTap: () {
-              // Navigate to notification detail or perform action
+              // Navigate to notification detail screen
+              Get.toNamed(
+                AppRoutes.notificationDetailScreen,
+                arguments: notification,
+              );
             },
             child: Container(
               width: 60.w,
@@ -268,7 +288,11 @@ class NotificationsListScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 1),
-                  SvgPicture.asset(MyIcons.arrow_right),
+                  // Flip arrow direction for RTL languages
+                  Transform.flip(
+                    flipX: Directionality.of(context) == TextDirection.rtl,
+                    child: SvgPicture.asset(MyIcons.arrow_right),
+                  ),
                   Spacer(flex: 1),
                 ],
               ),

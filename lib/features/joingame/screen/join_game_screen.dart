@@ -23,6 +23,7 @@ class JoinGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: MyColors.backgroundColor,
       body: GameBackground(
         isPurchased: false,
@@ -39,7 +40,6 @@ class JoinGameScreen extends StatelessWidget {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Text(
                       'Join the Game'.tr,
                       style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -51,7 +51,6 @@ class JoinGameScreen extends StatelessWidget {
                           child: SvgPicture.asset(MyIcons.menu),
                         ),
                         SizedBox(width: 5.w),
-
                         GestureDetector(
                           onTap: () => Navigator.pop(context),
                           child: SvgPicture.asset(MyIcons.arrowbackrounded),
@@ -86,6 +85,7 @@ class JoinGameScreen extends StatelessWidget {
                                   alignment: Alignment.center,
                                   child: Text(
                                     'Waiting for the host to start the game...'
+                                        .tr
                                         .tr,
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.captionRegular12()
@@ -100,154 +100,202 @@ class JoinGameScreen extends StatelessWidget {
                                 ),
                               ],
                             )
-                            : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // Case Image
-                                Container(
-                                  height: 0.6.sh,
-                                  padding: EdgeInsets.all(12.sp),
-
-                                  alignment: Alignment.center,
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Game Code'.tr,
-                                          style: AppTextStyles.heading1()
-                                              .copyWith(fontSize: 8.sp),
-                                        ),
-                                        SizedBox(height: 40.h),
-                                        CustomTextfield(
-                                          width: 0.25.sw,
-                                          fieldTextSize: 7,
-                                          hintFontSize: 7,
-                                          horizentalContentPadding: 2,
-                                          labelVisible: false,
-                                          maxLines: 1,
-                                          label: 'Paste the code Game'.tr,
-                                          hintText: 'Paste the code Game'.tr,
-                                          controller:
-                                              joinGameController
-                                                  .teamCodeController,
-                                          suffix: GestureDetector(
-                                            onTap: () async {
-                                              final data =
-                                                  await Clipboard.getData(
-                                                    Clipboard.kTextPlain,
-                                                  );
-                                              if (data != null) {
-                                                joinGameController
-                                                    .teamCodeController
-                                                    .text = data.text ?? '';
-                                              }
-                                            },
-                                            child: Padding(
-                                              padding: EdgeInsets.all(5.sp),
-                                              child: SvgPicture.asset(
-                                                MyIcons.paste,
-                                              ),
-                                            ),
-                                          ),
-                                          keyboardType: TextInputType.name,
-                                        ),
-                                        SizedBox(height: 30.h),
-
-                                        Obx(
-                                          () => Opacity(
-                                            opacity:
-                                                joinGameController
-                                                        .isLoading
-                                                        .value
-                                                    ? 0.5
-                                                    : 1.0,
-                                            child: StartPlayButton(
-                                              buttonWidth: 80.w,
-                                              onTap:
-                                                  joinGameController
-                                                          .isLoading
-                                                          .value
-                                                      ? () {}
-                                                      : joinGameController
-                                                          .joinGame,
-                                              buttonText: 'Join the Game'.tr,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                            : LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                    bottom:
+                                        MediaQuery.of(
+                                          context,
+                                        ).viewInsets.bottom +
+                                        20.h,
                                   ),
-                                ),
-                                SizedBox(width: 8.w),
-
-                                // Right Content
-                                Container(
-                                  height: 0.5.sh,
-                                  padding: EdgeInsets.all(12.sp),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                    color: MyColors.black.withValues(
-                                      alpha: 0.1,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minHeight: constraints.maxHeight,
                                     ),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-
-                                    children: [
-                                      Text(
-                                        'Has the game started?\nYou\'ll only be on the scoreboard.'
-                                            .tr,
-                                        textAlign: TextAlign.center,
-                                        style: AppTextStyles.captionRegular12()
-                                            .copyWith(
-                                              color: MyColors.white.withValues(
-                                                alpha: 0.5,
-                                              ),
-                                              height: 1.5,
-                                              fontSize: 7.sp,
-                                            ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Container(
-                                          height: 80.h,
-                                          width: 90.w,
-                                          padding: EdgeInsets.all(8.sp),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              4.r,
-                                            ),
-                                            color: MyColors.white.withValues(
-                                              alpha: 0.05,
-                                            ),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            'Main Page'.tr,
-                                            style:
-                                                AppTextStyles.bodyTextMedium16()
-                                                    .copyWith(
-                                                      color: Colors.white,
-                                                      fontSize: 8.sp,
-                                                      fontWeight:
-                                                          FontWeight.w700,
+                                    child: IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Case Image
+                                          Flexible(
+                                            child: Container(
+                                              padding: EdgeInsets.all(12.sp),
+                                              alignment: Alignment.center,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Game Code'.tr,
+                                                    style:
+                                                        AppTextStyles.heading1()
+                                                            .copyWith(
+                                                              fontSize: 8.sp,
+                                                            ),
+                                                  ),
+                                                  SizedBox(height: 40.h),
+                                                  CustomTextfield(
+                                                    width: 0.25.sw,
+                                                    fieldTextSize: 7,
+                                                    hintFontSize: 7,
+                                                    horizentalContentPadding: 2,
+                                                    labelVisible: false,
+                                                    maxLines: 1,
+                                                    label:
+                                                        'Paste the code Game'
+                                                            .tr,
+                                                    hintText:
+                                                        'Paste the code Game'
+                                                            .tr,
+                                                    controller:
+                                                        joinGameController
+                                                            .teamCodeController,
+                                                    suffix: GestureDetector(
+                                                      onTap: () async {
+                                                        final data =
+                                                            await Clipboard.getData(
+                                                              Clipboard
+                                                                  .kTextPlain,
+                                                            );
+                                                        if (data != null) {
+                                                          joinGameController
+                                                              .teamCodeController
+                                                              .text = data
+                                                                  .text ??
+                                                              '';
+                                                        }
+                                                      },
+                                                      child: Padding(
+                                                        padding: EdgeInsets.all(
+                                                          5.sp,
+                                                        ),
+                                                        child: SvgPicture.asset(
+                                                          MyIcons.paste,
+                                                        ),
+                                                      ),
                                                     ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                                    keyboardType:
+                                                        TextInputType.text,
+                                                  ),
+                                                  SizedBox(height: 30.h),
+                                                  Obx(
+                                                    () => Opacity(
+                                                      opacity:
+                                                          joinGameController
+                                                                  .isLoading
+                                                                  .value
+                                                              ? 0.5
+                                                              : 1.0,
+                                                      child: StartPlayButton(
+                                                        buttonWidth: 80.w,
+                                                        onTap:
+                                                            joinGameController
+                                                                    .isLoading
+                                                                    .value
+                                                                ? () {}
+                                                                : joinGameController
+                                                                    .joinGame,
+                                                        buttonText:
+                                                            'Join the Game'.tr,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          SizedBox(width: 8.w),
+                                          // Right Content
+                                          Flexible(
+                                            child: Container(
+                                              height: 0.5.sh,
+                                              padding: EdgeInsets.all(12.sp),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20.r),
+                                                color: MyColors.black
+                                                    .withValues(alpha: 0.1),
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Has the game started?\nYou\'ll only be on the scoreboard.'
+                                                        .tr,
+                                                    textAlign: TextAlign.center,
+                                                    style:
+                                                        AppTextStyles.captionRegular12()
+                                                            .copyWith(
+                                                              color: MyColors
+                                                                  .white
+                                                                  .withValues(
+                                                                    alpha: 0.5,
+                                                                  ),
+                                                              height: 1.5,
+                                                              fontSize: 7.sp,
+                                                            ),
+                                                  ),
+                                                  SizedBox(height: 20.h),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Container(
+                                                      height: 80.h,
+                                                      width: 90.w,
+                                                      padding: EdgeInsets.all(
+                                                        8.sp,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4.r,
+                                                            ),
+                                                        color: MyColors.white
+                                                            .withValues(
+                                                              alpha: 0.05,
+                                                            ),
+                                                      ),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text(
+                                                        'Main Page'.tr,
+                                                        style:
+                                                            AppTextStyles.bodyTextMedium16()
+                                                                .copyWith(
+                                                                  color:
+                                                                      Colors
+                                                                          .white,
+                                                                  fontSize:
+                                                                      8.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                ),
+                                                        maxLines: 1,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
                   ),
                 ),

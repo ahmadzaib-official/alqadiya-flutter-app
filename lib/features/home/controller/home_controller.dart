@@ -1,4 +1,6 @@
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
@@ -25,12 +27,27 @@ class HomeController extends GetxController {
     return HomeDrawerMenu(
       menuItems: [
         DrawerMenuItem(
+          icon: MyIcons.user,
+          label: 'Profile'.tr,
+          onTap: () {
+            closeDrawer();
+            AuthGuard.executeIfAuthenticated(
+              title: 'Profile Access'.tr,
+              message: 'Please sign in to view your profile'.tr,
+              action: () => Get.toNamed(AppRoutes.settingsScreen),
+            );
+          },
+        ),
+        DrawerMenuItem(
           icon: MyIcons.coins,
           label: 'My purchases'.tr,
           onTap: () {
             closeDrawer();
-            // Navigate to purchases
-            Get.toNamed(AppRoutes.transactionsListScreen);
+            AuthGuard.executeIfAuthenticated(
+              title: 'Purchase History'.tr,
+              message: 'Please sign in to view your purchase history'.tr,
+              action: () => Get.toNamed(AppRoutes.transactionsListScreen),
+            );
           },
         ),
         DrawerMenuItem(
@@ -38,8 +55,11 @@ class HomeController extends GetxController {
           label: 'Settings'.tr,
           onTap: () {
             closeDrawer();
-            // Navigate to settings
-            Get.toNamed(AppRoutes.settingsScreen);
+            AuthGuard.executeIfAuthenticated(
+              title: 'Settings Access'.tr,
+              message: 'Please sign in to access settings'.tr,
+              action: () => Get.toNamed(AppRoutes.settingsScreen),
+            );
           },
         ),
         DrawerMenuItem(
@@ -47,13 +67,12 @@ class HomeController extends GetxController {
           label: 'FAQ & Support'.tr,
           onTap: () async {
             closeDrawer();
-
-            final url = Uri.parse('https://www.google.com');
+            final url = Uri.parse('${ServerConfig.base}faqs');
 
             if (await canLaunchUrl(url)) {
               await launchUrl(url, mode: LaunchMode.externalApplication);
             } else {
-              debugPrint('Could not launch $url');
+              Get.log('Could not launch $url');
             }
           },
         ),

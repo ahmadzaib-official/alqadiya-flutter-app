@@ -17,13 +17,19 @@ class DioHelper {
     };
   }
 
+  // Get current language for API requests
+  Map<String, String> get languageQuery {
+    final lang = getx.Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
+    return {'language': lang == 'ar' ? 'ar' : 'en'};
+  }
+
   Options _buildOptions({bool isAuthRequired = false}) {
     return Options(
       receiveDataWhenStatusError: true,
       contentType: 'application/json',
       headers: isAuthRequired ? defaultHeaders : null,
-      sendTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+      // sendTimeout: const Duration(seconds: 10),
+      // receiveTimeout: const Duration(seconds: 10),
     );
   }
 
@@ -32,11 +38,23 @@ class DioHelper {
     required String url,
     bool isAuthRequired = false,
     Map<String, dynamic>? queryParameters,
+    bool excludeLanguage = false, // Add this parameter
   }) async {
     try {
+      // Merge language query with existing query parameters (only if not excluded)
+      final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
+      if (queryParameters != null) {
+        mergedQueryParameters.addAll(queryParameters);
+      }
+      
+      // Remove language parameter if excluded
+      if (excludeLanguage) {
+        mergedQueryParameters.remove('language');
+      }
+      
       final response = await dio.get(
         url,
-        queryParameters: queryParameters,
+        queryParameters: mergedQueryParameters,
         options: _buildOptions(isAuthRequired: isAuthRequired),
       );
       return response;
@@ -51,11 +69,25 @@ class DioHelper {
     required String url,
     Object? requestBody,
     bool isAuthRequired = false,
+    Map<String, dynamic>? queryParameters,
+    bool excludeLanguage = false,
   }) async {
     try {
+      // Merge language query with existing query parameters
+      final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
+      if (queryParameters != null) {
+        mergedQueryParameters.addAll(queryParameters);
+      }
+      
+      // Remove language parameter if excluded
+      if (excludeLanguage) {
+        mergedQueryParameters.remove('language');
+      }
+      
       final response = await dio.post(
         url,
         data: requestBody,
+        queryParameters: mergedQueryParameters,
         options: _buildOptions(isAuthRequired: isAuthRequired),
       );
       return response;
@@ -69,11 +101,19 @@ class DioHelper {
     required String url,
     Object? requestBody,
     bool isAuthRequired = false,
+    Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      // Merge language query with existing query parameters
+      final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
+      if (queryParameters != null) {
+        mergedQueryParameters.addAll(queryParameters);
+      }
+      
       final response = await dio.put(
         url,
         data: requestBody,
+        queryParameters: mergedQueryParameters,
         options: _buildOptions(isAuthRequired: isAuthRequired),
       );
       return response;
@@ -87,11 +127,19 @@ class DioHelper {
     required String url,
     Object? requestBody,
     bool isAuthRequired = false,
+    Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      // Merge language query with existing query parameters
+      final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
+      if (queryParameters != null) {
+        mergedQueryParameters.addAll(queryParameters);
+      }
+      
       final response = await dio.patch(
         url,
         data: requestBody,
+        queryParameters: mergedQueryParameters,
         options: _buildOptions(isAuthRequired: isAuthRequired),
       );
       return response;
@@ -105,11 +153,19 @@ class DioHelper {
     required String url,
     Object? requestBody,
     bool isAuthRequired = false,
+    Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      // Merge language query with existing query parameters
+      final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
+      if (queryParameters != null) {
+        mergedQueryParameters.addAll(queryParameters);
+      }
+      
       final response = await dio.delete(
         url,
         data: requestBody,
+        queryParameters: mergedQueryParameters,
         options: _buildOptions(isAuthRequired: isAuthRequired),
       );
       return response;
@@ -125,8 +181,15 @@ class DioHelper {
     required List<File> files,
     String fileFieldName = 'file', // default field name
     bool isAuthRequired = false,
+    Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      // Merge language query with existing query parameters
+      final mergedQueryParameters = Map<String, dynamic>.from(languageQuery);
+      if (queryParameters != null) {
+        mergedQueryParameters.addAll(queryParameters);
+      }
+      
       FormData formData = FormData();
       //Add from fields
       fields.forEach((key, value) {
@@ -145,6 +208,7 @@ class DioHelper {
       final response = await dio.post(
         url,
         data: formData,
+        queryParameters: mergedQueryParameters,
         options: _buildOptions(isAuthRequired: isAuthRequired),
       );
       return response;

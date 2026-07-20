@@ -10,7 +10,7 @@ class PackageModel {
 
   final String? id;
   final int? points;
-  final int? price;
+  final double? price; // ✅ Changed from int? to double?
   final String? currency;
   final bool? isActive;
   final int? order;
@@ -18,7 +18,7 @@ class PackageModel {
   PackageModel copyWith({
     String? id,
     int? points,
-    int? price,
+    double? price, // ✅ Changed
     String? currency,
     bool? isActive,
     int? order,
@@ -37,7 +37,7 @@ class PackageModel {
     return PackageModel(
       id: json["id"],
       points: json["points"],
-      price: json["price"],
+      price: (json["price"] as num?)?.toDouble(), // ✅ Safe cast
       currency: json["currency"],
       isActive: json["isActive"],
       order: json["order"],

@@ -83,7 +83,6 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(
@@ -239,17 +238,21 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                         ? null
                         : index == 0
                         ? BorderRadius.only(
-                          topLeft: Radius.circular(100.r),
-                          bottomLeft: Radius.circular(100.r),
+                          topLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          bottomLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          topRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
+                          bottomRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
                         )
                         : BorderRadius.only(
-                          topRight: Radius.circular(100.r),
-                          bottomRight: Radius.circular(100.r),
+                          topRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          bottomRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
+                          topLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
+                          bottomLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
                         ),
               ),
               child: Center(
                 child: Text(
-                  tabs[index],
+                  tabs[index].tr,
                   style: AppTextStyles.heading4().copyWith(
                     fontSize: 6.sp,
                     color: MyColors.white,
@@ -268,6 +271,22 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     SuspectDetailController controller,
     SuspectController suspectController,
   ) {
+    // Check if we're showing a specific attachment type within investigation
+    if (controller.selectedMainTab.value == 2 && controller.selectedAttachmentType.value != null) {
+      if (controller.selectedAttachmentType.value == 'Audio') {
+        return _buildAudioList(controller, suspectController);
+      } else if (controller.selectedAttachmentType.value == 'Videos') {
+        return _buildVideosList(controller, suspectController);
+      } else if (controller.selectedAttachmentType.value == 'Images') {
+        return _buildImagesList(controller, suspectController);
+      } else if (controller.selectedAttachmentType.value == 'Documents') {
+        return _buildDocumentsList(controller, suspectController);
+      } else {
+        return _buildInvestigationReport(controller, suspectController);
+      }
+    }
+    
+    // Regular tab content
     if (controller.selectedMainTab.value == 0) {
       return _buildPersonalInformation(suspectController);
     } else if (controller.selectedMainTab.value == 1) {
@@ -482,6 +501,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     SuspectController suspectController,
   ) {
     return Obx(() {
+      // When switching between attachment types, ensure clean state
       if (controller.selectedAttachmentType.value == null) {
         return _buildAttachmentsGrid(controller);
       } else if (controller.selectedAttachmentType.value == 'Videos') {
@@ -1098,9 +1118,12 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                         (context) => PDFViewerScreen(pdfUrl: report.mediaUrl!),
                   ),
                 );
-              } else if (isAudio) {
-                suspectController.setSelectedMainTab(1);
+              } else if (isAudio && report.mediaUrl != null && report.mediaUrl!.isNotEmpty) {
+                // Show audio list in the investigation tab
                 suspectController.setSelectedAttachmentType('Audio');
+              } else if (report.attachmentType?.toLowerCase() == 'video' && report.mediaUrl != null && report.mediaUrl!.isNotEmpty) {
+                // Show video list in the investigation tab
+                suspectController.setSelectedAttachmentType('Videos');
               }
             },
             child: Container(

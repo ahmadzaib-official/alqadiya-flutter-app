@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/case_detail_shimmer.dart';
@@ -51,7 +52,6 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 10.sp, right: 10.sp, top: 5.sp),
                 child: HomeHeader(
-                  onChromTap: () {},
                   title: Text(
                     controller.gameDetail.value.title ?? "",
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
@@ -114,7 +114,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                           height:
                                               // isPurchased ? 0.45.sh :
                                               0.65.sh,
-                                          fit: BoxFit.cover,
+                                          fit: BoxFit.fill,
                                           placeholder:
                                               (context, url) =>
                                                   Shimmer.fromColors(
@@ -233,7 +233,7 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                             ),
                                           ),
                                           child: Text(
-                                            "${controller.gameDetail.value.difficulty ?? 'Intermediate'}",
+                                            "${controller.gameDetail.value.difficulty?.tr ?? 'Intermediate'}",
                                             style: AppTextStyles.labelMedium14()
                                                 .copyWith(
                                                   fontSize: 6.sp,
@@ -321,11 +321,20 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                         ] else ...[
                                           GestureDetector(
                                             onTap: () {
-                                              Get.toNamed(
-                                                AppRoutes.addCaseScreen,
-                                                arguments: {
-                                                  'game': controller.gameDetail,
-                                                },
+                                              AuthGuard.executeIfAuthenticated(
+                                                title: 'Purchase Case'.tr,
+                                                message:
+                                                    'Please sign in to purchase this case'
+                                                        .tr,
+                                                action:
+                                                    () => Get.toNamed(
+                                                      AppRoutes.addCaseScreen,
+                                                      arguments: {
+                                                        'game':
+                                                            controller
+                                                                .gameDetail,
+                                                      },
+                                                    ),
                                               );
                                             },
                                             child: Container(

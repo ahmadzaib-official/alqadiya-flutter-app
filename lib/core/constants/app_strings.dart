@@ -1,6 +1,8 @@
 class AppStrings {
   static const String userId = "userID";
   static const String accessToken = "accessToken";
+  static const String fcmToken = "fcmToken";
+  static const String deviceId = "deviceId";
   static const String refreshToken = "refreshToken";
   static const languageCodeKey = "languageCodeKey";
   static const String language = 'language';

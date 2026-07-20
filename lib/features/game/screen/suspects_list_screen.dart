@@ -76,7 +76,6 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
                     top: 5.sp,
                   ),
                   child: HomeHeader(
-                    onChromTap: () {},
                     title: Row(
                       children: [
                         Text(

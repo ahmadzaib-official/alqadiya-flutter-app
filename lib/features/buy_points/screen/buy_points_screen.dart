@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/buy_points/controller/buy_points_provider.dart';
@@ -42,7 +43,7 @@ class BuyPointsScreen extends StatelessWidget {
                   ),
                   // Title
                   Text(
-                    'Buy points'.tr,
+                    'Buy Points'.tr,
                     style: AppTextStyles.heading1().copyWith(fontSize: 10.sp),
                   ),
                   Row(
@@ -56,13 +57,27 @@ class BuyPointsScreen extends StatelessWidget {
                       // Avatar
                       Obx(() {
                         final user = Get.find<UserController>().user.value;
-                        return CircleAvatar(
-                          backgroundColor: MyColors.redButtonColor,
-                          backgroundImage: CachedNetworkImageProvider(
-                            user!.photoUrl ??
-                                "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
+                        return GestureDetector(
+                          onTap: () {
+                            AuthGuard.executeIfAuthenticated(
+                              title: 'Profile Access'.tr,
+                              message: 'Please sign in to view your profile'.tr,
+                              action:
+                                  () =>
+                                      Get.toNamed(AppRoutes.userProfileScreen),
+                            );
+                          },
+                          child: CircleAvatar(
+                            backgroundColor: MyColors.darkBlueColor,
+                            backgroundImage:
+                                user!.photoUrl != null
+                                    ? CachedNetworkImageProvider(
+                                      user.photoUrl ??
+                                          "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
+                                    )
+                                    : AssetImage(MyIcons.userImage),
+                            radius: 9.sp,
                           ),
-                          radius: 9.sp,
                         );
                       }),
                     ],
@@ -211,7 +226,11 @@ class BuyPointsScreen extends StatelessWidget {
           // Buy points button
           GestureDetector(
             onTap: () {
-              goToPaymentScreen(package);
+              AuthGuard.executeIfAuthenticated(
+                title: 'Purchase Points'.tr,
+                message: 'Please sign in to purchase points'.tr,
+                action: () => goToPaymentScreen(package),
+              );
             },
             child: Container(
               width: double.infinity,
@@ -232,14 +251,20 @@ class BuyPointsScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(flex: 2),
+                  Get.locale?.languageCode == 'en'
+                      ? SvgPicture.asset(
+                        MyIcons.arrow_right,
+                        colorFilter: ColorFilter.mode(
+                          MyColors.brightRedColor,
+                          BlendMode.srcIn,
+                        ),
+                      )
+                      : Icon(
+                        Icons.arrow_forward_ios,
+                        size: 6.sp,
+                        color: MyColors.brightRedColor,
+                      ),
 
-                  SvgPicture.asset(
-                    MyIcons.arrow_right,
-                    colorFilter: ColorFilter.mode(
-                      MyColors.brightRedColor,
-                      BlendMode.srcIn,
-                    ),
-                  ),
                   Spacer(flex: 1),
                 ],
               ),

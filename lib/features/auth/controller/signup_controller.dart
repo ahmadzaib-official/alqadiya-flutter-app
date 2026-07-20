@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/constants/server_config.dart';
 import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart'
     show SpinkitRipple;
 import 'package:alqadiya_game/core/debug/debug_point.dart';
@@ -24,11 +25,7 @@ class SignupController extends GetxController {
   var otpCode = 0.obs;
   var isEye = false.obs;
   var isEyeConfirm = false.obs;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    serverClientId:
-        '1017677830312-tc1mn7jsf3su00k5fetvna30p857cfoq.apps.googleusercontent.com',
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
   @override
   void onClose() {
     fullNameController.dispose();
@@ -250,6 +247,30 @@ class SignupController extends GetxController {
     fullNameController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
+  }
+
+  void openPrivacyPolicy() {
+    Get.toNamed(
+      AppRoutes.webViewScreen,
+      arguments: {
+        'title': 'Privacy Policy'.tr,
+        'url': 'http://51.112.131.120/policy',
+      },
+    );
+  }
+
+  void openTermsAndConditions() {
+    Get.toNamed(
+      AppRoutes.webViewScreen,
+      arguments: {
+        'title': 'Terms and Conditions'.tr,
+        'url': '${ServerConfig.base}terms',
+      },
+    );
+  }
+
+  void openPrivacyAndTerms() {
+    Get.toNamed(AppRoutes.privacyTermsScreen);
   }
 
   @override

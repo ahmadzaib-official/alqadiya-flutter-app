@@ -56,6 +56,18 @@
 	<string>We need your location to show it on the map.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app may need access to your microphone for audio and video recording features.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app needs access to your local network to discover and connect to AirPlay devices for screen casting.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_airplay._tcp</string>
+		<string>_raop._tcp</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>external-accessory</string>
+	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

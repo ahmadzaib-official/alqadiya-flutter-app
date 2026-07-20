@@ -4,13 +4,33 @@
 -keep class io.flutter.embedding.** { *; }
 -dontwarn io.flutter.embedding.**
 
-# Firebase (optional, only if using Firebase)
+# Firebase
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
 
-# Prevent stripping of Kotlin metadata
+# Google Sign-In & GMS (YEH ADD KAREIN)
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**
+-keep class com.google.android.gms.auth.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+
+# Kotlin
 -keep class kotlin.** { *; }
 -keep class kotlinx.** { *; }
 -dontwarn kotlin.**
 
-# Add rules for any plugins you use (e.g. Glide, Retrofit, etc.)
+# Gson serialization
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Enum classes
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Mapping file
+-printmapping build/outputs/mapping/release/mapping.txt

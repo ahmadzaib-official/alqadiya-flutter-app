@@ -36,6 +36,7 @@ const Map<String, String> lnAr = {
       'أدخل الرمز المكون من 5 أرقام المرسل إلى هاتفك لإكمال التحقق.',
   'Didn\'t Receive a Code ?': 'لم تستلم رمزًا؟',
   'Resend': 'إعادة الإرسال',
+  'Points available in the balance': "النقاط المتاحة في الرصيد ",
   'Verify': 'تحقق',
   'Verified Successfully': 'تم التحقق بنجاح',
   'Your phone number has been verified. You\'re all set to continue!':
@@ -145,6 +146,15 @@ const Map<String, String> lnAr = {
   'guest': 'ضيوف',
   'Coupon applied successfully!': 'تم تطبيق الكوبون بنجاح!',
   'Beach': 'شاطئ',
+  'Recent Cases': 'الحالات الحديثة',
+  'My Games': 'ألعابي',
+  'beginner': 'مبتدئ',
+  'easy': 'سهل',
+  'intermediate': 'متوسط',
+  'medium': 'متوسط',
+  'difficult': 'صعب',
+  'hard': 'صعب',
+  'expert': 'خبير',
   "Everything you need for a comfortable stay.": 'كل ما تحتاجه لإقامة مريحة.',
   'Back to Chalet Details': 'العودة إلى تفاصيل الشاليه',
   'nights': 'ليالي',
@@ -152,6 +162,13 @@ const Map<String, String> lnAr = {
       'اجمع النقاط لكل حجز مكتمل في شاليهاتنا المشاركة.',
   'Notice': 'إشعار',
   'Points': 'النقاط',
+  'Difficulty': 'الصعوبة',
+  'Don\'t have an account? Sign Up': 'لا تمتلك حساباً؟ اشترك الآن',
+  'Duration': 'المدة',
+  "Purchase ": "الشراء ",
+  "Amount": "المبلغ",
+  "No suspects available": "لا توجد مشتبه بهم متاحين",
+  'minutes': 'دقيقة',
   'Something went wrong!!!:': 'حدث خطأ ما!!!:',
   'Teams created successfully': 'تم إنشاء الفرق بنجاح',
   'Members assigned successfully': 'تم تعيين الأعضاء بنجاح',
@@ -223,7 +240,10 @@ const Map<String, String> lnAr = {
   'Secure payment and excellent customer service':
       'سداد آمن وخدمة عملاء ممتازة',
   'Pay now': 'ادفع الآن',
+
   'KD': 'د.ك',
+  "Are you sure you want to delete your account? This action cannot be undone.":
+      'هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
   'English': 'الإنجليزية',
   'Arabic': 'العربية',
   'Error:': 'خطأ:',
@@ -236,7 +256,7 @@ const Map<String, String> lnAr = {
       'هل أنت متأكد من أنك تريد مغادرة اللعبة؟',
   'Yes': 'نعم',
   'No': 'لا',
-
+  "Notifications": "الإشعارات",
   // Settings and Profile
   'Name:': 'الاسم:',
   'Phone:': 'الهاتف:',
@@ -250,6 +270,32 @@ const Map<String, String> lnAr = {
   'Direct Call': 'اتصال مباشر',
   'My points balance': 'رصيد نقاطي',
   'Buy Points': 'شراء نقاط',
+  'Payment': 'الدفع',
+  'Notification Detail': 'تفاصيل الإشعار',
+
+  'Play Solo': 'العب بمفردك',
+  'Start the Game': 'ابدأ اللعبة',
+  'Create Teams': 'إنشاء فرق',
+  'Videos': 'الفيديوهات',
+  'Images': 'الصور',
+  'Audio': 'الصوت',
+  'Documents': 'الوثائق',
+
+  'Personal information': 'معلومات شخصية',
+  'Attachments': 'المرفقات',
+  'Investigation report': 'تقرير التحقيق',
+  'Clues': 'القرائن',
+  'No evidence available': 'لا توجد أدلة متاحة',
+  'No videos available': 'لا توجد فيديوهات متاحة',
+  'No images available': 'لا توجد صور متاحة',
+  'No documents available': 'لا توجد وثائق متاحة',
+  'No audio files available': 'لا توجد ملفات صوتية متاحة',
+  'Order detail': 'تفاصيل الطلب',
+  'Order:': 'الطلب:',
+  'Order number:': 'رقم الطلب:',
+  'Do you have a discount code?': 'هل لديك كود خصم?',
+  'Discount code': 'كود الخصم',
+  'Buy points': 'شراء نقاط',
   'Delete account': 'حذف الحساب',
   'Logout': 'تسجيل الخروج',
   'Enter full name': 'أدخل الاسم الكامل',
@@ -260,6 +306,13 @@ const Map<String, String> lnAr = {
   'Delete': 'حذف',
   'Edit profile': 'تعديل الملف الشخصي',
   'Settings': 'الإعدادات',
+  'Main Page': 'الصفحة الرئيسية',
+  'Paste the code Game': 'لصق رمز اللعبة',
+  'Game Code': 'رمز اللعبة',
+  'My purchases': 'مشترياتي',
+  'FAQ & Support': 'الأسئلة الشائعة والدعم',
+  'Has the game started?\nYou\'ll only be on the scoreboard.':
+      'هل بدأت اللعبة؟\nستظهر فقط في لوحة النتائج.',
 
   // Game-specific translations
   'Scoreboard': 'لوحة النتائج',
@@ -330,6 +383,17 @@ const Map<String, String> lnAr = {
   'Done': 'تم',
   'Skip': 'تخطي',
   'Search': 'بحث',
+  'Waiting for the host to start the game...':
+      'انتظار مضيف اللعبة لبدء اللعبة...',
+  'Drag and drop players into teams.': 'اسحب واسقط اللاعبين في الفرق.',
+  'Share this code with friends to join.':
+      'شارك هذا الكود مع الأصدقاء للانضمام.',
+  'Game Result': 'نتيجة اللعبة',
+  'Team score': 'نقاط الفريق',
+  'Create teams': 'إنشاء فرق',
+  'Second Team': 'الفريق الثاني',
+  'First Team': 'الفريق الأول',
+  'Name of the team': 'اسم الفريق',
   'Filter': 'تصفية',
   'Sort': 'ترتيب',
   'Clear': 'مسح',
@@ -420,7 +484,7 @@ const Map<String, String> lnAr = {
   'Document': 'وثيقة',
   'Image': 'صورة',
   'Video': 'فيديو',
-  'Audio': 'صوت',
+
   'Link': 'رابط',
   'Website': 'موقع ويب',
   'Page': 'صفحة',
@@ -542,17 +606,24 @@ const Map<String, String> lnAr = {
   'Hints used': 'التلميحات المستخدمة',
   'Suspect choosen': 'المشتبه به المختار',
 
+  // Tutorial screen translations
+  'Time taken to play': 'الوقت المستغرق للعب',
+  'Your Points here': 'نقاطك هنا',
+  'Game status': 'حالة اللعبة',
+  'Got it': 'فهمت',
+
+  // Screen casting translations
+  'Cast to Device': 'البث إلى الجهاز',
+  'Scanning for devices...': 'البحث عن الأجهزة...',
+  'No devices found': 'لم يتم العثور على أجهزة',
+  'Make sure your casting device is on the same network':
+      'تأكد من أن جهاز البث على نفس الشبكة',
+  'Cast Error': 'خطأ في البث',
+  'Stop Scanning': 'إيقاف البحث',
+  'Scan Again': 'البحث مرة أخرى',
+
   // Language selection hardcoded text
   'عربي': 'عربي',
-
-  // Difficulty levels
-  'beginner': 'مبتدئ',
-  'easy': 'سهل',
-  'intermediate': 'متوسط',
-  'medium': 'متوسط',
-  'difficult': 'صعب',
-  'hard': 'صعب',
-  'expert': 'خبير',
 
   // Network error messages
   'Authentication failed': 'فشل في المصادقة',

@@ -1,6 +1,8 @@
 class ServerConfig {
-  static const baseUrl = "http://51.112.131.120/api/";
-  // static const baseUrl = "http://192.168.1.23:4000/";
+  // static const baseUrl = "http://192.168.1.15:4000/";
+  static const baseUrl = "http://13.205.204.190/api/";
+  static const base = "http://13.205.204.190/";
+  // static const baseUrl = "http://192.168.1.43:4000/";
   // Below are the all api that are use in our system
   static const login = "${baseUrl}auth/signIn";
   static const register = "${baseUrl}auth/signUp";
@@ -21,6 +23,10 @@ class ServerConfig {
   static const chooseLeader = "${baseUrl}games/chooseLeader";
   static const joinGame = "${baseUrl}games/joinGame";
   static const notifications = "${baseUrl}notifications";
+  static const markAllNotificationsRead =
+      "${baseUrl}notifications/mark-all-read";
+  static String markNotificationRead(String id) =>
+      "${baseUrl}notifications/$id/mark-read";
   static const transactions = "${baseUrl}transactions";
   static const packages = "${baseUrl}points/packages";
   static const paymentMethods = "${baseUrl}points/payment-methods";
@@ -30,6 +36,9 @@ class ServerConfig {
   static const teams = "${baseUrl}teams";
   static const assignMembers = "${baseUrl}teams/assign-members";
   static String getReceipt(String id) => "${baseUrl}transactions/$id/receipt";
+
+  // Device Token Registration
+  static const registerDeviceToken = "${baseUrl}users/device-token";
 
   // Cutscenes
   static String getCutscenesByGame(String gameId) =>
@@ -74,4 +83,7 @@ class ServerConfig {
 
   // User Balance
   static const userBalance = "${baseUrl}games/balance";
+
+  // Support Contacts
+  static const supportContacts = "${baseUrl}user/settings/support-contacts";
 }

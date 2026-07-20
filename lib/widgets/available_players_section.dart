@@ -23,7 +23,7 @@ class AvailablePlayersSection extends StatelessWidget {
         children: [
           // Title
           Text(
-            'Drag and drop players into teams.',
+            'Drag and drop players into teams.'.tr,
             style: AppTextStyles.captionRegular12().copyWith(
               color: MyColors.white,
               height: 1.5,

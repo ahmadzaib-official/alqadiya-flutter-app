@@ -1,5 +1,6 @@
 // language_controller.dart
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/debug/debug_point.dart';
@@ -13,8 +14,11 @@ class ChangeLanguageController extends GetxController {
 
   @override
   void onInit() {
-    initializeLanguage();
     super.onInit();
+    // Defer initialization to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initializeLanguage();
+    });
   }
 
   void initializeLanguage() {
