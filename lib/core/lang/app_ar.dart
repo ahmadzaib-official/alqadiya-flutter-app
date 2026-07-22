@@ -1,4 +1,5 @@
 const Map<String, String> lnAr = {
+  'has left the game': 'غادر اللعبة',
   //ONBORDING
   'Language': 'لغة',
   'Welcome to\nBAZAR': 'مرحبًا بك في\nبازار',

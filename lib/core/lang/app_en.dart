@@ -1,4 +1,5 @@
 const Map<String, String> enUS = {
+  'has left the game': 'has left the game',
   'Language': 'Language',
   'start_now': 'Start Now',
   'back': 'Back',
