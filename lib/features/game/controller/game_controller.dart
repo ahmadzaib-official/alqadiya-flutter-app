@@ -618,4 +618,31 @@ class GameController extends GetxController {
       isLoading(false);
     }
   }
+
+  // Leave Game Session
+  Future<bool> leaveGameSession() async {
+    final sessionId = gameSession.value?.id;
+    if (sessionId == null) return false;
+
+    try {
+      isLoading(true);
+      final response = await GameRepository().leaveGameSession(
+        sessionId: sessionId,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        gameSession(null); // Optional: clear session
+        return true;
+      }
+      return false;
+    } on DioException {
+      return false;
+    } catch (e) {
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
+      return false;
+    } finally {
+      isLoading(false);
+    }
+  }
 }

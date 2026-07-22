@@ -80,6 +80,8 @@ class ServerConfig {
       "${baseUrl}game-sessions/$sessionId/result";
   static String getGameSessionStatus(String sessionId) =>
       "${baseUrl}game-sessions/$sessionId/status";
+  static String leaveGameSession(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/leave";
 
   // User Balance
   static const userBalance = "${baseUrl}games/balance";

@@ -69,10 +69,8 @@ class BuyPointsScreen extends StatelessWidget {
                           },
                           child: CircleAvatar(
                             backgroundColor: MyColors.darkBlueColor,
-                            backgroundImage: (user != null &&
-                                    user.photoUrl != null &&
-                                    user.photoUrl!.isNotEmpty)
-                                ? CachedNetworkImageProvider(user.photoUrl!)
+                            backgroundImage: (user?.photoUrl?.isNotEmpty ?? false)
+                                ? CachedNetworkImageProvider(user!.photoUrl!)
                                 : AssetImage(MyIcons.userImage) as ImageProvider,
                             radius: 9.sp,
                           ),
