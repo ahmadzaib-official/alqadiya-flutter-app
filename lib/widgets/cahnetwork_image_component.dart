@@ -1,4 +1,4 @@
-import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/utils/responsive.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +23,7 @@ class NetworkImageWidget extends StatelessWidget {
     this.borderRadius,
     this.errorWidget,
     this.color,
-    this.placeholderImage =
-        AppStrings.placeHolderImage, // Default to your constant
+    this.placeholderImage = MyIcons.userImage, // Default to userImage asset
   });
 
   @override
@@ -34,12 +33,12 @@ class NetworkImageWidget extends StatelessWidget {
 
     // If no imageUrl provided or it's empty, show placeholder immediately
     if (imageUrl == null || imageUrl!.isEmpty) {
-      return _buildPlaceholder(imgHeight, imgWidth);
+      return errorWidget ?? _buildPlaceholder(imgHeight, imgWidth);
     }
 
     // Validate URL format
     if (!Uri.tryParse(imageUrl!)!.hasAbsolutePath) {
-      return _buildPlaceholder(imgHeight, imgWidth);
+      return errorWidget ?? _buildPlaceholder(imgHeight, imgWidth);
     }
 
     return CachedNetworkImage(
@@ -87,19 +86,26 @@ class NetworkImageWidget extends StatelessWidget {
   Widget _buildPlaceholder(double height, double width) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius ?? 8),
-      child: CachedNetworkImage(
-        imageUrl: placeholderImage,
-        fit: fit ?? BoxFit.cover,
-        height: height,
-        width: width,
-        errorWidget:
-            (context, url, error) => Container(
+      child: placeholderImage.startsWith('assets/')
+          ? Image.asset(
+              placeholderImage,
+              fit: fit ?? BoxFit.cover,
               height: height,
               width: width,
-              color: Colors.grey.shade200,
-              child: Icon(Icons.broken_image, color: Colors.grey.shade400),
+            )
+          : CachedNetworkImage(
+              imageUrl: placeholderImage,
+              fit: fit ?? BoxFit.cover,
+              height: height,
+              width: width,
+              errorWidget:
+                  (context, url, error) => Container(
+                    height: height,
+                    width: width,
+                    color: Colors.grey.shade200,
+                    child: Icon(Icons.broken_image, color: Colors.grey.shade400),
+                  ),
             ),
-      ),
     );
   }
 }
