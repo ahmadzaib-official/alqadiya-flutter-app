@@ -547,6 +547,11 @@ class GameController extends GetxController {
                   response.data['session'],
                 );
                 gameSession(session);
+                
+                // Fetch the actual game details if they differ from current cache
+                if (session.gameId != null && gameDetail.value.id != session.gameId) {
+                  getGameDetail(gameId: session.gameId!);
+                }
               }
               if (response.data['players'] != null) {
                 final List<dynamic> playersList = response.data['players'];

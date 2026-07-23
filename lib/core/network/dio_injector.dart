@@ -332,9 +332,10 @@ String _extractErrorMessage(DioException e) {
 }
 
 void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
-  // Skip error display for device-token and signIn endpoints
+  // Skip error display for device-token, signIn, and leave session endpoints
   if (e.requestOptions.path.contains('device-token') || 
-      e.requestOptions.path.contains('signIn')) {
+      e.requestOptions.path.contains('signIn') ||
+      e.requestOptions.path.contains('/leave')) {
     return;
   }
 
