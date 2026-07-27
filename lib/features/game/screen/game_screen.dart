@@ -24,7 +24,6 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
-import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'dart:async';
 
@@ -939,34 +938,34 @@ class _GameScreenState extends State<GameScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () {
-            // Handle view additional evidence
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-            decoration: BoxDecoration(
-              color: MyColors.BlueColor,
-              borderRadius: BorderRadius.circular(4.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  offset: Offset(0, 1),
-                  blurRadius: 1,
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                'View additional evidence'.tr,
-                style: AppTextStyles.heading1().copyWith(
-                  fontSize: 6.sp,
-                  color: MyColors.white.withValues(alpha: 0.5),
-                ),
-              ),
-            ),
-          ),
-        ),
+        // GestureDetector(
+        //   onTap: () {
+        //     // Handle view additional evidence
+        //   },
+        //   child: Container(
+        //     padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+        //     decoration: BoxDecoration(
+        //       color: MyColors.BlueColor,
+        //       borderRadius: BorderRadius.circular(4.r),
+        //       boxShadow: [
+        //         BoxShadow(
+        //           color: Colors.black.withValues(alpha: 0.15),
+        //           offset: Offset(0, 1),
+        //           blurRadius: 1,
+        //         ),
+        //       ],
+        //     ),
+        //     child: Center(
+        //       child: Text(
+        //         'View additional evidence'.tr,
+        //         style: AppTextStyles.heading1().copyWith(
+        //           fontSize: 6.sp,
+        //           color: MyColors.white.withValues(alpha: 0.5),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         SizedBox(width: 12.w),
 
         Obx(() {
