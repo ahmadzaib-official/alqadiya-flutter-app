@@ -251,7 +251,7 @@ Future<void> _clearStorage() async {
 
 AppException _handleDioError(DioException error) {
   final errorMessage = _extractErrorMessage(error);
-  
+
   switch (error.type) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
@@ -260,10 +260,7 @@ AppException _handleDioError(DioException error) {
     case DioExceptionType.badResponse:
       switch (error.response?.statusCode) {
         case 400:
-          return ValidationException(
-            errorMessage,
-            data: error.response?.data,
-          );
+          return ValidationException(errorMessage, data: error.response?.data);
         case 401:
           return UnauthorizedException(
             errorMessage,
@@ -275,22 +272,13 @@ AppException _handleDioError(DioException error) {
             data: error.response?.data,
           );
         case 404:
-          return ServerException(
-            errorMessage,
-            data: error.response?.data,
-          );
+          return ServerException(errorMessage, data: error.response?.data);
         case 500:
         case 502:
         case 503:
-          return ServerException(
-            errorMessage,
-            data: error.response?.data,
-          );
+          return ServerException(errorMessage, data: error.response?.data);
         default:
-          return ServerException(
-            errorMessage,
-            data: error.response?.data,
-          );
+          return ServerException(errorMessage, data: error.response?.data);
       }
     case DioExceptionType.cancel:
       return NetworkException('Request cancelled'.tr);
@@ -333,7 +321,7 @@ String _extractErrorMessage(DioException e) {
 
 void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
   // Skip error display for device-token, signIn, and leave session endpoints
-  if (e.requestOptions.path.contains('device-token') || 
+  if (e.requestOptions.path.contains('device-token') ||
       e.requestOptions.path.contains('signIn') ||
       e.requestOptions.path.contains('/leave')) {
     return;
@@ -350,11 +338,11 @@ void _handleErrorDisplay(DioException e, int statusCode, String errorMessage) {
       e.type == DioExceptionType.connectionTimeout ||
       e.type == DioExceptionType.sendTimeout ||
       e.type == DioExceptionType.receiveTimeout) {
-    Future.delayed(Duration.zero, () {
-      CustomSnackbar.showError(
-        'Connection error. Please check your internet connection',
-      );
-    });
+    // Future.delayed(Duration.zero, () {
+    //   CustomSnackbar.showError(
+    //     'Connection error. Please check your internet connection',
+    //   );
+    // });
     return;
   }
 

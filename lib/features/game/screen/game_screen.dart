@@ -24,7 +24,9 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
+import 'dart:async';
 
 class GameScreen extends StatefulWidget {
   GameScreen({super.key});
@@ -47,6 +49,7 @@ class _GameScreenState extends State<GameScreen> {
   DateTime? questionStartTime;
   UserAnswerModel? lastSubmittedAnswer;
   bool _isNavigatingToResult = false; // Flag to prevent multiple navigations
+  Timer? _hostStatusTimer;
 
   @override
   void initState() {
@@ -67,6 +70,11 @@ class _GameScreenState extends State<GameScreen> {
 
     // Initialize timer controller (permanent to persist across navigation)
     timerController = Get.put(GameTimerController(), permanent: true);
+
+    // Initialize host status checking
+    _hostStatusTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _checkHostStatus();
+    });
 
     // Initialize game footer controller (permanent to persist across navigation)
     if (!Get.isRegistered<GameFooterController>()) {
@@ -131,6 +139,33 @@ class _GameScreenState extends State<GameScreen> {
 
     // Initialize question start time
     questionStartTime = DateTime.now();
+  }
+
+  Future<void> _checkHostStatus() async {
+    if (!mounted) return;
+
+    final gameController =
+        Get.isRegistered<GameController>() ? Get.find<GameController>() : null;
+    final sessionId = gameController?.gameSession.value?.id;
+
+    if (sessionId == null) return;
+
+    try {
+      final response = await GameRepository().getHostStatus(
+        sessionId: sessionId,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data != null && response.data['hasHostLeft'] == true) {
+          _hostStatusTimer?.cancel();
+          if (mounted) {
+            CustomSnackbar.showError('Host has left the game session'.tr);
+            Get.offAllNamed(AppRoutes.homescreen);
+          }
+        }
+      }
+    } catch (e) {
+      // Silently handle errors for polling
+    }
   }
 
   Future<void> _getGameIdFromSessionStatus(
@@ -348,6 +383,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    _hostStatusTimer?.cancel();
     // Pause the timer when leaving the game screen
     if (Get.isRegistered<GameTimerController>()) {
       timerController.pauseTimer();
