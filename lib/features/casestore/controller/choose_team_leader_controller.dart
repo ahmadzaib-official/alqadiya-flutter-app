@@ -51,7 +51,7 @@ class ChooseTeamLeaderController extends GetxController {
         List<TeamLeader> leaders = [];
         for (var m in Get.arguments['members']) {
           // Use actual image
-          String imageUrl = m['userPhotoURL'] ?? "";
+          String imageUrl = m['userPhotoURL'] ?? m['photoURL'] ?? m['photoUrl'] ?? m['avatar'] ?? m['userPhotoUrl'] ?? "";
 
           leaders.add(
             TeamLeader(
@@ -238,7 +238,9 @@ class ChooseTeamLeaderController extends GetxController {
             );
 
             // Use actual image
-            String imageUrl = member?.userPhotoURL ?? "";
+            String imageUrl = player.userPhotoUrl?.isNotEmpty == true
+                ? player.userPhotoUrl!
+                : (member?.userPhotoURL ?? "");
 
             print('Player: ${player.userName}, Image: $imageUrl');
             return TeamLeader(

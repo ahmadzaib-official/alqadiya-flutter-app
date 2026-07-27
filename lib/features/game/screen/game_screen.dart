@@ -932,6 +932,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
         SizedBox(width: 12.w),
+
         Obx(() {
           // Access observable to trigger rebuild
           final lastAnswer = answerController.lastAnswer.value;

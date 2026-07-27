@@ -258,9 +258,9 @@ class Member {
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       id: json["id"],
-      userId: json["userId"],
+      userId: json["userId"] ?? json["id"],
       name: json["name"],
-      photoUrl: json["photoURL"],
+      photoUrl: json["photoURL"] ?? json["userPhotoURL"] ?? json["userPhotoUrl"] ?? json["photoUrl"] ?? json["avatar"],
       isLeader: json["isLeader"],
       individualScore: json["individualScore"],
       hasAnswered: json["hasAnswered"],
@@ -293,9 +293,9 @@ class Player {
 
   factory Player.fromJson(Map<String, dynamic> json) {
     return Player(
-      userId: json["userId"],
-      userName: json["userName"],
-      userPhotoUrl: json["userPhotoURL"],
+      userId: json["userId"] ?? json["id"],
+      userName: json["userName"] ?? json["name"],
+      userPhotoUrl: json["userPhotoURL"] ?? json["photoURL"] ?? json["photoUrl"] ?? json["userPhotoUrl"] ?? json["avatar"],
       individualScore: json["individualScore"],
       hasAnswered: json["hasAnswered"],
       isLeader: json["isLeader"],
