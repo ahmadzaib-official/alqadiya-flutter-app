@@ -62,11 +62,7 @@ class HomeHeader extends StatelessWidget {
                   SizedBox(width: 5.w),
                   GestureDetector(
                     onTap: () {
-                      if (Platform.isAndroid) {
-                        castService.startScreenMirroring();
-                      } else {
-                        castService.showMirrorGuide();
-                      }
+                      castService.showCastPicker();
                     },
                     child: Stack(
                       children: [

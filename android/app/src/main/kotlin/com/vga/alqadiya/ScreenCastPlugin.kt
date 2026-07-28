@@ -198,6 +198,9 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "startScreenMirroring" -> {
                 startScreenMirroring(result)
             }
+            "checkConnectionStatus" -> {
+                checkConnectionStatus(result)
+            }
             else -> {
                 result.notImplemented()
             }
@@ -257,11 +260,30 @@ class ScreenCastPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     
     private fun connectToDevice(deviceId: String?, deviceName: String?, result: Result) {
         try {
-            // Connection is handled by the Cast framework
-            // This method is called after user selects a device
+            // We shouldn't automatically assume success here since it redirects to OS settings.
             result.success(true)
         } catch (e: Exception) {
             result.error("CONNECT_ERROR", e.message, null)
+        }
+    }
+    
+    private fun checkConnectionStatus(result: Result) {
+        try {
+            var isConnectedToDisplay = false
+            context?.let { ctx ->
+                val displayManager = ctx.getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
+                val displays = displayManager.displays
+                for (display in displays) {
+                    // Check if it's not the default screen display
+                    if (display.displayId != android.view.Display.DEFAULT_DISPLAY) {
+                        isConnectedToDisplay = true
+                        break
+                    }
+                }
+            }
+            result.success(isConnectedToDisplay)
+        } catch (e: Exception) {
+            result.success(false)
         }
     }
     

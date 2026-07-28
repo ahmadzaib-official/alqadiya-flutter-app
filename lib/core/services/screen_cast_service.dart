@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,7 +8,7 @@ import 'package:alqadiya_game/widgets/screen_mirror_guide_dialog.dart';
 
 /// Screen casting service for mirroring app content to external displays
 /// Supports both native casting (Chromecast, AirPlay) and screen mirroring
-class ScreenCastService extends GetxService {
+class ScreenCastService extends GetxService with WidgetsBindingObserver {
   static const MethodChannel _channel = MethodChannel(
     'com.vga.alqadiya/screen_cast',
   );
@@ -23,6 +24,7 @@ class ScreenCastService extends GetxService {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _setupMethodCallHandler();
     // Auto-start scanning when service initializes
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -32,9 +34,32 @@ class ScreenCastService extends GetxService {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _deviceSubscription?.cancel();
     disconnect();
     super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      checkConnectionStatus();
+    }
+  }
+
+  Future<void> checkConnectionStatus() async {
+    try {
+      final result = await _channel.invokeMethod('checkConnectionStatus');
+      if (result == true && connectedDevice.value != null) {
+        isConnected.value = true;
+      } else if (result == false) {
+        isConnected.value = false;
+        // Don't clear connectedDevice so the user knows what they tried to connect to,
+        // or clear it if you prefer strict sync.
+      }
+    } catch (e) {
+      log('Error checking connection status: $e');
+    }
   }
 
   /// Setup method call handler for native callbacks
@@ -100,8 +125,8 @@ class ScreenCastService extends GetxService {
 
       if (result == true) {
         connectedDevice.value = device;
-        isConnected.value = true;
-        log('Connected to device: ${device.name}');
+        // Do NOT set isConnected to true yet. Wait for checkConnectionStatus on resume.
+        log('Attempted connection to device: ${device.name}');
         return true;
       }
       return false;
@@ -247,11 +272,6 @@ class ScreenCastService extends GetxService {
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
-
-      // Show mirror guide after connection
-      Future.delayed(const Duration(seconds: 2), () {
-        showMirrorGuide();
-      });
     } catch (e) {
       log('Error handling device connected: $e');
     }
@@ -423,6 +443,11 @@ class CastDeviceDialog extends StatelessWidget {
                           final success = await service.connectToDevice(device);
                           if (success) {
                             Get.back();
+                            if (Platform.isAndroid) {
+                              service.startScreenMirroring();
+                            } else {
+                              service.showMirrorGuide();
+                            }
                           }
                         },
               );
@@ -436,6 +461,11 @@ class CastDeviceDialog extends StatelessWidget {
             onPressed: () {
               service.disconnect();
               Get.back();
+              if (Platform.isAndroid) {
+                service.startScreenMirroring();
+              } else {
+                service.showMirrorGuide();
+              }
             },
             child: Text('Disconnect'.tr),
           ),
