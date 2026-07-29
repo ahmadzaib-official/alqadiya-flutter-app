@@ -34,6 +34,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   // Selected attachment type inside Attachments tab (null = grid)
   final Rx<String?> selectedAttachmentType = Rx<String?>(null);
 
+  final RxBool showGrid = true.obs;
+  final Rx<dynamic> selectedEvidence = Rx<dynamic>(null);
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +66,11 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        Navigator.pop(context);
+        if (!showGrid.value) {
+          showGrid.value = true;
+        } else {
+          Navigator.pop(context);
+        }
       },
       child: Scaffold(
         backgroundColor: MyColors.backgroundColor,
@@ -112,7 +119,13 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                       ],
                     ),
                     actionButtons: GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        if (!showGrid.value) {
+                          showGrid.value = true;
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
                       child: SvgPicture.asset(MyIcons.arrowbackrounded),
                     ),
                   ),
@@ -122,44 +135,49 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
 
                 // ── Main Content ─────────────────────────────────────────────
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Left Panel
-                        _buildLeftImage(gameController, evidenceController),
+                  child: Obx(() {
+                    if (showGrid.value) {
+                      return _buildEnvelopeGrid(evidenceController);
+                    }
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Left Panel
+                          _buildLeftImage(gameController, evidenceController),
 
-                        SizedBox(width: 8.w),
+                          SizedBox(width: 8.w),
 
-                        // Right Panel
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Narrow Tabs
-                              Obx(() => _buildTabs()),
+                          // Right Panel
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Narrow Tabs
+                                _buildTabs(),
 
-                              SizedBox(height: 10.h),
+                                SizedBox(height: 10.h),
 
-                              // Tab Content
-                              Expanded(
-                                child: Obx(() {
-                                  if (selectedTab.value == 0) {
-                                    return _buildCluesTab(evidenceController);
-                                  } else {
-                                    return _buildAttachmentsTab(
-                                      evidenceController,
-                                    );
-                                  }
-                                }),
-                              ),
-                            ],
+                                // Tab Content
+                                Expanded(
+                                  child: Obx(() {
+                                    if (selectedTab.value == 0) {
+                                      return _buildCluesTab(evidenceController);
+                                    } else {
+                                      return _buildAttachmentsTab(
+                                        evidenceController,
+                                      );
+                                    }
+                                  }),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                        ],
+                      ),
+                    );
+                  }),
                 ),
 
                 // ── Footer ───────────────────────────────────────────────────
@@ -186,14 +204,11 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
     EvidenceController evidenceController,
   ) {
     return Obx(() {
-      final firstEvidence =
-          evidenceController.evidences.isNotEmpty
-              ? evidenceController.evidences.first
-              : null;
+      final currentEvidence = selectedEvidence.value;
 
       final imageUrl =
-          firstEvidence?.profileImageURL ??
-          firstEvidence?.profileImage ??
+          currentEvidence?.profileImageURL ??
+          currentEvidence?.profileImage ??
           gameController.gameDetail.value.coverImageUrl ??
           gameController.gameDetail.value.coverImage ??
           "https://picsum.photos/200";
@@ -301,7 +316,8 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
       );
     }
 
-    if (evidenceController.evidences.isEmpty) {
+    final evidence = selectedEvidence.value;
+    if (evidence == null) {
       return Center(
         child: SingleChildScrollView(
           child: Column(
@@ -309,7 +325,8 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
             children: [
               Image(
                 image: AssetImage(MyImages.mail),
-                height: 0.2.sh, // Limit the height of the image to prevent overflow
+                height:
+                    0.2.sh, // Limit the height of the image to prevent overflow
                 fit: BoxFit.contain,
               ),
               SizedBox(height: 20.h),
@@ -326,69 +343,55 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
       );
     }
 
-    return ListView.builder(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 5.h),
-      itemCount: evidenceController.evidences.length,
-      itemBuilder: (context, index) {
-        final evidence = evidenceController.evidences[index];
-        return GestureDetector(
-          onTap: () {
-            evidenceController.getEvidenceById(evidenceId: evidence.id ?? '');
-            Get.toNamed(
-              AppRoutes.clueDetailScreen,
-              arguments: {'evidenceId': evidence.id ?? ''},
-            );
-          },
-          child: Row(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  // controller: scrollController,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 8.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Personal Information Fields
-                        _buildInfoField(
-                          'Clue Name:',
-                          evidence.evidenceName ??
-                              evidence.evidenceNameAr ??
-                              'Unknown',
-                        ),
-                        SizedBox(height: 6.h),
-                        _buildInfoField(
-                          'Discovery Date:',
-                          evidence.createdAt != null
-                              ? DateFormat(
-                                'dd MMM yyyy',
-                              ).format(evidence.createdAt!)
-                              : 'N/A',
-                        ),
-
-                        SizedBox(height: 12.h),
-
-                        // Descriptive Paragraph
-                        Text(
-                          evidence.description ??
-                              evidence.descriptionAr ??
-                              'No biography available',
-                          style: AppTextStyles.bodyTextRegular16().copyWith(
-                            fontSize: 6.sp,
-                            color: MyColors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
+      child: Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(right: 8.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Personal Information Fields
+                    _buildInfoField(
+                      'Clue Name:',
+                      evidence.evidenceName ??
+                          evidence.evidenceNameAr ??
+                          'Unknown',
                     ),
-                  ),
+                    SizedBox(height: 6.h),
+                    _buildInfoField(
+                      'Discovery Date:',
+                      evidence.createdAt != null
+                          ? DateFormat(
+                            'dd MMM yyyy',
+                          ).format(evidence.createdAt!)
+                          : 'N/A',
+                    ),
+
+                    SizedBox(height: 12.h),
+
+                    // Descriptive Paragraph
+                    Text(
+                      evidence.description ??
+                          evidence.descriptionAr ??
+                          'No biography available',
+                      style: AppTextStyles.bodyTextRegular16().copyWith(
+                        fontSize: 6.sp,
+                        color: MyColors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -525,9 +528,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   );
 
   Widget _buildVideosList(EvidenceController c) {
+    final List<dynamic> attachments = selectedEvidence.value?.attachments ?? [];
     final all =
-        c.evidences
-            .expand((e) => e.attachments ?? [])
+        attachments
             .where((a) => a.attachmentType?.toLowerCase() == 'video')
             .toList();
     return _buildMediaContainer(
@@ -603,9 +606,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   }
 
   Widget _buildImagesList(EvidenceController c) {
+    final List<dynamic> attachments = selectedEvidence.value?.attachments ?? [];
     final all =
-        c.evidences
-            .expand((e) => e.attachments ?? [])
+        attachments
             .where((a) => a.attachmentType?.toLowerCase() == 'image')
             .toList();
     return _buildMediaContainer(
@@ -658,9 +661,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   }
 
   Widget _buildDocumentsList(EvidenceController c) {
+    final List<dynamic> attachments = selectedEvidence.value?.attachments ?? [];
     final all =
-        c.evidences
-            .expand((e) => e.attachments ?? [])
+        attachments
             .where((a) => a.attachmentType?.toLowerCase() == 'document')
             .toList();
     return _buildMediaContainer(
@@ -730,9 +733,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
   }
 
   Widget _buildAudioList(EvidenceController c) {
+    final List<dynamic> attachments = selectedEvidence.value?.attachments ?? [];
     final all =
-        c.evidences
-            .expand((e) => e.attachments ?? [])
+        attachments
             .where((a) => a.attachmentType?.toLowerCase() == 'audio')
             .toList();
     return _buildMediaContainer(
@@ -774,6 +777,116 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                   );
                 },
               ),
+    );
+  }
+
+  Widget _buildEnvelopeGrid(EvidenceController evidenceController) {
+    return Column(
+      children: [
+        // "New Clue has been revealed." text
+        Text(
+          'New Clue has been revealed.'.tr,
+          style: AppTextStyles.heading1().copyWith(
+            fontSize: 8.sp,
+            color: MyColors.redButtonColor,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        // Envelopes grid
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.sp),
+            child: Obx(() {
+              if (evidenceController.isLoading.value) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: MyColors.redButtonColor,
+                  ),
+                );
+              }
+
+              if (evidenceController.evidences.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No evidence available'.tr,
+                    style: AppTextStyles.heading1().copyWith(
+                      fontSize: 10.sp,
+                      color: MyColors.white,
+                    ),
+                  ),
+                );
+              }
+
+              return Center(
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: evidenceController.evidences.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.9,
+                    crossAxisSpacing: 20.w,
+                    mainAxisSpacing: 20.h,
+                  ),
+                  itemBuilder: (context, index) {
+                    final evidence = evidenceController.evidences[index];
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Image.asset(
+                            MyImages.mail,
+                            // color: envelopeColor,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        GestureDetector(
+                          onTap: () {
+                            selectedEvidence.value = evidence;
+                            selectedTab.value = 0;
+                            selectedAttachmentType.value = null;
+                            showGrid.value = false;
+                          },
+                          child: Container(
+                            width: 80.w,
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            decoration: BoxDecoration(
+                              color: MyColors.black.withValues(alpha: 0.4),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'View'.tr,
+                              style: AppTextStyles.heading2().copyWith(
+                                fontSize: 7.sp,
+                                color: MyColors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          evidence.evidenceName ?? evidence.evidenceNameAr ?? 'Unknown Clue'.tr,
+                          style: AppTextStyles.heading2().copyWith(
+                            fontSize: 5.sp, // Small font size
+                            color: MyColors.white.withValues(alpha: 0.8),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+        ),
+      ],
     );
   }
 }
