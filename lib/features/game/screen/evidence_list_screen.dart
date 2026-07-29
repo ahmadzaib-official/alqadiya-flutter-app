@@ -93,13 +93,14 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                   child: HomeHeader(
                     title: Row(
                       children: [
-                        Text(
-                          gameController.gameDetail.value.title ??
-                              'List of evidence'.tr,
+                        Obx(() => Text(
+                          showGrid.value
+                              ? 'List of evidence'.tr
+                              : (gameController.gameDetail.value.title ?? 'List of evidence'.tr),
                           style: AppTextStyles.heading1().copyWith(
                             fontSize: 10.sp,
                           ),
-                        ),
+                        )),
                         SizedBox(width: 20.w),
                         Text(
                           'Timer '.tr,
@@ -818,67 +819,79 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
               }
 
               return Center(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: evidenceController.evidences.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 0.9,
-                    crossAxisSpacing: 20.w,
-                    mainAxisSpacing: 20.h,
-                  ),
-                  itemBuilder: (context, index) {
-                    final evidence = evidenceController.evidences[index];
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate item width based on 4 columns and 20.w spacing
+                    final double itemWidth = (constraints.maxWidth - (3 * 20.w)) / 4;
+                    
+                    return SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 20.w,
+                        runSpacing: 20.h,
+                        children: List.generate(
+                          evidenceController.evidences.length,
+                          (index) {
+                            final evidence = evidenceController.evidences[index];
 
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Image.asset(
-                            MyImages.mail,
-                            // color: envelopeColor,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        GestureDetector(
-                          onTap: () {
-                            selectedEvidence.value = evidence;
-                            selectedTab.value = 0;
-                            selectedAttachmentType.value = null;
-                            showGrid.value = false;
-                          },
-                          child: Container(
-                            width: 80.w,
-                            padding: EdgeInsets.symmetric(vertical: 8.h),
-                            decoration: BoxDecoration(
-                              color: MyColors.black.withValues(alpha: 0.4),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              'View'.tr,
-                              style: AppTextStyles.heading2().copyWith(
-                                fontSize: 7.sp,
-                                color: MyColors.white,
-                                fontWeight: FontWeight.w600,
+                            return SizedBox(
+                              width: itemWidth,
+                              height: itemWidth / 0.9, // match childAspectRatio: 0.9
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Image.asset(
+                                      MyImages.mail,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  GestureDetector(
+                                    onTap: () {
+                                      selectedEvidence.value = evidence;
+                                      selectedTab.value = 0;
+                                      selectedAttachmentType.value = null;
+                                      showGrid.value = false;
+                                    },
+                                    child: Container(
+                                      width: 80.w,
+                                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                                      decoration: BoxDecoration(
+                                        color: MyColors.black.withValues(alpha: 0.4),
+                                        borderRadius: BorderRadius.circular(8.r),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'View'.tr,
+                                        style: AppTextStyles.heading2().copyWith(
+                                          fontSize: 7.sp,
+                                          color: MyColors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    evidence.evidenceName ??
+                                        evidence.evidenceNameAr ??
+                                        'Unknown Clue'.tr,
+                                    style: AppTextStyles.heading2().copyWith(
+                                      fontSize: 5.sp, // Small font size
+                                      color: MyColors.white.withValues(alpha: 0.8),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          evidence.evidenceName ?? evidence.evidenceNameAr ?? 'Unknown Clue'.tr,
-                          style: AppTextStyles.heading2().copyWith(
-                            fontSize: 5.sp, // Small font size
-                            color: MyColors.white.withValues(alpha: 0.8),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                      ),
                     );
                   },
                 ),
