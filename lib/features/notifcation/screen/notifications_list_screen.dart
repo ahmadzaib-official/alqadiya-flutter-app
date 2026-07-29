@@ -188,6 +188,21 @@ class NotificationsListScreen extends StatelessWidget {
     );
   }
 
+  String _formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    final day = dateTime.day.toString().padLeft(2, '0');
+    final month = months[dateTime.month - 1];
+    final year = dateTime.year;
+    final hour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+    return '$day $month $year, $hour:$minute $period';
+  }
+
   Widget _buildNotificationCard(
     BuildContext context,
     NotificationModel notification,
@@ -220,7 +235,7 @@ class NotificationsListScreen extends StatelessWidget {
               children: [
                 // Timestamp
                 Text(
-                  notification.createdAt.toString(),
+                  _formatDateTime(notification.createdAt),
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 6.sp,
                     color: MyColors.redButtonColor,
