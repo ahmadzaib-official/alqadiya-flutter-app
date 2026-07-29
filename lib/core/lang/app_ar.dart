@@ -104,7 +104,9 @@ const Map<String, String> lnAr = {
   'onboardingHeader1': 'لعبة تحقيق جنائي\nمدفوعة بالقصة',
   'onboardingDescription1':
       'تجمع القضية بين السرد الغامر\nوطريقة اللعب الاستقصائية.',
-  'onboardingHeader2': 'لعبة تحقيق جنائي\nمدفوعة بالقصة',
+  'onboardingHeader2': 'اختبر مهاراتك البوليسية في سيناريوهات مثيرة',
+  'onboardingDescription2':
+      'قم بحل الألغاز واكتشف الحقيقة في هذه المغامرة البوليسية المثيرة.',
   'No current bookings': 'لا توجد حجوزات حالية',
   'No completed bookings': 'لا توجد حجوزات مكتملة',
   'Your completed bookings will appear here': 'ستظهر حجوزاتك المكتملة هنا',

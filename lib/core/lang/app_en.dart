@@ -16,7 +16,9 @@ const Map<String, String> enUS = {
   'onboardingHeader1': 'Story-driven criminal\ninvestigation game',
   'onboardingDescription1':
       'The case combines immersive storytelling with\ninvestigative gameplay.',
-  'onboardingHeader2': 'Story-driven criminal\ninvestigation game',
+  'onboardingHeader2': 'Test your detective skills in thrilling scenarios',
+  'onboardingDescription2':
+      'Solve mysteries and uncover the truth in this thrilling detective adventure.',
   'Welcome to\nBAZAR': 'Welcome to\nBAZAR',
   "Points available in the balance": "Points available in the balance",
   'Discover\nChalets': "Discover\nChalets",

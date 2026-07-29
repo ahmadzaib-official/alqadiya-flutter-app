@@ -22,9 +22,7 @@ class OnboardingController extends GetxController {
     OnboardingModel(
       image1: MyImages.onboard2,
       title: 'onboardingHeader2'.tr,
-      description:
-          'Find the perfect stay for every occasion — from family getaways to special celebrations.'
-              .tr,
+      description: 'onboardingDescription2'.tr,
     ),
   ];
 
