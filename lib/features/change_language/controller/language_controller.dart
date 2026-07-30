@@ -27,24 +27,22 @@ class ChangeLanguageController extends GetxController {
       LanguageModel(title: "عربي", slug: "ar", image: MyIcons.flag),
     ]);
 
-    final storedLang = Get.find<Preferences>().getString(
-      AppStrings.languageCodeKey,
-    );
-    if (storedLang != null && storedLang.isNotEmpty) {
-      try {
-        final json = jsonDecode(storedLang);
-        final pref = LanguageModel.fromJson(json);
-        selectedLanguage.value = languageList.firstWhere(
-          (element) => element.slug == pref.slug,
-          orElse: () => languageList.first,
-        );
-      } catch (e) {
-        DebugPoint.log("Error parsing stored language: $e");
-        selectedLanguage.value = languageList.first;
-      }
+    final lang = Get.find<Preferences>().getString(AppStrings.language);
+    String currentLangCode = 'en';
+
+    if (lang != null && lang.isNotEmpty) {
+      currentLangCode = lang;
     } else {
-      selectedLanguage.value = languageList.first;
+      final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
+      if (deviceLocale.languageCode == 'ar') {
+        currentLangCode = 'ar';
+      }
     }
+
+    selectedLanguage.value = languageList.firstWhere(
+      (element) => element.slug == currentLangCode,
+      orElse: () => languageList.first,
+    );
   }
 
   Future<void> changeLanguage(LanguageModel newLanguage) async {

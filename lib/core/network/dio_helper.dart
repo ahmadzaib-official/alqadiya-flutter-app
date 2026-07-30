@@ -4,6 +4,7 @@ import 'package:alqadiya_game/core/network/dio_injector.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' as getx;
+import 'package:flutter/material.dart';
 
 class DioHelper {
   final Dio dio = getData();
@@ -19,8 +20,11 @@ class DioHelper {
 
   // Get current language for API requests
   Map<String, String> get languageQuery {
-    final lang = getx.Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
-    return {'language': lang == 'ar' ? 'ar' : 'en'};
+    String currentLang = getx.Get.find<Preferences>().getString(AppStrings.language) ?? '';
+    if (currentLang.isEmpty) {
+      currentLang = getx.Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    }
+    return {'language': currentLang == 'ar' ? 'ar' : 'en'};
   }
 
   Options _buildOptions({bool isAuthRequired = false}) {
