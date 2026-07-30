@@ -87,22 +87,26 @@ class NotificationsListScreen extends StatelessWidget {
                         return Column(
                           children: [
                             Expanded(
-                              child: ListView.separated(
-                                itemCount:
-                                    notificationsController
-                                        .notifications
-                                        .length,
-                                separatorBuilder:
-                                    (context, index) => SizedBox(height: 8.h),
-                                itemBuilder: (context, index) {
-                                  final notification =
+                              child: RefreshIndicator(
+                                onRefresh: notificationsController.fetchNotifications,
+                                color: MyColors.redButtonColor,
+                                child: ListView.separated(
+                                  itemCount:
                                       notificationsController
-                                          .notifications[index];
-                                  return _buildNotificationCard(
-                                    context,
-                                    notification,
-                                  );
-                                },
+                                          .notifications
+                                          .length,
+                                  separatorBuilder:
+                                      (context, index) => SizedBox(height: 8.h),
+                                  itemBuilder: (context, index) {
+                                    final notification =
+                                        notificationsController
+                                            .notifications[index];
+                                    return _buildNotificationCard(
+                                      context,
+                                      notification,
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                             SizedBox(height: 10.h),

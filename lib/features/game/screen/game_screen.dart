@@ -749,10 +749,8 @@ class _GameScreenState extends State<GameScreen> {
     final hints = question.hints;
     if (hints.isEmpty) return SizedBox.shrink();
 
-    final totalPointsCost = hints.fold<int>(
-      0,
-      (sum, hint) => sum + (hint.pointsCost ?? 0),
-    );
+    final totalPointsCost =
+        hints.isNotEmpty ? (hints.first.pointsCost ?? 0) : 0;
 
     return GestureDetector(
       onTap: () {
@@ -792,7 +790,7 @@ class _GameScreenState extends State<GameScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              hints.length > 1 ? 'Hints '.tr : 'Hint '.tr,
+              hints.length > 1 ? 'Hint '.tr : 'Hint '.tr,
               style: AppTextStyles.heading1().copyWith(
                 fontSize: 6.sp,
                 color: MyColors.white,
