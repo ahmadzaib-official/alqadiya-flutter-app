@@ -190,16 +190,29 @@ class NotificationsListScreen extends StatelessWidget {
 
   String _formatDateTime(DateTime? dateTime) {
     if (dateTime == null) return '';
+
+    final localDateTime = dateTime.toLocal();
+
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
-    final day = dateTime.day.toString().padLeft(2, '0');
-    final month = months[dateTime.month - 1];
-    final year = dateTime.year;
-    final hour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+    final day = localDateTime.day.toString().padLeft(2, '0');
+    final month = months[localDateTime.month - 1];
+    final year = localDateTime.year;
+    final hour = localDateTime.hour % 12 == 0 ? 12 : localDateTime.hour % 12;
+    final minute = localDateTime.minute.toString().padLeft(2, '0');
+    final period = localDateTime.hour >= 12 ? 'PM' : 'AM';
     return '$day $month $year, $hour:$minute $period';
   }
 
@@ -208,12 +221,18 @@ class NotificationsListScreen extends StatelessWidget {
     NotificationModel notification,
   ) {
     final isArabic = Get.locale?.languageCode == 'ar';
-    final title = isArabic 
-        ? (notification.titleInArabic?.isNotEmpty == true ? notification.titleInArabic! : notification.title ?? "") 
-        : (notification.title ?? "");
-    final body = isArabic 
-        ? (notification.bodyInArabic?.isNotEmpty == true ? notification.bodyInArabic! : notification.body ?? "") 
-        : (notification.body ?? "");
+    final title =
+        isArabic
+            ? (notification.titleInArabic?.isNotEmpty == true
+                ? notification.titleInArabic!
+                : notification.title ?? "")
+            : (notification.title ?? "");
+    final body =
+        isArabic
+            ? (notification.bodyInArabic?.isNotEmpty == true
+                ? notification.bodyInArabic!
+                : notification.body ?? "")
+            : (notification.body ?? "");
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
@@ -235,7 +254,7 @@ class NotificationsListScreen extends StatelessWidget {
               children: [
                 // Timestamp
                 Text(
-                  _formatDateTime(notification.createdAt),
+                  _formatDateTime(notification.updatedAt),
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 6.sp,
                     color: MyColors.redButtonColor,
