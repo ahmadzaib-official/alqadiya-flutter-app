@@ -1,0 +1,807 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-31T15:30:00+05:00",
+  "project": {
+    "id": "alqadiya-game",
+    "name": "Al Qadiya",
+    "description": "Al Qadiya is a cooperative team-based or solo mystery detective game mobile app built with Flutter. It allows players to purchase cases, join multi-player sessions, solve crime scenes, inspect clues (images, videos, audio, documents), question suspects, and submit answers.",
+    "business_domain": [
+      "Gaming",
+      "Cooperative Multiplayer",
+      "Mystery and Puzzle"
+    ],
+    "status": "active",
+    "repository": {
+      "default_branch": "main",
+      "current_branch": "feature/googleauth",
+      "current_commit": "4e9888fa725160648336bd07369e848b8667e91d",
+      "monorepo": false
+    },
+    "search_keywords": [
+      "detective game",
+      "mystery game",
+      "team-based game",
+      "cooperative play",
+      "screen casting",
+      "crime investigation"
+    ]
+  },
+  "summary": {
+    "purpose": "Provide users with a collaborative mystery-solving gameplay experience on mobile platforms with screen casting options.",
+    "target_users": [
+      "Puzzle and mystery game fans",
+      "Groups of friends playing cooperative games"
+    ],
+    "main_capabilities": [
+      "Solo and team play modes",
+      "Multiplayer session joining",
+      "Clue and evidence inspection (audio, video, PDF)",
+      "Biometric-authenticated case purchases",
+      "TV and screen casting"
+    ],
+    "business_processes": [
+      "User registration and authentication",
+      "Points package purchase and payment integration",
+      "Session setup and team assignment",
+      "Interactive case gameplay",
+      "Session scoreboard rendering"
+    ],
+    "important_limitations": [
+      "No offline play mode; requires active internet connection for REST API communications.",
+      "Points required to purchase or play games; no free case availability confirmed without backend balance."
+    ],
+    "known_risks": [
+      "Hardcoded server URLs make it difficult to support dynamic environments (development vs production).",
+      "Credential notes (test phone numbers and passwords) are present as comments in source files (e.g. main.dart, my_app.dart), posing a potential credential exposure risk."
+    ]
+  },
+  "technology_stack": {
+    "languages": [
+      "Dart"
+    ],
+    "backend": [],
+    "frontend": [],
+    "templating": [],
+    "mobile": [
+      "Flutter"
+    ],
+    "databases": [
+      "Shared Preferences"
+    ],
+    "caches": [],
+    "message_brokers": [],
+    "background_processing": [],
+    "search_engines": [],
+    "vector_databases": [],
+    "ai_and_ml": [],
+    "cloud": [
+      "AWS S3",
+      "Firebase"
+    ],
+    "containers": [],
+    "infrastructure_as_code": [],
+    "ci_cd": [],
+    "testing": [
+      "Flutter Test"
+    ],
+    "security": [
+      "Local Auth"
+    ],
+    "observability": [
+      "Logger"
+    ],
+    "package_managers": [
+      "Pub"
+    ],
+    "build_tools": [
+      "Gradle",
+      "CocoaPods"
+    ]
+  },
+  "features": [
+    {
+      "id": "user-authentication",
+      "name": "User Authentication",
+      "category": "Auth",
+      "description": "Provides user sign-up, sign-in, OTP verification, password reset, and social sign-in integrations.",
+      "business_purpose": "Authenticates users to manage their profiles, game progress, point balance, and multiplayer session status securely.",
+      "status": "implemented",
+      "confidence": "confirmed",
+      "user_roles": [
+        "customer",
+        "guest"
+      ],
+      "route_names": [
+        "/auth/sigin",
+        "/auth/signup",
+        "/auth/otpscreen",
+        "/auth/verifyscreen",
+        "/auth/forgotpassword",
+        "/auth/newPasswordScreen"
+      ],
+      "frontend_pages": [],
+      "models": [],
+      "services": [
+        "AuthGuard"
+      ],
+      "background_jobs": [],
+      "integrations": [
+        "Google Sign-In",
+        "Sign In With Apple"
+      ],
+      "configuration_variables": [],
+      "keywords": [
+        "auth",
+        "login",
+        "signup",
+        "otp",
+        "social sign in"
+      ],
+      "evidence": [
+        {
+          "path": "lib/features/auth/controller/signin_controller.dart",
+          "line_start": 70,
+          "line_end": 266,
+          "reason": "Implements email, phone, Google, and Apple login methods."
+        }
+      ]
+    },
+    {
+      "id": "biometric-case-unlocking",
+      "name": "Biometric Case Unlocking",
+      "category": "Security",
+      "description": "Requires users to authenticate using face or fingerprint recognition before purchasing or unlocking game cases.",
+      "business_purpose": "Secures point balances and confirms explicit user transactions before unlocking premium game cases.",
+      "status": "implemented",
+      "confidence": "confirmed",
+      "user_roles": [
+        "customer"
+      ],
+      "route_names": [
+        "/addCaseScreen"
+      ],
+      "frontend_pages": [],
+      "models": [],
+      "services": [
+        "LocalAuthService"
+      ],
+      "background_jobs": [],
+      "integrations": [],
+      "configuration_variables": [],
+      "keywords": [
+        "biometrics",
+        "face id",
+        "fingerprint",
+        "local auth",
+        "case purchase"
+      ],
+      "evidence": [
+        {
+          "path": "lib/features/casestore/controller/add_case_controller.dart",
+          "line_start": 30,
+          "line_end": 60,
+          "reason": "Requires LocalAuthService authentication before triggering purchaseGame API call."
+        }
+      ]
+    },
+    {
+      "id": "game-session-management",
+      "name": "Game Session Management",
+      "category": "Game Core",
+      "description": "Allows users to create new game sessions, choose between solo or team modes, join existing sessions via code, and assign players/teams.",
+      "business_purpose": "Sets up cooperative or solo multiplayer sessions and groups players together under team leaders.",
+      "status": "implemented",
+      "confidence": "confirmed",
+      "user_roles": [
+        "customer"
+      ],
+      "route_names": [
+        "/startGameScreen",
+        "/createTeamScreen",
+        "/playerSelectionScreen",
+        "/chooseTeamLeaderScreen",
+        "/joinGameScreen"
+      ],
+      "frontend_pages": [],
+      "models": [
+        "GameSessionModel",
+        "TeamModel",
+        "MemberModel"
+      ],
+      "services": [],
+      "background_jobs": [],
+      "integrations": [],
+      "configuration_variables": [],
+      "keywords": [
+        "game session",
+        "multiplayer",
+        "teams",
+        "leader selection",
+        "join game"
+      ],
+      "evidence": [
+        {
+          "path": "lib/features/game/controller/game_controller.dart",
+          "line_start": 189,
+          "line_end": 398,
+          "reason": "Handles session creation, session mode selection, team creation, and member assignments."
+        }
+      ]
+    },
+    {
+      "id": "case-investigation",
+      "name": "Case Investigation",
+      "category": "Gameplay",
+      "description": "Allows players to investigate a mystery case by examining evidence (images, audio files, PDF documents), questioning suspects, and watching cutscene videos.",
+      "business_purpose": "Provides the core interactive investigation gameplay loop where players analyze clues and answer questions.",
+      "status": "implemented",
+      "confidence": "confirmed",
+      "user_roles": [
+        "customer"
+      ],
+      "route_names": [
+        "/caseVideoScreen",
+        "/gameScreen",
+        "/suspectDetailScreen",
+        "/suspectsListScreen",
+        "/evidenceListScreen",
+        "/clueDetailScreen"
+      ],
+      "frontend_pages": [],
+      "models": [
+        "CutsceneModel",
+        "EvidenceModel",
+        "QuestionModel",
+        "SuspectModel",
+        "UserAnswerModel"
+      ],
+      "services": [],
+      "background_jobs": [],
+      "integrations": [],
+      "configuration_variables": [],
+      "keywords": [
+        "clues",
+        "suspects",
+        "evidence",
+        "audio player",
+        "video player",
+        "pdf viewer"
+      ],
+      "evidence": [
+        {
+          "path": "lib/features/game/screen/clue_detail_screen.dart",
+          "line_start": 1,
+          "line_end": 100,
+          "reason": "Allows rendering clues and routes them to specific media preview screens."
+        }
+      ]
+    },
+    {
+      "id": "screen-casting",
+      "name": "Screen Casting and Mirroring",
+      "category": "Utilities",
+      "description": "Casts the game's contents to external displays (smart TVs, monitors) via Chromecast, AirPlay, or Miracast protocols using native method channels.",
+      "business_purpose": "Allows players in a room to cast evidence and gameplay details onto a larger screen for better collaborative discussion.",
+      "status": "implemented",
+      "confidence": "confirmed",
+      "user_roles": [
+        "customer"
+      ],
+      "route_names": [],
+      "frontend_pages": [],
+      "models": [],
+      "services": [
+        "ScreenCastService"
+      ],
+      "background_jobs": [],
+      "integrations": [],
+      "configuration_variables": [],
+      "keywords": [
+        "chromecast",
+        "airplay",
+        "miracast",
+        "mirroring",
+        "screen sharing"
+      ],
+      "evidence": [
+        {
+          "path": "lib/core/services/screen_cast_service.dart",
+          "line_start": 12,
+          "line_end": 184,
+          "reason": "Implements Native MethodChannel handlers to start scanning, connect to cast devices, and mirror screen."
+        }
+      ]
+    },
+    {
+      "id": "points-purchasing",
+      "name": "Points and Package Purchasing",
+      "category": "Monetization",
+      "description": "Enables users to buy points packages using configured payment methods in order to buy/unlock cases and hints.",
+      "business_purpose": "Provides points/package purchasing flows for the game monetization model.",
+      "status": "implemented",
+      "confidence": "confirmed",
+      "user_roles": [
+        "customer"
+      ],
+      "route_names": [
+        "/buyPointsScreen",
+        "/paymentScreen",
+        "/paymentDoneScreen",
+        "/transactionReceiptScreen"
+      ],
+      "frontend_pages": [],
+      "models": [
+        "PaymentMethodModel"
+      ],
+      "services": [],
+      "background_jobs": [],
+      "integrations": [
+        "MyFatoorah Payment Gateway"
+      ],
+      "configuration_variables": [],
+      "keywords": [
+        "monetization",
+        "purchase",
+        "payments",
+        "points balance",
+        "packages"
+      ],
+      "evidence": [
+        {
+          "path": "lib/features/payment/controller/payment_provider.dart",
+          "line_start": 84,
+          "line_end": 113,
+          "reason": "Allows processing points purchases via payment methods from points/purchase backend endpoint."
+        }
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "id": "firebase-cloud-messaging",
+      "name": "Firebase Cloud Messaging",
+      "category": "Notifications",
+      "description": "Handles incoming background/foreground push notifications.",
+      "capabilities": [
+        "FCM Token generation and registration",
+        "Token refresh listener support",
+        "Background message handling with local notification popups"
+      ],
+      "status": "implemented",
+      "confidence": "confirmed",
+      "sdk": "firebase_messaging",
+      "protocol": "proprietary",
+      "authentication_method": "API Key",
+      "configuration_variable_names": [],
+      "route_names": [],
+      "webhook_names": [],
+      "services": [
+        "NotificationService"
+      ],
+      "evidence": [
+        {
+          "path": "lib/core/services/notification_service.dart",
+          "line_start": 149,
+          "line_end": 194,
+          "reason": "Listens for FCM tokens and manages messaging opened app streams."
+        }
+      ]
+    },
+    {
+      "id": "google-sign-in",
+      "name": "Google Sign-In",
+      "category": "Authentication",
+      "description": "Social authentication provider integration.",
+      "capabilities": [
+        "Google account sign-in popup",
+        "Failsafe sign-in flows returning user details to backend"
+      ],
+      "status": "implemented",
+      "confidence": "confirmed",
+      "sdk": "google_sign_in",
+      "protocol": "OAuth 2.0",
+      "authentication_method": "OAuth Token",
+      "configuration_variable_names": [],
+      "route_names": [],
+      "webhook_names": [],
+      "services": [],
+      "evidence": [
+        {
+          "path": "lib/features/auth/controller/signin_controller.dart",
+          "line_start": 162,
+          "line_end": 220,
+          "reason": "Invokes GoogleSignIn signIn methods and coordinates sign in body submission."
+        }
+      ]
+    },
+    {
+      "id": "sign-in-with-apple",
+      "name": "Apple Sign-In",
+      "category": "Authentication",
+      "description": "Apple authentication provider integration.",
+      "capabilities": [
+        "Apple ID credential requests",
+        "Failsafe login flows transferring credentials to backend"
+      ],
+      "status": "implemented",
+      "confidence": "confirmed",
+      "sdk": "sign_in_with_apple",
+      "protocol": "OAuth 2.0",
+      "authentication_method": "OAuth Token",
+      "configuration_variable_names": [],
+      "route_names": [],
+      "webhook_names": [],
+      "services": [],
+      "evidence": [
+        {
+          "path": "lib/features/auth/controller/signin_controller.dart",
+          "line_start": 222,
+          "line_end": 266,
+          "reason": "Executes AppleIDCredential lookup and sign-in body transmission."
+        }
+      ]
+    },
+    {
+      "id": "my-fatoorah",
+      "name": "MyFatoorah Payment Gateway",
+      "category": "Payments",
+      "description": "Payment gateway integration to purchase points packages.",
+      "capabilities": [
+        "Knet, Credit Card, and other Middle East region payment methods support",
+        "Points balances incrementing via purchased packages"
+      ],
+      "status": "implemented",
+      "confidence": "confirmed",
+      "sdk": "",
+      "protocol": "HTTPS REST",
+      "authentication_method": "Bearer Token",
+      "configuration_variable_names": [],
+      "route_names": [],
+      "webhook_names": [],
+      "services": [],
+      "evidence": [
+        {
+          "path": "Alqadiya.postman_collection.json",
+          "line_start": 1485,
+          "line_end": 1485,
+          "reason": "Integrates 'My Fatoorah' as active payment gateway type."
+        }
+      ]
+    }
+  ],
+  "authentication_and_authorization": {
+    "authentication_methods": [
+      "email",
+      "phone_otp",
+      "google",
+      "apple"
+    ],
+    "libraries": [
+      "google_sign_in",
+      "sign_in_with_apple",
+      "local_auth"
+    ],
+    "token_types": [
+      "Bearer Access Token",
+      "Refresh Token"
+    ],
+    "session_management": "JWT tokens are saved in SharedPreferences. The Dio HTTP client attaches authorization headers and intercepts 401 errors to perform a refresh token request before retrying.",
+    "password_reset_supported": true,
+    "mfa_supported": false,
+    "social_login_providers": [
+      "google",
+      "apple"
+    ],
+    "roles": [
+      "customer",
+      "admin",
+      "guest"
+    ],
+    "permissions": [],
+    "authorization_model": "Role checks on client-side where guests are restricted from starting/joining games until authenticated.",
+    "security_notes": [
+      "Hardcoded base URLs and credentials in comments."
+    ],
+    "evidence": [
+      {
+        "path": "lib/core/services/auth_guard.dart",
+        "line_start": 1,
+        "line_end": 66,
+        "reason": "Checks guest role and restricts access."
+      }
+    ]
+  },
+  "architecture": {
+    "style": [
+      "Client-Server",
+      "MVVM (Controllers, Models, Repositories, Views)"
+    ],
+    "applications": [
+      "alqadiya_game (Flutter Mobile Client)"
+    ],
+    "services": [
+      "NotificationService",
+      "DeviceInfoService",
+      "LocalAuthService",
+      "ScreenCastService",
+      "LocalizationService"
+    ],
+    "major_components": [
+      "Auth",
+      "Case Store",
+      "Game Sessions & Teams",
+      "Gameplay",
+      "Payments",
+      "Screen Mirroring"
+    ],
+    "data_flows": [
+      "Auth tokens stored in SharedPreferences and sent on API calls.",
+      "Game session join requests fetch session state and populate local models.",
+      "Evidence files retrieved by ID and displayed in media-appropriate views (audio player, video player, PDF viewer)."
+    ],
+    "design_patterns": [
+      "Singleton",
+      "Repository",
+      "Dependency Injection (GetX)",
+      "Reactive State (GetX Rx)"
+    ],
+    "external_dependencies": [
+      "Firebase Messaging",
+      "Google Sign-In",
+      "Sign In With Apple",
+      "AWS S3"
+    ],
+    "architectural_risks": [
+      "Base URL and port hardcoded in configuration files instead of using environment configuration.",
+      "Substantial business logic placed inside UI screens and controllers."
+    ]
+  },
+  "api": {
+    "styles": [
+      "REST"
+    ],
+    "authentication_methods": [
+      "Bearer Token (JWT)"
+    ],
+    "major_route_groups": [
+      "Auth",
+      "Users",
+      "Games",
+      "Game Sessions",
+      "Media Assets (Cutscenes, Suspects, Evidences, Questions)",
+      "Points & Payments"
+    ],
+    "webhooks": [],
+    "documentation_locations": [],
+    "versioning": "Path versioning (prefix /api/)",
+    "rate_limiting": "",
+    "evidence": [
+      {
+        "path": "lib/core/constants/server_config.dart",
+        "line_start": 1,
+        "line_end": 94,
+        "reason": "Defines all REST routes."
+      }
+    ]
+  },
+  "database": {
+    "engines": [
+      "Shared Preferences"
+    ],
+    "extensions": [],
+    "major_models": [
+      "GameModel",
+      "GameSessionModel",
+      "TeamModel",
+      "MemberModel",
+      "EvidenceModel",
+      "QuestionModel",
+      "SuspectModel",
+      "UserAnswerModel",
+      "PaymentMethodModel",
+      "CutsceneModel"
+    ],
+    "important_relationships": [
+      "GameSession contains Teams",
+      "Teams contain Members",
+      "Game contains Cutscenes, Suspects, Evidences, Questions",
+      "Question contains Answers, Hints"
+    ],
+    "migration_tools": [],
+    "seed_files": [],
+    "sensitive_data_types": [
+      "Access Token",
+      "Refresh Token",
+      "User ID",
+      "Device ID",
+      "Phone Number",
+      "Password"
+    ],
+    "evidence": [
+      {
+        "path": "lib/features/game/model/",
+        "line_start": null,
+        "line_end": null,
+        "reason": "Contains gameplay data models."
+      }
+    ]
+  },
+  "background_processing": {
+    "frameworks": [],
+    "brokers": [],
+    "workers": [],
+    "queues": [],
+    "scheduled_tasks": [],
+    "retry_handling": "Interceptors automatically refresh expired authentication tokens on 401 response and retry.",
+    "monitoring": [],
+    "evidence": [
+      {
+        "path": "lib/core/network/dio_injector.dart",
+        "line_start": 70,
+        "line_end": 156,
+        "reason": "Handles token refresh retries."
+      }
+    ]
+  },
+  "deployment": {
+    "environments": [
+      "Local Development",
+      "Staging/Production"
+    ],
+    "cloud_providers": [
+      "AWS",
+      "Firebase"
+    ],
+    "services": [
+      "S3 (asset hosting)",
+      "FCM (push notifications)"
+    ],
+    "containerization": [],
+    "infrastructure_as_code": [],
+    "ci_cd": [],
+    "release_process": [],
+    "rollback_process": [],
+    "health_checks": [],
+    "scaling": [],
+    "evidence": [
+      {
+        "path": "firebase.json",
+        "line_start": 1,
+        "line_end": 1,
+        "reason": "Configures Firebase environments."
+      }
+    ]
+  },
+  "configuration": {
+    "environment_variables": [],
+    "configuration_files": [
+      "pubspec.yaml",
+      "firebase.json",
+      "lib/firebase_options.dart"
+    ]
+  },
+  "commands": {
+    "installation": [
+      "flutter pub get"
+    ],
+    "local_development": [
+      "flutter run"
+    ],
+    "frontend": [],
+    "backend": [],
+    "tests": [
+      "flutter test"
+    ],
+    "linting": [
+      "flutter analyze"
+    ],
+    "formatting": [
+      "dart format ."
+    ],
+    "database_migrations": [],
+    "database_seed": [],
+    "build": [
+      "flutter build apk",
+      "flutter build ios"
+    ]
+  },
+  "testing": {
+    "frameworks": [
+      "flutter_test"
+    ],
+    "test_types": [
+      "widget"
+    ],
+    "test_directories": [
+      "test"
+    ],
+    "coverage_tools": [],
+    "end_to_end_tools": [],
+    "tests_executed": [],
+    "test_status": "not-run"
+  },
+  "observability": {
+    "logging": [
+      "Logger package"
+    ],
+    "metrics": [],
+    "tracing": [],
+    "error_tracking": [],
+    "monitoring": [],
+    "alerts": []
+  },
+  "security": {
+    "security_controls": [
+      "Biometrics check before adding cases",
+      "AuthGuard on client routes",
+      "Auto logout on token refresh failure"
+    ],
+    "secret_management_approach": [
+      "Hardcoded base URLs and credentials in comments instead of environment variables."
+    ],
+    "dependency_scanning": [],
+    "known_risks": [
+      "Plain text test credential comments in source files",
+      "Hardcoded API URLs"
+    ],
+    "recommendations": [
+      "Extract base URLs to build configurations or dart-defines",
+      "Remove credentials in comments",
+      "Store access tokens in secure storage (flutter_secure_storage)"
+    ]
+  },
+  "important_files": [
+    {
+      "path": "pubspec.yaml",
+      "category": "build_configuration",
+      "purpose": "Defines Flutter dependencies and project metadata.",
+      "evidence": []
+    },
+    {
+      "path": "lib/main.dart",
+      "category": "entry_point",
+      "purpose": "App startup entry point, sets up Firebase and notifications.",
+      "evidence": []
+    },
+    {
+      "path": "lib/core/constants/server_config.dart",
+      "category": "configuration",
+      "purpose": "Stores API endpoints and base server URLs.",
+      "evidence": []
+    },
+    {
+      "path": "lib/core/network/dio_injector.dart",
+      "category": "network",
+      "purpose": "Configures Dio client with interceptors for token refresh.",
+      "evidence": []
+    },
+    {
+      "path": "lib/core/services/screen_cast_service.dart",
+      "category": "service",
+      "purpose": "Implements screen casting and mirroring using native platform channels.",
+      "evidence": []
+    },
+    {
+      "path": "lib/core/services/local_auth_service.dart",
+      "category": "service",
+      "purpose": "Manages biometric authentication for user transactions.",
+      "evidence": []
+    },
+    {
+      "path": "lib/features/game/controller/game_controller.dart",
+      "category": "controller",
+      "purpose": "Contains all core game session and multiplayer state logic.",
+      "evidence": []
+    }
+  ],
+  "unknowns": [
+    "Backend application architecture, language, database engine, and deployment environments (only mobile client repository is available).",
+    "Specific SMS provider used for sending OTP codes (triggered via backend endpoints)."
+  ],
+  "analysis": {
+    "files_inspected": 482,
+    "runtime_validation_performed": false,
+    "tests_executed": [],
+    "warnings": []
+  }
+}
