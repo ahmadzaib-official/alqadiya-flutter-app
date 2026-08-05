@@ -2,6 +2,7 @@ const Map<String, String> lnAr = {
   'has left the game': 'غادر اللعبة',
   //ONBORDING
   'Language': 'لغة',
+
   'Welcome to\nBAZAR': 'مرحبًا بك في\nبازار',
   'Discover\nChalets': "اكتشف\nالشاليهات",
   'Earn & Redeem\nRewards': 'اكسب واستبدل\nالمكافآت',

@@ -50,12 +50,17 @@ class ScreenCastService extends GetxService with WidgetsBindingObserver {
   Future<void> checkConnectionStatus() async {
     try {
       final result = await _channel.invokeMethod('checkConnectionStatus');
-      if (result == true && connectedDevice.value != null) {
+      if (result == true) {
+        if (connectedDevice.value == null) {
+          connectedDevice.value = CastDevice(
+            id: Platform.isIOS ? 'airplay_device' : 'cast_device',
+            name: Platform.isIOS ? 'AirPlay Display' : 'Cast Display',
+            type: Platform.isIOS ? 'airplay' : 'chromecast',
+          );
+        }
         isConnected.value = true;
       } else if (result == false) {
         isConnected.value = false;
-        // Don't clear connectedDevice so the user knows what they tried to connect to,
-        // or clear it if you prefer strict sync.
       }
     } catch (e) {
       log('Error checking connection status: $e');
@@ -443,11 +448,7 @@ class CastDeviceDialog extends StatelessWidget {
                           final success = await service.connectToDevice(device);
                           if (success) {
                             Get.back();
-                            if (Platform.isAndroid) {
-                              service.startScreenMirroring();
-                            } else {
-                              service.showMirrorGuide();
-                            }
+                            await service.startScreenMirroring();
                           }
                         },
               );
@@ -461,11 +462,7 @@ class CastDeviceDialog extends StatelessWidget {
             onPressed: () {
               service.disconnect();
               Get.back();
-              if (Platform.isAndroid) {
-                service.startScreenMirroring();
-              } else {
-                service.showMirrorGuide();
-              }
+              service.startScreenMirroring();
             },
             child: Text('Disconnect'.tr),
           ),

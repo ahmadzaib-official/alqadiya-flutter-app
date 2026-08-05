@@ -649,7 +649,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     final buttonText =
         _allHintsViewed
             ? 'Continue'.tr
-            : (hasMoreHints ? 'Next Hint'.tr : 'Continue'.tr);
+            : (hasMoreHints ? 'Next'.tr : 'Continue'.tr);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),

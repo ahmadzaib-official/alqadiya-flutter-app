@@ -124,7 +124,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        if (Platform.isAndroid)
+        if (Platform.isAndroid || Platform.isIOS)
           TextButton(
             onPressed: () async {
               final castService = Get.find<ScreenCastService>();
