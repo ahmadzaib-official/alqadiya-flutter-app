@@ -226,16 +226,16 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (totalHints > 1) ...[
-                  SizedBox(height: 4.h),
-                  Text(
-                    '${'Hint'.tr} $currentHintNumber/$totalHints',
-                    style: AppTextStyles.captionRegular10().copyWith(
-                      fontSize: 6.sp,
-                      color: MyColors.white.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
+                // if (totalHints > 1) ...[
+                //   SizedBox(height: 4.h),
+                //   Text(
+                //     '${'Hint'.tr} $currentHintNumber/$totalHints',
+                //     style: AppTextStyles.captionRegular10().copyWith(
+                //       fontSize: 6.sp,
+                //       color: MyColors.white.withValues(alpha: 0.7),
+                //     ),
+                //   ),
+                // ],
               ],
             ),
           ),
@@ -649,7 +649,7 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
     final buttonText =
         _allHintsViewed
             ? 'Continue'.tr
-            : (hasMoreHints ? 'Next Hint'.tr : 'Continue'.tr);
+            : (hasMoreHints ? 'Next'.tr : 'Continue'.tr);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),

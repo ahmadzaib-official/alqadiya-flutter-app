@@ -1,5 +1,5 @@
 class ServerConfig {
-  // static const baseUrl = "http://192.168.1.15:4000/";
+  // static const baseUrl = "http://192.168.1.33:4000/";
   static const baseUrl = "http://13.205.204.190/api/";
   static const base = "http://13.205.204.190/";
   // static const baseUrl = "http://192.168.1.43:4000/";
@@ -80,6 +80,10 @@ class ServerConfig {
       "${baseUrl}game-sessions/$sessionId/result";
   static String getGameSessionStatus(String sessionId) =>
       "${baseUrl}game-sessions/$sessionId/status";
+  static String leaveGameSession(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/leave";
+  static String getHostStatus(String sessionId) =>
+      "${baseUrl}game-sessions/$sessionId/host-status";
 
   // User Balance
   static const userBalance = "${baseUrl}games/balance";

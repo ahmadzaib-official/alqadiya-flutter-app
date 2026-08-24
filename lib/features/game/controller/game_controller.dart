@@ -547,6 +547,11 @@ class GameController extends GetxController {
                   response.data['session'],
                 );
                 gameSession(session);
+                
+                // Fetch the actual game details if they differ from current cache
+                if (session.gameId != null && gameDetail.value.id != session.gameId) {
+                  getGameDetail(gameId: session.gameId!);
+                }
               }
               if (response.data['players'] != null) {
                 final List<dynamic> playersList = response.data['players'];
@@ -608,6 +613,33 @@ class GameController extends GetxController {
       return false;
     } on DioException {
       // Error already shown by interceptor
+      return false;
+    } catch (e) {
+      CustomSnackbar.showError(
+        "${'Something went wrong!!!:'.tr} ${e.toString()}",
+      );
+      return false;
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Leave Game Session
+  Future<bool> leaveGameSession() async {
+    final sessionId = gameSession.value?.id;
+    if (sessionId == null) return false;
+
+    try {
+      isLoading(true);
+      final response = await GameRepository().leaveGameSession(
+        sessionId: sessionId,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        gameSession(null); // Optional: clear session
+        return true;
+      }
+      return false;
+    } on DioException {
       return false;
     } catch (e) {
       CustomSnackbar.showError(

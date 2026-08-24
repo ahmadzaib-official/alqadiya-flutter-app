@@ -1,6 +1,6 @@
+import 'package:alqadiya_game/widgets/cahnetwork_image_component.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
@@ -38,37 +38,20 @@ class TeamLeaderCard extends StatelessWidget {
                 decoration: BoxDecoration(shape: BoxShape.circle),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        imageUrl.isNotEmpty
-                            ? imageUrl
-                            : "https://picsum.photos/200?random=1",
+                  child: NetworkImageWidget(
+                    imageUrl: imageUrl,
+                    height: 28.w,
+                    width: 28.w,
+                    borderRadius: 50.r,
                     fit: BoxFit.cover,
-                    placeholder:
-                        (context, url) => Container(
-                          color: MyColors.darkBlueColor,
-                          child: Center(
-                            child: SizedBox(
-                              width: 28.w,
-                              height: 28.w,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  MyColors.greenColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    errorWidget:
-                        (context, url, error) => Container(
-                          color: MyColors.darkBlueColor,
-                          child: Icon(
-                            Icons.person,
-                            size: 25.sp,
-                            color: MyColors.white.withValues(alpha: 0.5),
-                          ),
-                        ),
+                    errorWidget: Container(
+                      color: MyColors.darkBlueColor,
+                      child: Icon(
+                        Icons.person,
+                        size: 25.sp,
+                        color: MyColors.white.withValues(alpha: 0.5),
+                      ),
+                    ),
                   ),
                 ),
               ),

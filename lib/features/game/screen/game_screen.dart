@@ -25,6 +25,7 @@ import 'package:alqadiya_game/features/casestore/controller/add_case_controller.
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
+import 'dart:async';
 
 class GameScreen extends StatefulWidget {
   GameScreen({super.key});
@@ -47,6 +48,7 @@ class _GameScreenState extends State<GameScreen> {
   DateTime? questionStartTime;
   UserAnswerModel? lastSubmittedAnswer;
   bool _isNavigatingToResult = false; // Flag to prevent multiple navigations
+  Timer? _hostStatusTimer;
 
   @override
   void initState() {
@@ -67,6 +69,11 @@ class _GameScreenState extends State<GameScreen> {
 
     // Initialize timer controller (permanent to persist across navigation)
     timerController = Get.put(GameTimerController(), permanent: true);
+
+    // Initialize host status checking
+    _hostStatusTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _checkHostStatus();
+    });
 
     // Initialize game footer controller (permanent to persist across navigation)
     if (!Get.isRegistered<GameFooterController>()) {
@@ -131,6 +138,33 @@ class _GameScreenState extends State<GameScreen> {
 
     // Initialize question start time
     questionStartTime = DateTime.now();
+  }
+
+  Future<void> _checkHostStatus() async {
+    if (!mounted) return;
+
+    final gameController =
+        Get.isRegistered<GameController>() ? Get.find<GameController>() : null;
+    final sessionId = gameController?.gameSession.value?.id;
+
+    if (sessionId == null) return;
+
+    try {
+      final response = await GameRepository().getHostStatus(
+        sessionId: sessionId,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data != null && response.data['hasHostLeft'] == true) {
+          _hostStatusTimer?.cancel();
+          if (mounted) {
+            CustomSnackbar.showError('Host has left the game session'.tr);
+            Get.offAllNamed(AppRoutes.homescreen);
+          }
+        }
+      }
+    } catch (e) {
+      // Silently handle errors for polling
+    }
   }
 
   Future<void> _getGameIdFromSessionStatus(
@@ -348,6 +382,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    _hostStatusTimer?.cancel();
     // Pause the timer when leaving the game screen
     if (Get.isRegistered<GameTimerController>()) {
       timerController.pauseTimer();
@@ -714,10 +749,8 @@ class _GameScreenState extends State<GameScreen> {
     final hints = question.hints;
     if (hints.isEmpty) return SizedBox.shrink();
 
-    final totalPointsCost = hints.fold<int>(
-      0,
-      (sum, hint) => sum + (hint.pointsCost ?? 0),
-    );
+    final totalPointsCost =
+        hints.isNotEmpty ? (hints.first.pointsCost ?? 0) : 0;
 
     return GestureDetector(
       onTap: () {
@@ -757,7 +790,7 @@ class _GameScreenState extends State<GameScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              hints.length > 1 ? 'Hints '.tr : 'Hint '.tr,
+              hints.length > 1 ? 'Hint '.tr : 'Hint '.tr,
               style: AppTextStyles.heading1().copyWith(
                 fontSize: 6.sp,
                 color: MyColors.white,
@@ -903,35 +936,36 @@ class _GameScreenState extends State<GameScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () {
-            // Handle view additional evidence
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-            decoration: BoxDecoration(
-              color: MyColors.BlueColor,
-              borderRadius: BorderRadius.circular(4.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  offset: Offset(0, 1),
-                  blurRadius: 1,
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                'View additional evidence'.tr,
-                style: AppTextStyles.heading1().copyWith(
-                  fontSize: 6.sp,
-                  color: MyColors.white.withValues(alpha: 0.5),
-                ),
-              ),
-            ),
-          ),
-        ),
+        // GestureDetector(
+        //   onTap: () {
+        //     // Handle view additional evidence
+        //   },
+        //   child: Container(
+        //     padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+        //     decoration: BoxDecoration(
+        //       color: MyColors.BlueColor,
+        //       borderRadius: BorderRadius.circular(4.r),
+        //       boxShadow: [
+        //         BoxShadow(
+        //           color: Colors.black.withValues(alpha: 0.15),
+        //           offset: Offset(0, 1),
+        //           blurRadius: 1,
+        //         ),
+        //       ],
+        //     ),
+        //     child: Center(
+        //       child: Text(
+        //         'View additional evidence'.tr,
+        //         style: AppTextStyles.heading1().copyWith(
+        //           fontSize: 6.sp,
+        //           color: MyColors.white.withValues(alpha: 0.5),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         SizedBox(width: 12.w),
+
         Obx(() {
           // Access observable to trigger rebuild
           final lastAnswer = answerController.lastAnswer.value;

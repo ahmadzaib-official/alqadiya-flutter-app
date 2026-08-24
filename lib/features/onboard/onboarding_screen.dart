@@ -57,28 +57,31 @@ class OnboardingScreen extends StatelessWidget {
                     itemCount: controller.onboardingPages.length,
                     itemBuilder: (context, index) {
                       final page = controller.onboardingPages[index];
-                      return Column(
-                        children: [
-                          Text(
-                            page.title,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.heading1().copyWith(
-                              color: MyColors.white,
-                              fontSize: 36.sp,
+                      return SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              page.title,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.heading1().copyWith(
+                                color: MyColors.white,
+                                fontSize: 36.sp,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: screenHeight * 0.015),
-                          Text(
-                            page.description,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.bodyTextMedium16bold()
-                                .copyWith(
-                                  color: MyColors.white,
-                                  fontSize: 14.sp,
-                                ),
-                            maxLines: 2,
-                          ),
-                        ],
+                            SizedBox(height: screenHeight * 0.015),
+                            Text(
+                              page.description,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.bodyTextMedium16bold()
+                                  .copyWith(
+                                    color: MyColors.white,
+                                    fontSize: 14.sp,
+                                  ),
+                              maxLines: 2,
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),

@@ -16,6 +16,9 @@ class SplashController extends GetxController {
     // Check if user is guest or logged in
     final bool isGuest = pref.getBool(AppStrings.isGuest) ?? false;
     final bool isLoggedIn = pref.getString(AppStrings.userId) != null;
+    final String? accessToken = pref.getString(AppStrings.accessToken);
+
+    DebugPoint.log('accessToken: $accessToken');
 
     // ✅ Always use Get.offAllNamed to clear navigation stack
     if (isGuest || isLoggedIn) {

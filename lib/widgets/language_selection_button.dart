@@ -32,10 +32,12 @@ class LanguageSelectionButton extends StatelessWidget {
   String _getCurrentLanguageName() {
     try {
       final lang = Get.find<Preferences>().getString(AppStrings.language);
-      if (lang == 'ar') {
-        return 'عربي';
+      if (lang != null && lang.isNotEmpty) {
+        if (lang == 'ar') return 'عربي';
+        return 'English';
       }
-      return 'English';
+      final currentCode = Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+      return currentCode == 'ar' ? 'عربي'.tr : 'English'.tr;
     } catch (e) {
       return Get.locale?.languageCode == 'ar' ? 'عربي'.tr : 'English'.tr;
     }
@@ -44,10 +46,12 @@ class LanguageSelectionButton extends StatelessWidget {
   String _getCurrentLanguageFlag() {
     try {
       final lang = Get.find<Preferences>().getString(AppStrings.language);
-      if (lang == 'ar') {
-        return MyIcons.flag;
+      if (lang != null && lang.isNotEmpty) {
+        if (lang == 'ar') return MyIcons.flag;
+        return MyIcons.ukFlag;
       }
-      return MyIcons.ukFlag;
+      final currentCode = Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+      return currentCode == 'ar' ? MyIcons.flag : MyIcons.ukFlag;
     } catch (e) {
       return Get.locale?.languageCode == 'ar' ? MyIcons.flag : MyIcons.ukFlag;
     }
@@ -59,8 +63,10 @@ class LanguageSelectionButton extends StatelessWidget {
       return;
     }
 
-    final currentLang =
-        Get.find<Preferences>().getString(AppStrings.language) ?? 'en';
+    String currentLang = Get.find<Preferences>().getString(AppStrings.language) ?? '';
+    if (currentLang.isEmpty) {
+      currentLang = Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    }
     final currentLanguageName =
         currentLang == 'ar' ? 'Arabic'.tr : 'English'.tr;
 

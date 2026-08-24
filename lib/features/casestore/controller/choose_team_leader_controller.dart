@@ -50,12 +50,8 @@ class ChooseTeamLeaderController extends GetxController {
           Get.arguments['members'] is List) {
         List<TeamLeader> leaders = [];
         for (var m in Get.arguments['members']) {
-          // Use fallback image if userPhotoURL is empty or null
-          String imageUrl = m['userPhotoURL'] ?? "";
-          if (imageUrl.isEmpty) {
-            imageUrl =
-                "https://picsum.photos/200?random=${m['id']?.hashCode ?? 1}";
-          }
+          // Use actual image
+          String imageUrl = m['userPhotoURL'] ?? m['photoURL'] ?? m['photoUrl'] ?? m['avatar'] ?? m['userPhotoUrl'] ?? "";
 
           leaders.add(
             TeamLeader(
@@ -138,12 +134,8 @@ class ChooseTeamLeaderController extends GetxController {
           // Use all session players as team members (they should all be in the team after assignment)
           members =
               gameController.sessionPlayers.map((member) {
-                // Use fallback image if userPhotoURL is empty or null
+                // Use actual image
                 String imageUrl = member.userPhotoURL ?? "";
-                if (imageUrl.isEmpty) {
-                  imageUrl =
-                      "https://picsum.photos/200?random=${member.userId?.hashCode ?? member.id?.hashCode ?? 1}";
-                }
 
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
@@ -170,12 +162,8 @@ class ChooseTeamLeaderController extends GetxController {
         if (gameController.sessionPlayers.isNotEmpty) {
           final members =
               gameController.sessionPlayers.map((member) {
-                // Use fallback image if userPhotoURL is empty or null
+                // Use actual image
                 String imageUrl = member.userPhotoURL ?? "";
-                if (imageUrl.isEmpty) {
-                  imageUrl =
-                      "https://picsum.photos/200?random=${member.userId?.hashCode ?? member.id?.hashCode ?? 1}";
-                }
 
                 return TeamLeader(
                   id: member.userId ?? member.id ?? '',
@@ -200,12 +188,8 @@ class ChooseTeamLeaderController extends GetxController {
         // Use session players as fallback
         final members =
             gameController.sessionPlayers.map((member) {
-              // Use fallback image if userPhotoURL is empty or null
+              // Use actual image
               String imageUrl = member.userPhotoURL ?? "";
-              if (imageUrl.isEmpty) {
-                imageUrl =
-                    "https://picsum.photos/200?random=${member.userId?.hashCode ?? member.id?.hashCode ?? 1}";
-              }
 
               return TeamLeader(
                 id: member.userId ?? member.id ?? '',
@@ -253,12 +237,10 @@ class ChooseTeamLeaderController extends GetxController {
               (m) => m.userId == player.userId || m.id == player.userId,
             );
 
-            // Use fallback image if userPhotoURL is empty or null
-            String imageUrl = member?.userPhotoURL ?? "";
-            if (imageUrl.isEmpty) {
-              imageUrl =
-                  "https://picsum.photos/200?random=${player.userId?.hashCode ?? 1}";
-            }
+            // Use actual image
+            String imageUrl = player.userPhotoUrl?.isNotEmpty == true
+                ? player.userPhotoUrl!
+                : (member?.userPhotoURL ?? "");
 
             print('Player: ${player.userName}, Image: $imageUrl');
             return TeamLeader(

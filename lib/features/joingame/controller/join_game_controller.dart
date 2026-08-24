@@ -100,6 +100,12 @@ class JoinGameController extends GetxController {
           isWaiting.value = true;
           // CustomSnackbar.showSuccess('Joined game successfully'.tr);
 
+          // Fetch game detail if we somehow have gameId but no sessionId
+          final fallbackGameId = gameController.gameSession.value?.gameId;
+          if (fallbackGameId != null && gameController.gameDetail.value.id != fallbackGameId) {
+             await gameController.getGameDetail(gameId: fallbackGameId);
+          }
+
           Future.delayed(const Duration(seconds: 3), () {
             // Use post frame callback to ensure navigation happens safely
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -183,6 +189,13 @@ class JoinGameController extends GetxController {
                   sessionId: sessionId,
                   silent: true,
                 );
+              }
+
+              final currentGameId = gameController.gameSession.value?.gameId;
+              if (currentGameId != null) {
+                if (gameController.gameDetail.value.id != currentGameId) {
+                  await gameController.getGameDetail(gameId: currentGameId);
+                }
               }
 
               // Navigate to video screen

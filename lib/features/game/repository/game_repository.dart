@@ -237,4 +237,22 @@ class GameRepository extends GetxService {
     var response = await _dioHelper.get(url: url, isAuthRequired: true);
     return response;
   }
+
+  // Leave Game Session API
+  Future<Response<dynamic>> leaveGameSession({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.leaveGameSession(sessionId);
+    var response = await _dioHelper.post(url: url, isAuthRequired: true);
+    return response;
+  }
+
+  // Get Host Status API
+  Future<Response<dynamic>> getHostStatus({
+    required String sessionId,
+  }) async {
+    final String url = ServerConfig.getHostStatus(sessionId);
+    var response = await _dioHelper.get(url: url, isAuthRequired: true);
+    return response;
+  }
 }

@@ -5,6 +5,7 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 
 class LeaveDialog {
   static Future<bool?> show(BuildContext context) async {
@@ -62,6 +63,10 @@ class LeaveDialog {
   static Future<void> showAndNavigateHome(BuildContext context) async {
     final shouldLeave = await show(context);
     if (shouldLeave == true) {
+      if (Get.isRegistered<GameController>()) {
+        final gameController = Get.find<GameController>();
+        await gameController.leaveGameSession();
+      }
       Get.offAllNamed(AppRoutes.homescreen);
     }
   }

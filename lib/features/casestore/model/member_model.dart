@@ -56,7 +56,7 @@ class MemberModel {
       userId: json["userId"],
       userName: json["userName"],
       userEmail: json["userEmail"],
-      userPhotoURL: json["userPhotoURL"],
+      userPhotoURL: json["userPhotoURL"] ?? json["photoURL"] ?? json["photoUrl"] ?? json["avatar"],
       role: json["role"],
       status: json["status"],
       individualScore: json["individualScore"],

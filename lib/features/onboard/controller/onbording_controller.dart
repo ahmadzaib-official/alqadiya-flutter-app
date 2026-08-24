@@ -22,23 +22,7 @@ class OnboardingController extends GetxController {
     OnboardingModel(
       image1: MyImages.onboard2,
       title: 'onboardingHeader2'.tr,
-      description:
-          'Find the perfect stay for every occasion — from family getaways to special celebrations.'
-              .tr,
-    ),
-    OnboardingModel(
-      image1: MyImages.onboard3,
-      title: 'onboardingHeader3'.tr,
-      description:
-          'Collect points with every booking and redeem them for discounts, gifts, or free nights.'
-              .tr,
-    ),
-    OnboardingModel(
-      image1: MyImages.onboard3,
-      title: 'onboardingHeader3'.tr,
-      description:
-          'Collect points with every booking and redeem them for discounts, gifts, or free nights.'
-              .tr,
+      description: 'onboardingDescription2'.tr,
     ),
   ];
 

@@ -87,22 +87,26 @@ class NotificationsListScreen extends StatelessWidget {
                         return Column(
                           children: [
                             Expanded(
-                              child: ListView.separated(
-                                itemCount:
-                                    notificationsController
-                                        .notifications
-                                        .length,
-                                separatorBuilder:
-                                    (context, index) => SizedBox(height: 8.h),
-                                itemBuilder: (context, index) {
-                                  final notification =
+                              child: RefreshIndicator(
+                                onRefresh: notificationsController.fetchNotifications,
+                                color: MyColors.redButtonColor,
+                                child: ListView.separated(
+                                  itemCount:
                                       notificationsController
-                                          .notifications[index];
-                                  return _buildNotificationCard(
-                                    context,
-                                    notification,
-                                  );
-                                },
+                                          .notifications
+                                          .length,
+                                  separatorBuilder:
+                                      (context, index) => SizedBox(height: 8.h),
+                                  itemBuilder: (context, index) {
+                                    final notification =
+                                        notificationsController
+                                            .notifications[index];
+                                    return _buildNotificationCard(
+                                      context,
+                                      notification,
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                             SizedBox(height: 10.h),
@@ -188,17 +192,51 @@ class NotificationsListScreen extends StatelessWidget {
     );
   }
 
+  String _formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+
+    final localDateTime = dateTime.toLocal();
+
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final day = localDateTime.day.toString().padLeft(2, '0');
+    final month = months[localDateTime.month - 1];
+    final year = localDateTime.year;
+    final hour = localDateTime.hour % 12 == 0 ? 12 : localDateTime.hour % 12;
+    final minute = localDateTime.minute.toString().padLeft(2, '0');
+    final period = localDateTime.hour >= 12 ? 'PM' : 'AM';
+    return '$day $month $year, $hour:$minute $period';
+  }
+
   Widget _buildNotificationCard(
     BuildContext context,
     NotificationModel notification,
   ) {
     final isArabic = Get.locale?.languageCode == 'ar';
-    final title = isArabic 
-        ? (notification.titleInArabic?.isNotEmpty == true ? notification.titleInArabic! : notification.title ?? "") 
-        : (notification.title ?? "");
-    final body = isArabic 
-        ? (notification.bodyInArabic?.isNotEmpty == true ? notification.bodyInArabic! : notification.body ?? "") 
-        : (notification.body ?? "");
+    final title =
+        isArabic
+            ? (notification.titleInArabic?.isNotEmpty == true
+                ? notification.titleInArabic!
+                : notification.title ?? "")
+            : (notification.title ?? "");
+    final body =
+        isArabic
+            ? (notification.bodyInArabic?.isNotEmpty == true
+                ? notification.bodyInArabic!
+                : notification.body ?? "")
+            : (notification.body ?? "");
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
@@ -220,7 +258,7 @@ class NotificationsListScreen extends StatelessWidget {
               children: [
                 // Timestamp
                 Text(
-                  notification.createdAt.toString(),
+                  _formatDateTime(notification.updatedAt),
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 6.sp,
                     color: MyColors.redButtonColor,

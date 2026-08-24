@@ -180,16 +180,21 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     final suspectController = Get.find<SuspectController>();
     return Obx(() {
       final suspect = suspectController.suspectDetail.value;
-      final imageUrl =
-          suspect?.profileImageURL ?? suspect?.profileImage ?? MyImages.suspect;
+      final imageUrl = suspect?.profileImageURL ?? suspect?.profileImage;
+      final hasNoImage = imageUrl == null || imageUrl.trim().isEmpty;
 
       return Container(
         width: 0.2.sw,
         height: double.infinity,
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.r)),
+        decoration: BoxDecoration(
+          color: MyColors.darkBlueColor,
+          borderRadius: BorderRadius.circular(10.r),
+        ),
         child:
-            imageUrl.startsWith('http')
+            hasNoImage
+                ? Container(color: MyColors.darkBlueColor)
+                : imageUrl.startsWith('http')
                 ? CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
@@ -204,7 +209,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                       ),
                   errorWidget:
                       (context, url, error) =>
-                          Image.asset(MyImages.suspect, fit: BoxFit.cover),
+                          Container(color: MyColors.darkBlueColor),
                 )
                 : Image.asset(imageUrl, fit: BoxFit.cover),
       );
@@ -238,16 +243,32 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                         ? null
                         : index == 0
                         ? BorderRadius.only(
-                          topLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
-                          bottomLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
-                          topRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
-                          bottomRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
+                          topLeft: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                          ),
+                          bottomLeft: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                          ),
+                          topRight: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                          ),
+                          bottomRight: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                          ),
                         )
                         : BorderRadius.only(
-                          topRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
-                          bottomRight: Radius.circular(Get.locale?.languageCode == 'ar' ? 0 : 100.r),
-                          topLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
-                          bottomLeft: Radius.circular(Get.locale?.languageCode == 'ar' ? 100.r : 0),
+                          topRight: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                          ),
+                          bottomRight: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                          ),
+                          topLeft: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                          ),
+                          bottomLeft: Radius.circular(
+                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                          ),
                         ),
               ),
               child: Center(
@@ -272,7 +293,8 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     SuspectController suspectController,
   ) {
     // Check if we're showing a specific attachment type within investigation
-    if (controller.selectedMainTab.value == 2 && controller.selectedAttachmentType.value != null) {
+    if (controller.selectedMainTab.value == 2 &&
+        controller.selectedAttachmentType.value != null) {
       if (controller.selectedAttachmentType.value == 'Audio') {
         return _buildAudioList(controller, suspectController);
       } else if (controller.selectedAttachmentType.value == 'Videos') {
@@ -285,7 +307,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
         return _buildInvestigationReport(controller, suspectController);
       }
     }
-    
+
     // Regular tab content
     if (controller.selectedMainTab.value == 0) {
       return _buildPersonalInformation(suspectController);
@@ -1118,10 +1140,14 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                         (context) => PDFViewerScreen(pdfUrl: report.mediaUrl!),
                   ),
                 );
-              } else if (isAudio && report.mediaUrl != null && report.mediaUrl!.isNotEmpty) {
+              } else if (isAudio &&
+                  report.mediaUrl != null &&
+                  report.mediaUrl!.isNotEmpty) {
                 // Show audio list in the investigation tab
                 suspectController.setSelectedAttachmentType('Audio');
-              } else if (report.attachmentType?.toLowerCase() == 'video' && report.mediaUrl != null && report.mediaUrl!.isNotEmpty) {
+              } else if (report.attachmentType?.toLowerCase() == 'video' &&
+                  report.mediaUrl != null &&
+                  report.mediaUrl!.isNotEmpty) {
                 // Show video list in the investigation tab
                 suspectController.setSelectedAttachmentType('Videos');
               }
