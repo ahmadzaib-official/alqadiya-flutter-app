@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/debug/debug_point.dart';
 import 'package:alqadiya_game/features/change_language/modal/language_modal.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:get/get.dart';

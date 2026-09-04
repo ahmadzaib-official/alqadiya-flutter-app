@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
+import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
@@ -223,9 +224,24 @@ class AddCaseScreen extends StatelessWidget {
                                         controller.isAuthenticating.value
                                             ? null
                                             : () {
-                                              controller.handleAddCaseWithAuth(
-                                                gameId: game.id!,
-                                              );
+                                              final userPoints =
+                                                  userController
+                                                      .user
+                                                      .value
+                                                      ?.pointsBalance ??
+                                                  0;
+                                              if (userPoints == 0 ||
+                                                  userPoints <
+                                                      (game.costPoints ?? 0)) {
+                                                Get.toNamed(
+                                                  AppRoutes.buyPointsScreen,
+                                                );
+                                              } else {
+                                                controller
+                                                    .handleAddCaseWithAuth(
+                                                      gameId: game.id!,
+                                                    );
+                                              }
                                             },
                                     child: Container(
                                       width: 90.w,

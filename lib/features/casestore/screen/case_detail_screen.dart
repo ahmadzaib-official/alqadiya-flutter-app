@@ -85,116 +85,13 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.sp),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Case Image and Details Row
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Case Image
-                              Column(
-                                children: [
-                                  Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          16.sp,
-                                        ),
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              controller
-                                                  .gameDetail
-                                                  .value
-                                                  .coverImageUrl ??
-                                              '',
-                                          width:
-                                              //  isPurchased ? 0.2.sw :
-                                              0.18.sw,
-                                          height:
-                                              // isPurchased ? 0.45.sh :
-                                              0.65.sh,
-                                          fit: BoxFit.fill,
-                                          placeholder:
-                                              (context, url) =>
-                                                  Shimmer.fromColors(
-                                                    baseColor: MyColors
-                                                        .backgroundColor
-                                                        .withValues(alpha: 0.3),
-                                                    highlightColor: MyColors
-                                                        .white
-                                                        .withValues(alpha: 0.1),
-                                                    child: Container(
-                                                      width:
-                                                          // isPurchased
-                                                          //     ? 0.2.sw
-                                                          //     :
-                                                          0.18.sw,
-                                                      height:
-                                                          // isPurchased
-                                                          //     ? 0.45.sh
-                                                          //     :
-                                                          0.65.sh,
-                                                      color: Colors.grey,
-                                                    ),
-                                                  ),
-
-                                          // ❌ Error widget
-                                          errorWidget:
-                                              (context, url, error) =>
-                                                  Container(
-                                                    width:
-                                                        // isPurchased
-                                                        //     ? 0.2.sw
-                                                        //     :
-                                                        0.18.sw,
-                                                    height:
-                                                        // isPurchased
-                                                        //     ? 0.45.sh
-                                                        //     :
-                                                        0.65.sh,
-                                                    color: Colors.grey.shade200,
-                                                    alignment: Alignment.center,
-                                                    child: const Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.grey,
-                                                      size: 40,
-                                                    ),
-                                                  ),
-                                        ),
-                                      ),
-
-                                      if (!isPurchased)
-                                        Positioned(
-                                          right: 10.h,
-                                          top: 40.h,
-                                          child: SvgPicture.asset(
-                                            MyIcons.lockrounded,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  // if (isPurchased && gameId.isNotEmpty) ...[
-                                  //   SizedBox(height: 8.h),
-                                  //   CopyCodeButton(code: gameId),
-
-                                  //   SizedBox(height: 10.h),
-
-                                  //   Text(
-                                  //     'Share this code with friends to join.'
-                                  //         .tr,
-                                  //     style: AppTextStyles.captionRegular12()
-                                  //         .copyWith(
-                                  //           color: MyColors.white,
-                                  //           height: 1.5,
-                                  //           fontSize: 5.sp,
-                                  //         ),
-                                  //   ),
-                                  // ],
-                                ],
-                              ),
-                              SizedBox(width: 12.w),
-
                               // Right Content
                               Expanded(
                                 child: Column(
