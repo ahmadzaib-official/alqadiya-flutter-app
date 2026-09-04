@@ -4,11 +4,11 @@ import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
-import 'package:alqadiya_game/features/payment/controller/payment_provider.dart';
+import 'package:alqadiya_game/features/payment/controller/payment_controller.dart';
 
-import 'package:alqadiya_game/widgets/custom_button.dart';
-import 'package:alqadiya_game/widgets/custom_textfield.dart';
-import 'package:alqadiya_game/widgets/gradient_box_border.dart';
+import 'package:alqadiya_game/core/widgets/custom_button.dart';
+import 'package:alqadiya_game/core/widgets/custom_textfield.dart';
+import 'package:alqadiya_game/core/widgets/gradient_box_border.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,11 +1,11 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:alqadiya_game/features/transactions/controller/transactions_provider.dart';
+import 'package:alqadiya_game/features/transactions/controller/transactions_controller.dart';
 import 'package:alqadiya_game/features/transactions/model/transaction_model.dart';
-import 'package:alqadiya_game/widgets/game_background.dart';
-import 'package:alqadiya_game/widgets/home_header.dart';
-import 'package:alqadiya_game/widgets/localization_footer.dart';
+import 'package:alqadiya_game/features/game/widgets/game_background.dart';
+import 'package:alqadiya_game/core/widgets/home_header.dart';
+import 'package:alqadiya_game/core/widgets/localization_footer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';

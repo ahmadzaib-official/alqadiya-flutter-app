@@ -7,7 +7,7 @@ import 'package:alqadiya_game/core/network/app_exceptions.dart';
 import 'package:dio/dio.dart';
 import 'package:alqadiya_game/core/services/notification_service.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
-import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart';
+import 'package:alqadiya_game/core/widgets/spinkkit_ripple_efffect.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';

@@ -1,0 +1,146 @@
+import 'package:alqadiya_game/core/constants/my_icons.dart';
+import 'package:alqadiya_game/core/services/localization_services.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
+import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/style/text_styles.dart';
+import 'package:alqadiya_game/core/widgets/language_selection_bottomsheet.dart';
+import 'package:alqadiya_game/core/widgets/language_selection_drawer.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+
+class LanguageSelectionButton extends StatelessWidget {
+  const LanguageSelectionButton({
+    super.key,
+    this.color,
+    this.height,
+    this.width,
+    this.margin,
+    this.textFontSize,
+    this.onTap,
+    this.isShadow = true,
+  });
+  final Color? color;
+  final double? height;
+  final double? width;
+  final double? textFontSize;
+  final EdgeInsetsGeometry? margin;
+  final VoidCallback? onTap;
+  final bool isShadow;
+
+  String _getCurrentLanguageName() {
+    try {
+      final lang = Get.find<Preferences>().getString(AppStrings.language);
+      if (lang != null && lang.isNotEmpty) {
+        if (lang == 'ar') return 'عربي';
+        return 'English';
+      }
+      final currentCode = Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+      return currentCode == 'ar' ? 'عربي'.tr : 'English'.tr;
+    } catch (e) {
+      return Get.locale?.languageCode == 'ar' ? 'عربي'.tr : 'English'.tr;
+    }
+  }
+
+  String _getCurrentLanguageFlag() {
+    try {
+      final lang = Get.find<Preferences>().getString(AppStrings.language);
+      if (lang != null && lang.isNotEmpty) {
+        if (lang == 'ar') return MyIcons.flag;
+        return MyIcons.ukFlag;
+      }
+      final currentCode = Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+      return currentCode == 'ar' ? MyIcons.flag : MyIcons.ukFlag;
+    } catch (e) {
+      return Get.locale?.languageCode == 'ar' ? MyIcons.flag : MyIcons.ukFlag;
+    }
+  }
+
+  void _handleLanguageSelection(BuildContext context) {
+    if (onTap != null) {
+      onTap!();
+      return;
+    }
+
+    String currentLang = Get.find<Preferences>().getString(AppStrings.language) ?? '';
+    if (currentLang.isEmpty) {
+      currentLang = Get.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    }
+    final currentLanguageName =
+        currentLang == 'ar' ? 'Arabic'.tr : 'English'.tr;
+
+    // Check orientation
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    if (isLandscape) {
+      // Use drawer in landscape mode
+      LanguageSelectionDrawer.show(
+        currentLanguage: currentLanguageName,
+        onEnglishSelected: () async {
+          await LocalizationService().changeLocale('en');
+        },
+        onArabicSelected: () async {
+          await LocalizationService().changeLocale('ar');
+        },
+      );
+    } else {
+      // Use bottom sheet in portrait mode
+      LanguageSelectionBottomSheet.show(
+        currentLanguage: currentLanguageName,
+        onEnglishSelected: () async {
+          Navigator.pop(context);
+          await LocalizationService().changeLocale('en');
+        },
+        onArabicSelected: () async {
+          Navigator.pop(context);
+          await LocalizationService().changeLocale('ar');
+        },
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _handleLanguageSelection(context),
+      child: Container(
+        height: height ?? 50.h,
+        width: width ?? 80.w,
+        margin: margin ?? null,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.sp),
+          color: color ?? Colors.transparent,
+          boxShadow:
+              isShadow
+                  ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      spreadRadius: 0,
+                      blurRadius: 1,
+                      offset: const Offset(0, 1),
+                    ),
+                  ]
+                  : null,
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _getCurrentLanguageName(),
+              style: AppTextStyles.captionRegular12().copyWith(
+                fontSize: textFontSize ?? 12.sp,
+              ),
+            ),
+            SizedBox(width: 4.w),
+            SvgPicture.asset(_getCurrentLanguageFlag(), height: 20.h),
+          ],
+        ),
+      ),
+    );
+  }
+}

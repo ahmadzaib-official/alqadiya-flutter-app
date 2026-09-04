@@ -4,7 +4,7 @@ import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/widgets/home_menu/home_drawer_menu.dart';
+import 'package:alqadiya_game/core/widgets/home_menu/home_drawer_menu.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeController extends GetxController {

@@ -1,6 +1,6 @@
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
-import 'package:alqadiya_game/widgets/auth_required_dialog.dart';
+import 'package:alqadiya_game/core/widgets/auth_required_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

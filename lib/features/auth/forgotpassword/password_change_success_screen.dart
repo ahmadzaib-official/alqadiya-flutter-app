@@ -3,9 +3,9 @@
 // import 'package:alqadiya_game/core/utils/spacing.dart';
 // import 'package:alqadiya_game/core/theme/my_colors.dart';
 // import 'package:alqadiya_game/core/style/text_styles.dart';
-// import 'package:alqadiya_game/widgets/animation_entry_wrapper.dart';
-// import 'package:alqadiya_game/widgets/custom_button.dart';
-// import 'package:alqadiya_game/widgets/custom_header.dart';
+// import 'package:alqadiya_game/core/widgets/animation_entry_wrapper.dart';
+// import 'package:alqadiya_game/core/widgets/custom_button.dart';
+// import 'package:alqadiya_game/core/widgets/custom_header.dart';
 // import 'package:alqadiya_game/widgets/textfield_widget.dart';
 // import 'package:alqadiya_game/features/auth/controller/signin_controller.dart';
 // import 'package:alqadiya_game/core/utils/validator.dart';

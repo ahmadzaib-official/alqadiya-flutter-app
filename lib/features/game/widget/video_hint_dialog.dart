@@ -1,8 +1,8 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:alqadiya_game/features/game/controller/audio_player_provider.dart';
-import 'package:alqadiya_game/features/game/controller/video_player_provider.dart';
+import 'package:alqadiya_game/features/game/controller/audio_player_controller.dart';
+import 'package:alqadiya_game/features/game/controller/video_player_controller.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/pdf_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

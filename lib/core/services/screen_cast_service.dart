@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:alqadiya_game/widgets/screen_mirror_guide_dialog.dart';
+import 'package:alqadiya_game/core/widgets/screen_mirror_guide_dialog.dart';
 
 /// Screen casting service for mirroring app content to external displays
 /// Supports both native casting (Chromecast, AirPlay) and screen mirroring

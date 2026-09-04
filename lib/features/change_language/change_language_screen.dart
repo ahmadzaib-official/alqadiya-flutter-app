@@ -1,7 +1,7 @@
 // change_language_screen.dart
 import 'package:alqadiya_game/core/utils/spacing.dart';
 import 'package:alqadiya_game/features/change_language/controller/language_controller.dart';
-import 'package:alqadiya_game/widgets/app_bar.dart';
+import 'package:alqadiya_game/core/widgets/app_bar.dart';
 import 'package:alqadiya_game/features/change_language/widgets/custom_selector.dart';
 import 'package:alqadiya_game/core/services/localization_services.dart';
 import 'package:alqadiya_game/core/services/refresh_services.dart';

@@ -1,11 +1,11 @@
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
-import 'package:alqadiya_game/widgets/animation_entry_wrapper.dart';
-import 'package:alqadiya_game/widgets/custom_button.dart';
-import 'package:alqadiya_game/widgets/custom_header.dart';
-import 'package:alqadiya_game/widgets/language_selection_button.dart';
-import 'package:alqadiya_game/widgets/custom_textfield.dart';
+import 'package:alqadiya_game/core/widgets/animation_entry_wrapper.dart';
+import 'package:alqadiya_game/core/widgets/custom_button.dart';
+import 'package:alqadiya_game/core/widgets/custom_header.dart';
+import 'package:alqadiya_game/core/widgets/language_selection_button.dart';
+import 'package:alqadiya_game/core/widgets/custom_textfield.dart';
 import 'package:alqadiya_game/features/auth/controller/signin_controller.dart';
 import 'package:alqadiya_game/core/utils/validator.dart';
 import 'package:flutter/material.dart';

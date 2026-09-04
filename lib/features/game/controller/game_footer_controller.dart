@@ -1,6 +1,6 @@
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/question_controller.dart';
-import 'package:alqadiya_game/features/game/controller/scoreboard_provider.dart';
+import 'package:alqadiya_game/features/game/controller/scoreboard_controller.dart';
 import 'package:alqadiya_game/features/game/controller/user_answer_controller.dart';
 import 'package:alqadiya_game/features/game/model/user_answer_model.dart';
 import 'package:get/get.dart';

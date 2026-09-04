@@ -1,6 +1,6 @@
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/constants/server_config.dart';
-import 'package:alqadiya_game/widgets/spinkkit_ripple_efffect.dart'
+import 'package:alqadiya_game/core/widgets/spinkkit_ripple_efffect.dart'
     show SpinkitRipple;
 import 'package:alqadiya_game/core/debug/debug_point.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';

@@ -11,9 +11,9 @@ import 'package:alqadiya_game/features/game/widget/suspect_detail/audio_player_w
 import 'package:alqadiya_game/features/game/widget/suspect_detail/image_preview_screen.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/pdf_viewer.dart';
 import 'package:alqadiya_game/features/game/widget/suspect_detail/video_player_screen.dart';
-import 'package:alqadiya_game/widgets/game_background.dart';
-import 'package:alqadiya_game/widgets/game_footer.dart';
-import 'package:alqadiya_game/widgets/home_header.dart';
+import 'package:alqadiya_game/features/game/widgets/game_background.dart';
+import 'package:alqadiya_game/features/game/widgets/game_footer.dart';
+import 'package:alqadiya_game/core/widgets/home_header.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
