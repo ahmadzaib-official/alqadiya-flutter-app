@@ -21,7 +21,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:alqadiya_game/features/case_store/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
 import 'package:alqadiya_game/features/game/repository/game_repository.dart';
@@ -35,7 +34,6 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  final AddCaseController controller = Get.put(AddCaseController());
   late final GameTimerController timerController;
   final QuestionController questionController = Get.find<QuestionController>();
   final UserAnswerController answerController =

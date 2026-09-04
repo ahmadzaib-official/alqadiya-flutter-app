@@ -20,7 +20,6 @@ class AppRoutes {
   static const String homescreen = '/homeScreen';
   static const String caseStoreScreen = '/caseStoreScreen';
   static const String caseDetailScreen = '/caseDetailScreen';
-  static const String addCaseScreen = '/addCaseScreen';
   static const String startGameScreen = '/startGameScreen';
   static const String createTeamScreen = '/createTeamScreen';
   static const String playerSelectionScreen = '/playerSelectionScreen';
