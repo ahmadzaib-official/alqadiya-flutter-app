@@ -66,9 +66,19 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundColor,
-      body: GameBackground(
-        imageUrl: "https://picsum.photos/200",
-        body: Stack(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment.topCenter,
+            radius: 1.5,
+            colors: [
+              Color(0xFF273F5D),
+              Color(0xFF020D21),
+              Color(0xFF031229),
+            ],
+          ),
+        ),
+        child: Stack(
           children: [
             Column(
               children: [

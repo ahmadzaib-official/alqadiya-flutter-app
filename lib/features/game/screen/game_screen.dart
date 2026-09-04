@@ -12,6 +12,7 @@ import 'package:alqadiya_game/features/game/widget/question_stepper.dart';
 import 'package:alqadiya_game/features/game/widget/video_hint_dialog.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
+
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/gradient_box_border.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
@@ -409,13 +410,19 @@ class _GameScreenState extends State<GameScreen> {
       child: Scaffold(
         backgroundColor: MyColors.backgroundColor,
         body: Obx(
-          () => GameBackground(
-            isPurchased: true,
-            imageUrl:
-                gameController.gameDetail.value.coverImageUrl ??
-                gameController.gameDetail.value.coverImage ??
-                "https://picsum.photos/200",
-            body: Column(
+          () => Container(
+            decoration: const BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment.topCenter,
+                radius: 1.5,
+                colors: [
+                  Color(0xFF273F5D),
+                  Color(0xFF020D21),
+                  Color(0xFF031229),
+                ],
+              ),
+            ),
+            child: Column(
               children: [
                 // Top Bar
                 Padding(
