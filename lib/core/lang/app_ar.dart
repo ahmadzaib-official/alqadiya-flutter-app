@@ -23,6 +23,8 @@ const Map<String, String> lnAr = {
   'Full Name:': 'الاسم الكامل:',
   'Job:': 'الوظيفة:',
   'No biography available': 'لا توجد سيرة ذاتية متاحة',
+  'Clue Name:': 'اسم القرينة:',
+  'Discovery Date:': 'تاريخ الاكتشاف:',
   'Phone': 'رقم الهاتف',
   'years old': 'سنة',
   'Password': 'كلمة المرور',

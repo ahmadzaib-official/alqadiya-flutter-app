@@ -45,6 +45,8 @@ const Map<String, String> enUS = {
   'Full Name:': 'Full Name:',
   'Job:': 'Job:',
   'No biography available': 'No biography available',
+  'Clue Name:': 'Clue Name:',
+  'Discovery Date:': 'Discovery Date:',
   'Phone': 'Phone',
   'years old': 'years old',
   'No notification settings found': 'No notification settings found',

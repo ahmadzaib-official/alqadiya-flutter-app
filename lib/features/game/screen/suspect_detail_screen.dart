@@ -28,9 +28,19 @@ class SuspectDetailScreen extends StatefulWidget {
 }
 
 class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
+  late final GameTimerController timerController;
+
   @override
   void initState() {
     super.initState();
+
+    if (Get.isRegistered<GameTimerController>()) {
+      timerController = Get.find<GameTimerController>();
+    } else {
+      timerController = Get.put(GameTimerController(), permanent: true);
+      timerController.startTimer();
+    }
+
     // Suspect details should already be fetched when navigating from list
     // But if navigated directly, we might need to fetch
     final suspectController = Get.find<SuspectController>();
@@ -38,20 +48,15 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
       // If no suspect detail, try to get from arguments or first suspect
       final suspectId = Get.arguments?['suspectId'];
       if (suspectId != null) {
-        suspectController.getSuspectById(suspectId: suspectId);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          suspectController.getSuspectById(suspectId: suspectId);
+        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the existing timer controller (should already be initialized from game_screen)
-    // If not found, create it (fallback scenario)
-    final timerController =
-        Get.isRegistered<GameTimerController>()
-              ? Get.find<GameTimerController>()
-              : Get.put(GameTimerController(), permanent: true)
-          ..startTimer();
 
     // Initialize suspect detail controller
     final suspectDetailController = Get.find<SuspectDetailController>();

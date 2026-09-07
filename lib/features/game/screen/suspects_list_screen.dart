@@ -232,7 +232,7 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
         );
       }
 
-      final suspects = suspectController.suspects;
+      final suspects = suspectController.suspects.toList();
 
       return Center(
         child: SizedBox(

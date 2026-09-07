@@ -28,6 +28,8 @@ class ClueDetailScreen extends StatefulWidget {
 }
 
 class _ClueDetailScreenState extends State<ClueDetailScreen> {
+  late final GameTimerController timerController;
+
   @override
   void initState() {
     super.initState();
@@ -35,21 +37,22 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
     final arguments = Get.arguments as Map<String, dynamic>?;
     final evidenceId = arguments?['evidenceId'];
 
+    if (Get.isRegistered<GameTimerController>()) {
+      timerController = Get.find<GameTimerController>();
+    } else {
+      timerController = Get.put(GameTimerController(), permanent: true);
+      timerController.startTimer();
+    }
+
     if (evidenceId != null) {
-      evidenceController.getEvidenceById(evidenceId: evidenceId);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        evidenceController.getEvidenceById(evidenceId: evidenceId);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the existing timer controller (should already be initialized from game_screen)
-    // If not found, create it (fallback scenario)
-    final timerController =
-        Get.isRegistered<GameTimerController>()
-              ? Get.find<GameTimerController>()
-              : Get.put(GameTimerController(), permanent: true)
-          ..startTimer();
-
     // Initialize clue detail controller
     final clueController = Get.find<ClueDetailController>();
     final evidenceController = Get.find<EvidenceController>();
