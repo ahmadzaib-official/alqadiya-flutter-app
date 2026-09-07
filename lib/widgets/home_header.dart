@@ -59,34 +59,35 @@ class HomeHeader extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 5.w),
-                  GestureDetector(
-                    onTap: () {
-                      castService.showCastPicker();
-                    },
-                    child: Stack(
-                      children: [
-                        SvgPicture.asset(MyIcons.chromecast),
-                        // Show indicator when connected
-                        if (castService.isConnected.value)
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: Container(
-                              width: 6.sp,
-                              height: 6.sp,
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: MyColors.backgroundColor,
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     castService.showCastPicker();
+                  //   },
+                  //   child: Stack(
+                  //     children: [
+                  //       SvgPicture.asset(MyIcons.chromecast),
+                  //       // Show indicator when connected
+                  //       if (castService.isConnected.value)
+                  //         Positioned(
+                  //           right: 0,
+                  //           top: 0,
+                  //           child: Container(
+                  //             width: 6.sp,
+                  //             height: 6.sp,
+                  //             decoration: BoxDecoration(
+                  //               color: Colors.green,
+                  //               shape: BoxShape.circle,
+                  //               border: Border.all(
+                  //                 color: MyColors.backgroundColor,
+                  //                 width: 1,
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
               title ?? SizedBox.shrink(),

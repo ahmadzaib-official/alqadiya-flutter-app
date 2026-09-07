@@ -10,7 +10,7 @@ class UserAnswerRepository extends GetxService {
   Future<Response<dynamic>> submitAnswer({
     required String sessionId,
     required String questionId,
-    required String selectedOptionId,
+    required List<String> selectedOptionIds,
     required int timeSpentSeconds,
     bool hintUsed = false,
   }) async {
@@ -20,7 +20,7 @@ class UserAnswerRepository extends GetxService {
       requestBody: {
         "sessionId": sessionId,
         "questionId": questionId,
-        "selectedOptionId": selectedOptionId,
+        "selectedOptionIds": selectedOptionIds,
         "timeSpentSeconds": timeSpentSeconds,
         "hintUsed": hintUsed,
       },

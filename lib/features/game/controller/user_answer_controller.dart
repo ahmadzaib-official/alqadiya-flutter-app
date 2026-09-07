@@ -14,7 +14,7 @@ class UserAnswerController extends GetxController {
   Future<bool> submitAnswer({
     required String sessionId,
     required String questionId,
-    required String selectedOptionId,
+    required List<String> selectedOptionIds,
     required int timeSpentSeconds,
     bool hintUsed = false,
   }) async {
@@ -25,7 +25,7 @@ class UserAnswerController extends GetxController {
       final response = await _repository.submitAnswer(
         sessionId: sessionId,
         questionId: questionId,
-        selectedOptionId: selectedOptionId,
+        selectedOptionIds: selectedOptionIds,
         timeSpentSeconds: timeSpentSeconds,
         hintUsed: hintUsed,
       );

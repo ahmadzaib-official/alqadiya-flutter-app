@@ -4,7 +4,7 @@ class UserAnswerModel {
     this.sessionId,
     this.questionId,
     this.userId,
-    this.selectedOptionId,
+    this.selectedOptionIds,
     this.isCorrect,
     this.pointsEarned,
     this.timeSpentSeconds,
@@ -17,7 +17,7 @@ class UserAnswerModel {
   final String? sessionId;
   final String? questionId;
   final String? userId;
-  final String? selectedOptionId;
+  final List<String>? selectedOptionIds;
   final bool? isCorrect;
   final int? pointsEarned;
   final int? timeSpentSeconds;
@@ -31,7 +31,7 @@ class UserAnswerModel {
       sessionId: json["sessionId"],
       questionId: json["questionId"],
       userId: json["userId"],
-      selectedOptionId: json["selectedOptionId"],
+      selectedOptionIds: json["selectedOptionIds"] != null ? List<String>.from(json["selectedOptionIds"]) : null,
       isCorrect: json["isCorrect"] ?? false,
       pointsEarned: json["pointsEarned"] ?? 0,
       timeSpentSeconds: json["timeSpentSeconds"] ?? 0,
@@ -46,7 +46,7 @@ class UserAnswerModel {
     "sessionId": sessionId,
     "questionId": questionId,
     "userId": userId,
-    "selectedOptionId": selectedOptionId,
+    "selectedOptionIds": selectedOptionIds,
     "isCorrect": isCorrect,
     "pointsEarned": pointsEarned,
     "timeSpentSeconds": timeSpentSeconds,

@@ -42,7 +42,7 @@ class _GameScreenState extends State<GameScreen> {
   late final GameFooterController footerController;
 
   int? currentQuestionIndex;
-  var selectedAnswerIndex = Rx<int?>(null);
+  var selectedAnswerIndices = <int>{}.obs;
   bool hintUsed = false;
   DateTime? questionStartTime;
   UserAnswerModel? lastSubmittedAnswer;
@@ -60,7 +60,7 @@ class _GameScreenState extends State<GameScreen> {
 
     // Reset local state variables
     currentQuestionIndex = null;
-    selectedAnswerIndex.value = null;
+    selectedAnswerIndices.clear();
     hintUsed = false;
     questionStartTime = null;
     lastSubmittedAnswer = null;
@@ -298,7 +298,7 @@ class _GameScreenState extends State<GameScreen> {
   void _loadQuestion(int index) {
     setState(() {
       currentQuestionIndex = index;
-      selectedAnswerIndex.value = null;
+      selectedAnswerIndices.clear();
       hintUsed = false;
       questionStartTime = DateTime.now();
       lastSubmittedAnswer = null;
@@ -314,16 +314,12 @@ class _GameScreenState extends State<GameScreen> {
 
     if (question == null ||
         sessionId == null ||
-        selectedAnswerIndex.value == null) {
-      CustomSnackbar.showError('Please select an answer'.tr);
+        selectedAnswerIndices.isEmpty) {
+      CustomSnackbar.showError('Please select at least one answer'.tr);
       return;
     }
 
-    final selectedAnswer = question.answers[selectedAnswerIndex.value!];
-    if (selectedAnswer.id == null) {
-      CustomSnackbar.showError('Invalid answer selected'.tr);
-      return;
-    }
+    List<String> optionsToSend = selectedAnswerIndices.map((i) => question.answers[i].id!).toList();
 
     final timeSpent =
         questionStartTime != null
@@ -333,7 +329,7 @@ class _GameScreenState extends State<GameScreen> {
     final success = await answerController.submitAnswer(
       sessionId: sessionId,
       questionId: question.id ?? '',
-      selectedOptionId: selectedAnswer.id!,
+      selectedOptionIds: optionsToSend,
       timeSpentSeconds: timeSpent,
       hintUsed: hintUsed,
     );
@@ -343,6 +339,17 @@ class _GameScreenState extends State<GameScreen> {
       setState(() {
         lastSubmittedAnswer = answerController.lastAnswer.value;
       });
+
+      if (answerController.lastAnswer.value?.isCorrect == true) {
+        // Auto-advance directly on correct
+        if (currentQuestionIndex != null &&
+            currentQuestionIndex! < totalQuestions - 1) {
+          _nextQuestion();
+        } else {
+          Get.offNamed(AppRoutes.gameResultSummaryScreen);
+        }
+        return;
+      }
 
       // Check if all questions are answered and navigate to result screen
       _checkAndNavigateToResult();
@@ -624,7 +631,7 @@ class _GameScreenState extends State<GameScreen> {
                                       ),
                                       Obx(
                                         () => Text(
-                                          '${footerController.correctAnswers}',
+                                          '${selectedAnswerIndices.where((idx) => currentQuestion?.answers[idx].isCorrect == true).length}',
                                           style: AppTextStyles.heading1()
                                               .copyWith(
                                                 fontSize: 7.sp,
@@ -633,7 +640,7 @@ class _GameScreenState extends State<GameScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '/$totalQuestions'.tr,
+                                        '/${currentQuestion?.answers.where((a) => a.isCorrect == true).length ?? 1}'.tr,
                                         style: AppTextStyles.heading1()
                                             .copyWith(
                                               fontSize: 6.sp,
@@ -708,12 +715,9 @@ class _GameScreenState extends State<GameScreen> {
                                       questionController.questions;
                                   final lastAnswer =
                                       answerController.lastAnswer.value;
-                                  final selectedIndex =
-                                      selectedAnswerIndex.value;
                                   return _buildAnswerOptions(
                                     questions,
                                     lastAnswer,
-                                    selectedIndex,
                                   );
                                 }),
                                 const Spacer(),
@@ -821,7 +825,6 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildAnswerOptions(
     RxList<QuestionModel> questions,
     UserAnswerModel? lastAnswer,
-    int? selectedIndex,
   ) {
     final question = currentQuestion;
     if (question == null || question.answers.isEmpty) {
@@ -848,7 +851,7 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(answers.length, (index) {
           final answer = answers[index];
-          final isSelected = selectedIndex == index;
+          final isSelected = selectedAnswerIndices.contains(index);
           final answerIsCorrect = answer.isCorrect ?? false;
           final showAsCorrect =
               isAnswerSubmitted && isSelected && answerIsCorrect;
@@ -858,7 +861,11 @@ class _GameScreenState extends State<GameScreen> {
           return GestureDetector(
             onTap: () {
               if (!isAnswerSubmitted || lastAnswer?.isCorrect == false) {
-                selectedAnswerIndex.value = index;
+                if (selectedAnswerIndices.contains(index)) {
+                  selectedAnswerIndices.remove(index);
+                } else {
+                  selectedAnswerIndices.add(index);
+                }
                 if (isAnswerSubmitted && lastAnswer?.isCorrect == false) {
                   // Clear the wrong answer state so they can try again
                   answerController.lastAnswer.value = null;
