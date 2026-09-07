@@ -2,6 +2,7 @@ import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
+import 'package:alqadiya_game/core/utils/localization_helper.dart';
 import 'package:alqadiya_game/features/game/controller/clue_detail_provider.dart';
 import 'package:alqadiya_game/features/game/controller/evidence_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
@@ -766,8 +767,9 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                                   SvgPicture.asset(MyIcons.file),
                                   SizedBox(height: 8.h),
                                   Text(
-                                    document.attachmentNameEn ??
-                                        'Document ${index + 1}',
+                                    LocalizedStringFallback.getLocalizedValue(document.attachmentNameEn, document.attachmentNameAr).isNotEmpty
+                                          ? LocalizedStringFallback.getLocalizedValue(document.attachmentNameEn, document.attachmentNameAr)
+                                          : '${'Document'.tr} ${index + 1}',
                                     style: AppTextStyles.heading2().copyWith(
                                       fontSize: 6.sp,
                                       color: MyColors.BlueColor,
@@ -864,9 +866,9 @@ class _ClueDetailScreenState extends State<ClueDetailScreen> {
                             ),
                             child: AudioPlayerWidget(
                               audioUrl: audio.mediaUrl ?? '',
-                              title:
-                                  audio.attachmentNameEn ??
-                                  '${'Audio'.tr} ${index + 1}',
+                              title: LocalizedStringFallback.getLocalizedValue(audio.attachmentNameEn, audio.attachmentNameAr).isNotEmpty
+                                  ? LocalizedStringFallback.getLocalizedValue(audio.attachmentNameEn, audio.attachmentNameAr)
+                                  : '${'Audio'.tr} ${index + 1}',
                             ),
                           ),
                         );

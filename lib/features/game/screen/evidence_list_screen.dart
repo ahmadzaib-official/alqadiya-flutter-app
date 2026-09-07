@@ -17,6 +17,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:alqadiya_game/core/utils/localization_helper.dart';
 import 'package:get/get.dart';
 
 class EvidenceListScreen extends StatefulWidget {
@@ -464,7 +465,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                 SvgPicture.asset(item['icon'] as String),
                 SizedBox(height: 5.h),
                 Text(
-                  item['label'] as String,
+                  (item['label'] as String).tr,
                   style: TextStyle(
                     fontSize: 6.sp,
                     color: MyColors.white,
@@ -538,7 +539,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
             .toList();
     return _buildMediaContainer(
       icon: MyIcons.videos,
-      title: 'Videos',
+      title: 'Videos'.tr,
       child:
           all.isEmpty
               ? _buildEmptyState('No videos available'.tr)
@@ -616,7 +617,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
             .toList();
     return _buildMediaContainer(
       icon: MyIcons.gallery,
-      title: 'Images',
+      title: 'Images'.tr,
       child:
           all.isEmpty
               ? _buildEmptyState('No images available'.tr)
@@ -671,7 +672,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
             .toList();
     return _buildMediaContainer(
       icon: MyIcons.document,
-      title: 'Documents',
+      title: 'Documents'.tr,
       child:
           all.isEmpty
               ? _buildEmptyState('No documents available'.tr)
@@ -714,9 +715,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                             SvgPicture.asset(MyIcons.file),
                             SizedBox(height: 8.h),
                             Text(
-                              doc.attachmentNameEn ??
-                                  doc.attachmentNameAr ??
-                                  'Document ${index + 1}',
+                              LocalizedStringFallback.getLocalizedValue(doc.attachmentNameEn, doc.attachmentNameAr).isNotEmpty
+                                  ? LocalizedStringFallback.getLocalizedValue(doc.attachmentNameEn, doc.attachmentNameAr)
+                                  : '${'Document'.tr} ${index + 1}',
                               style: AppTextStyles.heading2().copyWith(
                                 fontSize: 6.sp,
                                 color: MyColors.BlueColor,
@@ -743,7 +744,7 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
             .toList();
     return _buildMediaContainer(
       icon: MyIcons.audios,
-      title: 'Audio',
+      title: 'Audio'.tr,
       child:
           all.isEmpty
               ? _buildEmptyState('No audio files available'.tr)
@@ -771,10 +772,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                       ),
                       child: AudioPlayerWidget(
                         audioUrl: audio.mediaUrl ?? '',
-                        title:
-                            audio.attachmentNameEn ??
-                            audio.attachmentNameAr ??
-                            'Audio ${index + 1}',
+                        title: LocalizedStringFallback.getLocalizedValue(audio.attachmentNameEn, audio.attachmentNameAr).isNotEmpty
+                            ? LocalizedStringFallback.getLocalizedValue(audio.attachmentNameEn, audio.attachmentNameAr)
+                            : '${'Audio'.tr} ${index + 1}',
                       ),
                     ),
                   );

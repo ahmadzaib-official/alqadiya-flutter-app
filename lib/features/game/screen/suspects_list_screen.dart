@@ -10,6 +10,7 @@ import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:alqadiya_game/core/utils/localization_helper.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
@@ -304,7 +305,9 @@ class _SuspectsListScreenState extends State<SuspectsListScreen> {
                       ),
                       SizedBox(height: 10.h),
                       Text(
-                        suspect.nameEn ?? suspect.nameAr ?? 'Unknown'.tr,
+                        LocalizedStringFallback.getLocalizedValue(suspect.nameEn, suspect.nameAr).isNotEmpty
+                            ? LocalizedStringFallback.getLocalizedValue(suspect.nameEn, suspect.nameAr)
+                            : 'Unknown'.tr,
                         style: TextStyle(
                           fontSize: 6.sp,
                           color: MyColors.white,

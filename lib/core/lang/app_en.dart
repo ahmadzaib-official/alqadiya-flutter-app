@@ -42,11 +42,16 @@ const Map<String, String> enUS = {
   'Join us and enjoy seamless chalet bookings and exclusive rewards.':
       'Join us and enjoy seamless chalet bookings and exclusive rewards.',
   'Full Name': 'Full Name',
+  'Full Name:': 'Full Name:',
+  'Job:': 'Job:',
+  'No biography available': 'No biography available',
   'Phone': 'Phone',
+  'years old': 'years old',
   'No notification settings found': 'No notification settings found',
   'You can manage your notification preferences here.':
       'You can manage your notification preferences here.',
   'Password': 'Password',
+  'Age:': 'Age:',
   'Pay Remaining Amount': 'Pay Remaining Amount',
   'OR': 'OR',
   'No benefits found': 'No benefits found',
@@ -111,6 +116,7 @@ const Map<String, String> enUS = {
   'Your phone number has been verified. You\'re all set to continue!':
       'Your phone number has been verified. You\'re all set to continue!',
   'Continue': 'Continue',
+
   'Welcome back! Log in to manage your bookings and profile.':
       'Welcome back! Log in to manage your bookings and profile.',
   'Remember Me': 'Remember Me',

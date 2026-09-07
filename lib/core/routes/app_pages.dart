@@ -9,7 +9,7 @@ import 'package:alqadiya_game/features/auth/screen/offline_legal_screen.dart';
 import 'package:alqadiya_game/features/auth/signin_screen.dart';
 import 'package:alqadiya_game/features/auth/signup_screen.dart';
 import 'package:alqadiya_game/features/auth/verification_successful_screen.dart';
-import 'package:alqadiya_game/features/casestore/screen/add_case_screen.dart';
+
 import 'package:alqadiya_game/features/casestore/screen/case_detail_screen.dart';
 import 'package:alqadiya_game/features/casestore/screen/case_store_screen.dart';
 import 'package:alqadiya_game/features/casestore/screen/case_video_screen.dart';
@@ -49,7 +49,7 @@ import 'package:alqadiya_game/features/buy_points/controller/buy_points_provider
 import 'package:alqadiya_game/features/auth/controller/signup_controller.dart';
 import 'package:alqadiya_game/features/home/controller/home_controller.dart';
 import 'package:alqadiya_game/features/joingame/controller/join_game_controller.dart';
-import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
+
 import 'package:alqadiya_game/features/casestore/controller/player_selection_controller.dart';
 import 'package:alqadiya_game/features/casestore/controller/choose_team_leader_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_result_provider.dart';
@@ -187,17 +187,7 @@ class AppPages {
       transition: Transition.circularReveal,
       transitionDuration: Duration(milliseconds: 600),
     ),
-    GetPage(
-      name: AppRoutes.addCaseScreen,
-      page: () => AddCaseScreen(),
-      bindings: [
-        BindingsBuilder(() {
-          Get.lazyPut(() => AddCaseController());
-        }),
-      ],
-      transition: Transition.circularReveal,
-      transitionDuration: Duration(milliseconds: 600),
-    ),
+
     GetPage(
       name: AppRoutes.startGameScreen,
       page: () => StartGameScreen(),

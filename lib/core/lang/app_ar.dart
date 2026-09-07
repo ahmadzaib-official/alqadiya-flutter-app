@@ -20,7 +20,11 @@ const Map<String, String> lnAr = {
   'Join us and enjoy seamless chalet bookings and exclusive rewards.':
       'انضم إلينا واستمتع بحجوزات شاليه سلسة ومكافآت حصرية',
   'Full Name': 'الاسم الكامل',
+  'Full Name:': 'الاسم الكامل:',
+  'Job:': 'الوظيفة:',
+  'No biography available': 'لا توجد سيرة ذاتية متاحة',
   'Phone': 'رقم الهاتف',
+  'years old': 'سنة',
   'Password': 'كلمة المرور',
   'points_remaining_message':
       'احصل على @points نقطة إضافية للحصول على حجز مجاني والاستمتاع بخصومات حصرية في إقامتك القادمة.',
@@ -28,6 +32,7 @@ const Map<String, String> lnAr = {
       'تهانينا! لقد حصلت على حجز مجاني وخصومات حصرية في إقامتك القادمة.',
   'OR': 'أو',
   'points': 'نقاط',
+  'Age:': 'العمر:',
   'guests': 'الضيوف',
   'Confirm': 'تأكيد',
   'Select Guests': 'اختر الضيوف',

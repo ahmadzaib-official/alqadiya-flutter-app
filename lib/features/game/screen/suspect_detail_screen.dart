@@ -1,6 +1,7 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
+import 'package:alqadiya_game/core/utils/localization_helper.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_detail_provider.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:alqadiya_game/core/utils/localization_helper.dart';
 import 'package:get/get.dart';
 
 class SuspectDetailScreen extends StatefulWidget {
@@ -344,29 +346,51 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                     children: [
                       // Personal Information Fields
                       _buildInfoField(
-                        'Full Name:',
-                        suspect.nameEn ?? suspect.nameAr ?? 'Unknown',
+                        'Full Name:'.tr,
+                        LocalizedStringFallback.getLocalizedValue(
+                              suspect.nameEn,
+                              suspect.nameAr,
+                            ).isNotEmpty
+                            ? LocalizedStringFallback.getLocalizedValue(
+                              suspect.nameEn,
+                              suspect.nameAr,
+                            )
+                            : 'Unknown'.tr,
                       ),
                       SizedBox(height: 6.h),
                       _buildInfoField(
-                        'Age:',
+                        'Age:'.tr,
                         suspect.age != null
-                            ? '${suspect.age} years old'
-                            : 'N/A',
+                            ? '${suspect.age} ${'years old'.tr}'
+                            : 'N/A'.tr,
                       ),
                       SizedBox(height: 6.h),
                       _buildInfoField(
-                        'Job:',
-                        suspect.jobEn ?? suspect.jobAr ?? 'N/A',
+                        'Job:'.tr,
+                        LocalizedStringFallback.getLocalizedValue(
+                              suspect.jobEn,
+                              suspect.jobAr,
+                            ).isNotEmpty
+                            ? LocalizedStringFallback.getLocalizedValue(
+                              suspect.jobEn,
+                              suspect.jobAr,
+                            )
+                            : 'N/A'.tr,
                       ),
 
                       SizedBox(height: 12.h),
 
                       // Descriptive Paragraph
                       Text(
-                        suspect.biographyEn ??
-                            suspect.biographyAr ??
-                            'No biography available',
+                        LocalizedStringFallback.getLocalizedValue(
+                              suspect.biographyEn,
+                              suspect.biographyAr,
+                            ).isNotEmpty
+                            ? LocalizedStringFallback.getLocalizedValue(
+                              suspect.biographyEn,
+                              suspect.biographyAr,
+                            )
+                            : 'No biography available'.tr,
                         style: AppTextStyles.bodyTextRegular16().copyWith(
                           fontSize: 6.sp,
                           color: MyColors.white,
@@ -576,7 +600,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                   SvgPicture.asset(item['icon'] as String),
                   SizedBox(height: 5.h),
                   Text(
-                    item['label'] as String,
+                    (item['label'] as String).tr,
                     style: TextStyle(
                       fontSize: 6.sp,
                       color: MyColors.white,
@@ -621,7 +645,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                 SvgPicture.asset(MyIcons.videos, height: 10.sp),
                 SizedBox(width: 5.w),
                 Text(
-                  'Videos',
+                  'Videos'.tr,
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
@@ -783,7 +807,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                 SvgPicture.asset(MyIcons.gallery, height: 10.sp),
                 SizedBox(width: 5.w),
                 Text(
-                  'Images',
+                  'Images'.tr,
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
@@ -899,7 +923,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                 SvgPicture.asset(MyIcons.document, height: 10.sp),
                 SizedBox(width: 5.w),
                 Text(
-                  'Documents',
+                  'Documents'.tr,
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
@@ -972,9 +996,15 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                                     SvgPicture.asset(MyIcons.file),
                                     SizedBox(height: 8.h),
                                     Text(
-                                      document.attachmentNameEn ??
-                                          document.attachmentNameAr ??
-                                          'Document ${index + 1}',
+                                      LocalizedStringFallback.getLocalizedValue(
+                                            document.attachmentNameEn,
+                                            document.attachmentNameAr,
+                                          ).isNotEmpty
+                                          ? LocalizedStringFallback.getLocalizedValue(
+                                            document.attachmentNameEn,
+                                            document.attachmentNameAr,
+                                          )
+                                          : '${'Document'.tr} ${index + 1}',
                                       style: AppTextStyles.heading2().copyWith(
                                         fontSize: 6.sp,
                                         color: MyColors.BlueColor,
@@ -1024,7 +1054,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                 SvgPicture.asset(MyIcons.audios, height: 10.sp),
                 SizedBox(width: 5.w),
                 Text(
-                  'Audio',
+                  'Audio'.tr,
                   style: AppTextStyles.heading2().copyWith(
                     fontSize: 8.sp,
                     color: MyColors.white,
@@ -1079,9 +1109,15 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                               child: AudioPlayerWidget(
                                 audioUrl: audio.mediaUrl ?? '',
                                 title:
-                                    audio.attachmentNameEn ??
-                                    audio.attachmentNameAr ??
-                                    'Audio ${index + 1}',
+                                    LocalizedStringFallback.getLocalizedValue(
+                                          audio.attachmentNameEn,
+                                          audio.attachmentNameAr,
+                                        ).isNotEmpty
+                                        ? LocalizedStringFallback.getLocalizedValue(
+                                          audio.attachmentNameEn,
+                                          audio.attachmentNameAr,
+                                        )
+                                        : '${'Audio'.tr} ${index + 1}',
                               ),
                             ),
                           );
@@ -1165,9 +1201,15 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                   ),
                   SizedBox(height: 8.h),
                   Text(
-                    report.attachmentNameEn ??
-                        report.attachmentNameAr ??
-                        (isDocument ? 'Investigation report' : 'Audio'),
+                    LocalizedStringFallback.getLocalizedValue(
+                          report.attachmentNameEn,
+                          report.attachmentNameAr,
+                        ).isNotEmpty
+                        ? LocalizedStringFallback.getLocalizedValue(
+                          report.attachmentNameEn,
+                          report.attachmentNameAr,
+                        )
+                        : 'Investigation report ${index + 1}'.tr,
                     style: AppTextStyles.heading1().copyWith(
                       fontSize: 8.sp,
                       color: MyColors.white,
