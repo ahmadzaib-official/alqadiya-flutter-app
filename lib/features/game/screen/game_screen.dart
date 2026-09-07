@@ -857,8 +857,12 @@ class _GameScreenState extends State<GameScreen> {
 
           return GestureDetector(
             onTap: () {
-              if (!isAnswerSubmitted) {
+              if (!isAnswerSubmitted || lastAnswer?.isCorrect == false) {
                 selectedAnswerIndex.value = index;
+                if (isAnswerSubmitted && lastAnswer?.isCorrect == false) {
+                  // Clear the wrong answer state so they can try again
+                  answerController.lastAnswer.value = null;
+                }
               }
             },
             child: Container(
@@ -989,17 +993,18 @@ class _GameScreenState extends State<GameScreen> {
                     : () {
                       if (!isSubmitted) {
                         _submitAnswer();
-                      } else {
-                        // Answer already submitted - move to next question or result
+                      } else if (lastAnswer?.isCorrect == true) {
+                        // Answer already submitted and correct - move to next question or result
                         if (currentQuestionIndex != null &&
                             currentQuestionIndex! < totalQuestions - 1) {
                           _nextQuestion();
                         } else {
                           // Last question already answered - navigate to result
-                          // (This is a fallback, automatic navigation should have already happened)
                           Get.offNamed(AppRoutes.gameResultSummaryScreen);
                         }
                       }
+                      // If isSubmitted but WRONG (isCorrect == false), it does nothing when tapping "Wrong answer".
+                      // The player must tap a different answer option to clear the wrong state and try again.
                     },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
