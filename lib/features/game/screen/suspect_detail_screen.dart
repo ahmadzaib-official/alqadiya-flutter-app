@@ -18,6 +18,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:alqadiya_game/core/utils/localization_helper.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class SuspectDetailScreen extends StatefulWidget {
@@ -356,59 +357,27 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Personal Information Fields
-                      _buildInfoField(
-                        'Full Name:'.tr,
-                        LocalizedStringFallback.getLocalizedValue(
-                              suspect.nameEn,
-                              suspect.nameAr,
-                            ).isNotEmpty
-                            ? LocalizedStringFallback.getLocalizedValue(
-                              suspect.nameEn,
-                              suspect.nameAr,
-                            )
-                            : 'Unknown'.tr,
-                      ),
-                      SizedBox(height: 6.h),
-                      _buildInfoField(
-                        'Age:'.tr,
-                        suspect.age != null
-                            ? '${suspect.age} ${'years old'.tr}'
-                            : 'N/A'.tr,
-                      ),
-                      SizedBox(height: 6.h),
-                      _buildInfoField(
-                        'Job:'.tr,
-                        LocalizedStringFallback.getLocalizedValue(
-                              suspect.jobEn,
-                              suspect.jobAr,
-                            ).isNotEmpty
-                            ? LocalizedStringFallback.getLocalizedValue(
-                              suspect.jobEn,
-                              suspect.jobAr,
-                            )
-                            : 'N/A'.tr,
-                      ),
-
-                      SizedBox(height: 12.h),
-
-                      // Descriptive Paragraph
-                      Text(
-                        LocalizedStringFallback.getLocalizedValue(
-                              suspect.biographyEn,
-                              suspect.biographyAr,
-                            ).isNotEmpty
-                            ? LocalizedStringFallback.getLocalizedValue(
-                              suspect.biographyEn,
-                              suspect.biographyAr,
-                            )
-                            : 'No biography available'.tr,
-                        style: AppTextStyles.bodyTextRegular16().copyWith(
-                          fontSize: 6.sp,
-                          color: MyColors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.left,
+                      // Descriptive Paragraph with Rich Text Support
+                      Html(
+                        data: LocalizedStringFallback.getLocalizedValue(
+                                suspect.biographyEn,
+                                suspect.biographyAr,
+                              ).isNotEmpty
+                              ? LocalizedStringFallback.getLocalizedValue(
+                                suspect.biographyEn,
+                                suspect.biographyAr,
+                              )
+                              : 'No biography available'.tr,
+                        style: {
+                          "body": Style(
+                            fontSize: FontSize(6.sp),
+                            color: MyColors.white,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: AppTextStyles.bodyTextRegular16().fontFamily,
+                            padding: HtmlPaddings.zero,
+                            margin: Margins.zero,
+                          ),
+                        },
                       ),
                     ],
                   ),

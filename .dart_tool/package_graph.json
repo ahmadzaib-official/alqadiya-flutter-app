@@ -17,6 +17,7 @@
         "firebase_core",
         "firebase_messaging",
         "flutter",
+        "flutter_html",
         "flutter_local_notifications",
         "flutter_screenutil",
         "flutter_spinkit",
@@ -71,6 +72,17 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "flutter_html",
+      "version": "3.0.0",
+      "dependencies": [
+        "collection",
+        "csslib",
+        "flutter",
+        "html",
+        "list_counter"
       ]
     },
     {
@@ -551,6 +563,26 @@
       ]
     },
     {
+      "name": "list_counter",
+      "version": "1.0.2",
+      "dependencies": []
+    },
+    {
+      "name": "csslib",
+      "version": "1.0.2",
+      "dependencies": [
+        "source_span"
+      ]
+    },
+    {
+      "name": "html",
+      "version": "0.15.6",
+      "dependencies": [
+        "csslib",
+        "source_span"
+      ]
+    },
+    {
       "name": "win32_registry",
       "version": "2.1.0",
       "dependencies": [
@@ -735,14 +767,6 @@
       "dependencies": [
         "flutter",
         "video_player_platform_interface"
-      ]
-    },
-    {
-      "name": "html",
-      "version": "0.15.6",
-      "dependencies": [
-        "csslib",
-        "source_span"
       ]
     },
     {
@@ -1513,13 +1537,6 @@
         "firebase_core_platform_interface",
         "flutter",
         "meta"
-      ]
-    },
-    {
-      "name": "csslib",
-      "version": "1.0.2",
-      "dependencies": [
-        "source_span"
       ]
     },
     {
