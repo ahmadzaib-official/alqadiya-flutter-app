@@ -196,8 +196,6 @@ class _VideoEvidenceDialogState extends State<VideoEvidenceDialog> {
 
     final currentHint = widget.hints[_currentHintIndex];
     final title = _getHintTitle(currentHint);
-    final totalHints = widget.hints.length;
-    final currentHintNumber = _currentHintIndex + 1;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),

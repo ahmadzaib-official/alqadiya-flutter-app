@@ -4,7 +4,7 @@ import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/widgets/case_store_filter/case_store_filter_drawer.dart';
-import 'package:alqadiya_game/widgets/game_background.dart';
+
 import 'package:alqadiya_game/widgets/game_card.dart';
 import 'package:alqadiya_game/widgets/game_card_shimmer.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
@@ -71,11 +71,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
           gradient: RadialGradient(
             center: Alignment.topCenter,
             radius: 1.5,
-            colors: [
-              Color(0xFF273F5D),
-              Color(0xFF020D21),
-              Color(0xFF031229),
-            ],
+            colors: [Color(0xFF273F5D), Color(0xFF020D21), Color(0xFF031229)],
           ),
         ),
         child: Stack(

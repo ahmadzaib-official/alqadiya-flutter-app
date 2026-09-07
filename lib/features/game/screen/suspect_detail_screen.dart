@@ -1,5 +1,4 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/game/controller/suspect_detail_provider.dart';

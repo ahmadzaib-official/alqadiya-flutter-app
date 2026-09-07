@@ -11,8 +11,6 @@ import 'package:alqadiya_game/features/game/model/user_answer_model.dart';
 import 'package:alqadiya_game/features/game/widget/question_stepper.dart';
 import 'package:alqadiya_game/features/game/widget/video_hint_dialog.dart';
 import 'package:alqadiya_game/widgets/custom_button.dart';
-import 'package:alqadiya_game/widgets/game_background.dart';
-
 import 'package:alqadiya_game/widgets/game_footer.dart';
 import 'package:alqadiya_game/widgets/gradient_box_border.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';

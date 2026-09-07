@@ -3,17 +3,17 @@ import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/services/auth_guard.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
+import 'package:alqadiya_game/features/auth/controller/user_controller.dart';
+import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/widgets/case_detail_shimmer.dart';
 import 'package:alqadiya_game/widgets/game_background.dart';
 import 'package:alqadiya_game/widgets/home_header.dart';
 import 'package:alqadiya_game/widgets/start_play_button.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
-import 'package:shimmer/shimmer.dart';
 
 class CaseDetailScreen extends StatefulWidget {
   const CaseDetailScreen({super.key});
@@ -223,15 +223,45 @@ class _CaseDetailScreenState extends State<CaseDetailScreen> {
                                                 message:
                                                     'Please sign in to purchase this case'
                                                         .tr,
-                                                action:
-                                                    () => Get.toNamed(
-                                                      AppRoutes.addCaseScreen,
-                                                      arguments: {
-                                                        'game':
-                                                            controller
-                                                                .gameDetail,
-                                                      },
-                                                    ),
+                                                action: () {
+                                                  final userController =
+                                                      Get.find<
+                                                        UserController
+                                                      >();
+                                                  final userPoints =
+                                                      userController
+                                                          .user
+                                                          .value
+                                                          ?.pointsBalance ??
+                                                      0;
+                                                  final cost =
+                                                      controller
+                                                          .gameDetail
+                                                          .value
+                                                          .costPoints ??
+                                                      0;
+
+                                                  if (userPoints == 0 ||
+                                                      userPoints < cost) {
+                                                    Get.toNamed(
+                                                      AppRoutes.buyPointsScreen,
+                                                    );
+                                                  } else {
+                                                    final addCaseController =
+                                                        Get.put(
+                                                          AddCaseController(),
+                                                        );
+                                                    addCaseController
+                                                        .game
+                                                        .value = controller
+                                                            .gameDetail
+                                                            .value;
+                                                    addCaseController
+                                                        .handleAddCaseWithAuth(
+                                                          gameId: gameId,
+                                                        );
+                                                  }
+                                                },
                                               );
                                             },
                                             child: Container(

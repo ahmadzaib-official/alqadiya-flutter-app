@@ -35,7 +35,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
             Text(
               'To see the entire app on your TV, enable screen mirroring:'.tr,
               style: TextStyle(
-                color: MyColors.white.withOpacity(0.9),
+                color: MyColors.white.withValues(alpha: 0.9),
                 fontSize: 8.sp,
               ),
             ),
@@ -59,10 +59,10 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(7.w),
               decoration: BoxDecoration(
-                color: MyColors.redButtonColor.withOpacity(0.2),
+                color: MyColors.redButtonColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(
-                  color: MyColors.redButtonColor.withOpacity(0.5),
+                  color: MyColors.redButtonColor.withValues(alpha: 0.5),
                   width: 1,
                 ),
               ),
@@ -81,7 +81,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
                           .tr,
                       style: TextStyle(
                         fontSize: 8.sp,
-                        color: MyColors.white.withOpacity(0.9),
+                        color: MyColors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ),
@@ -95,10 +95,10 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.2),
+                color: Colors.green.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(
-                  color: Colors.green.withOpacity(0.5),
+                  color: Colors.green.withValues(alpha: 0.5),
                   width: 1,
                 ),
               ),
@@ -113,7 +113,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
                           .tr,
                       style: TextStyle(
                         fontSize: 8.sp,
-                        color: MyColors.white.withOpacity(0.9),
+                        color: MyColors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ),
@@ -209,7 +209,7 @@ class ScreenMirrorGuideDialog extends StatelessWidget {
                 text,
                 style: TextStyle(
                   fontSize: 9.sp,
-                  color: MyColors.white.withOpacity(0.9),
+                  color: MyColors.white.withValues(alpha: 0.9),
                   height: 1.4,
                 ),
               ),
