@@ -21,7 +21,7 @@ class QuestionStepper extends StatefulWidget {
     this.currentColor = MyColors.greenColor,
     this.totalColor = const Color(0xFF141B25),
     this.lineColor = Colors.white,
-    this.dotColor = const Color(0xff141B25),
+    this.dotColor = Colors.white,
   }) : super(key: key);
 
   @override
@@ -66,73 +66,39 @@ class _QuestionStepperState extends State<QuestionStepper>
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Starting dot (white) or Previous question circle
-        widget.currentQuestion > 1
-            ? GestureDetector(
-                onTap: () {
-                  if (widget.onQuestionTapped != null) {
-                    widget.onQuestionTapped!(widget.currentQuestion - 2);
-                  }
-                },
-                child: Container(
-                  width: 25,
-                  height: 25,
-                  decoration: BoxDecoration(
-                    color: widget.totalColor,
-                    borderRadius: BorderRadius.circular(200.r),
-                    border: Border.all(color: Colors.white, width: 1),
-                  ),
-                  child: Center(
-                    child: Text(
-                      (widget.currentQuestion - 1).toString().padLeft(2, '0'),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 5.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : Container(
-                width: 15,
-                height: 15,
-                decoration: BoxDecoration(
-                  color: widget.lineColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-
-        // Line to current question
-        Container(width: 20, height: 3, color: widget.lineColor),
-
-        // Current question circle (green)
-        AnimatedBuilder(
-          animation: _scaleAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
+    final total = widget.totalQuestions > 0 ? widget.totalQuestions : 1;
+    
+    // Wrapped in SingleChildScrollView so it never overflows if there are many questions
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(total, (index) {
+          final int questionNumber = index + 1;
+          final bool isPast = questionNumber < widget.currentQuestion;
+          final bool isCurrent = questionNumber == widget.currentQuestion;
+          final bool isTotal = questionNumber == total;
+          
+          Widget node;
+          
+          if (isPast) {
+            node = GestureDetector(
+              onTap: () {
+                if (widget.onQuestionTapped != null) {
+                  widget.onQuestionTapped!(index);
+                }
+              },
               child: Container(
-                width: 30,
-                height: 35,
+                width: 25,
+                height: 25,
                 decoration: BoxDecoration(
-                  color: widget.currentColor,
+                  color: widget.totalColor,
                   borderRadius: BorderRadius.circular(200.r),
                   border: Border.all(color: Colors.white, width: 1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: widget.currentColor.withValues(alpha: 0.4),
-                      blurRadius: 12,
-                      spreadRadius: 2,
-                    ),
-                  ],
                 ),
                 child: Center(
                   child: Text(
-                    widget.currentQuestion.toString().padLeft(2, '0'),
+                    questionNumber.toString().padLeft(2, '0'),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 5.sp,
@@ -142,61 +108,88 @@ class _QuestionStepperState extends State<QuestionStepper>
                 ),
               ),
             );
-          },
-        ),
-
-        // Connecting line with dots
-        SizedBox(
-          width: 110,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Base line
-              Container(height: 3, color: widget.lineColor),
-              // Three evenly spaced dots
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(3, (index) {
-                  return AnimatedContainer(
-                    duration: Duration(milliseconds: 300 + (index * 100)),
-                    width: 15.w,
-                    height: 15.h,
+          } else if (isCurrent) {
+            node = AnimatedBuilder(
+              animation: _scaleAnimation,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: Container(
+                    width: 30,
+                    height: 35,
                     decoration: BoxDecoration(
-                      color: widget.dotColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: widget.backgroundColor,
-                        width: 2,
+                      color: widget.currentColor,
+                      borderRadius: BorderRadius.circular(200.r),
+                      border: Border.all(color: Colors.white, width: 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: widget.currentColor.withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        questionNumber.toString().padLeft(2, '0'),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 5.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            );
+          } else if (isTotal) {
+            // The last node is always a dark circle showing the total
+            node = Container(
+              width: 25,
+              height: 25,
+              decoration: BoxDecoration(
+                color: widget.totalColor,
+                borderRadius: BorderRadius.circular(200.r),
+                border: Border.all(color: Colors.white, width: 1),
               ),
-            ],
-          ),
-        ),
+              child: Center(
+                child: Text(
+                  questionNumber.toString().padLeft(2, '0'),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 5.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          } else {
+            // Future question (white dot)
+            node = Container(
+              width: 15,
+              height: 15,
+              decoration: BoxDecoration(
+                color: widget.dotColor,
+                shape: BoxShape.circle,
+              ),
+            );
+          }
 
-        // Total questions circle (dark) - NO SPACING
-        Container(
-          width: 25,
-          height: 25,
-          decoration: BoxDecoration(
-            color: widget.totalColor,
-            borderRadius: BorderRadius.circular(200.r),
-            border: Border.all(color: Colors.white, width: 1),
-          ),
-          child: Center(
-            child: Text(
-              widget.totalQuestions.toString().padLeft(2, '0'),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 5.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ],
+          if (index == total - 1) {
+            return node;
+          }
+
+          // Connecting line
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              node,
+              Container(width: 20, height: 3, color: widget.lineColor),
+            ],
+          );
+        }),
+      ),
     );
   }
 }
