@@ -358,25 +358,45 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Descriptive Paragraph with Rich Text Support
-                      Html(
-                        data: LocalizedStringFallback.getLocalizedValue(
-                                suspect.biographyEn,
-                                suspect.biographyAr,
-                              ).isNotEmpty
-                              ? LocalizedStringFallback.getLocalizedValue(
-                                suspect.biographyEn,
-                                suspect.biographyAr,
-                              )
-                              : 'No biography available'.tr,
-                        style: {
-                          "body": Style(
-                            fontSize: FontSize(6.sp),
-                            color: MyColors.white,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: AppTextStyles.bodyTextRegular16().fontFamily,
-                            padding: HtmlPaddings.zero,
-                            margin: Margins.zero,
-                          ),
+                      Builder(
+                        builder: (context) {
+                          String bioData = LocalizedStringFallback.getLocalizedValue(
+                            suspect.biographyEn,
+                            suspect.biographyAr,
+                          );
+                          if (bioData.trim().isEmpty) {
+                            bioData = 'No biography available'.tr;
+                          }
+
+                          TextDirection? explicitDirection;
+                          if (bioData.toLowerCase().contains('dir="rtl"')) {
+                            explicitDirection = TextDirection.rtl;
+                          } else if (bioData.toLowerCase().contains('dir="ltr"')) {
+                            explicitDirection = TextDirection.ltr;
+                          }
+
+                          Widget htmlWidget = Html(
+                            data: bioData,
+                            style: {
+                              "body": Style(
+                                fontSize: FontSize(6.sp),
+                                color: MyColors.white,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: AppTextStyles.bodyTextRegular16().fontFamily,
+                                padding: HtmlPaddings.zero,
+                                margin: Margins.zero,
+                                direction: explicitDirection, // Apply direction directly to body
+                              ),
+                            },
+                          );
+
+                          if (explicitDirection != null) {
+                            return Directionality(
+                              textDirection: explicitDirection,
+                              child: htmlWidget,
+                            );
+                          }
+                          return htmlWidget;
                         },
                       ),
                     ],
@@ -504,23 +524,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     );
   }
 
-  Widget _buildInfoField(String label, String value) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 0.12.sw,
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 6.sp, fontWeight: FontWeight.w500),
-          ),
-        ),
-        Text(
-          ' $value',
-          style: TextStyle(fontSize: 6.sp, fontWeight: FontWeight.w700),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildAttachments(
     SuspectDetailController controller,
