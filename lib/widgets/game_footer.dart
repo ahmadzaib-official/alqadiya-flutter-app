@@ -1,5 +1,6 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
+import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_footer_controller.dart';
 import 'package:alqadiya_game/widgets/custom_icon_text_button.dart';
 import 'package:flutter/material.dart';
@@ -32,28 +33,35 @@ class GameFooter extends StatelessWidget {
           SizedBox(height: 5.h),
           Divider(color: MyColors.white.withValues(alpha: 0.1)),
         ],
-        Obx(
-          () => Row(
+        Obx(() {
+          final gameController = Get.isRegistered<GameController>() ? Get.find<GameController>() : null;
+          final isSoloMode = gameController?.gameSession.value?.mode == 'solo';
+          
+          return Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomIconTextButton(
-                height: 55.h,
-                buttonText: 'Team score'.tr,
-                icon: MyIcons.arrowbackrounded,
-                isTextButton: true,
-                scoreValue: footerController.totalScore.value,
-                onTap: () {},
-              ),
-              CustomIconTextButton(
-                height: 55.h,
-                forgroundColor: isResultCompleted ? MyColors.white : null,
-                buttonColor: isResultCompleted ? MyColors.redButtonColor : null,
-                buttonText: 'Game Result'.tr,
-                icon: MyIcons.dice,
-                isIconButton: true,
-                onTap: onGameResultTap,
-              ),
+              if (!isSoloMode) ...[
+                CustomIconTextButton(
+                  height: 55.h,
+                  buttonText: 'Team score'.tr,
+                  icon: MyIcons.arrowbackrounded,
+                  isTextButton: true,
+                  scoreValue: footerController.totalScore.value,
+                  onTap: () {},
+                ),
+                CustomIconTextButton(
+                  height: 55.h,
+                  forgroundColor: isResultCompleted ? MyColors.white : null,
+                  buttonColor: isResultCompleted ? MyColors.redButtonColor : null,
+                  buttonText: 'Game Result'.tr,
+                  icon: MyIcons.dice,
+                  isIconButton: true,
+                  onTap: onGameResultTap,
+                ),
+              ] else
+                const Spacer(),
+                
               CustomIconTextButton(
                 height: 55.h,
                 width: 70.w,
@@ -64,8 +72,8 @@ class GameFooter extends StatelessWidget {
                 onTap: () {},
               ),
             ],
-          ),
-        ),
+          );
+        }),
       ],
     );
   }

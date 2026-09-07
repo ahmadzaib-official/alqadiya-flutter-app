@@ -142,9 +142,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                           child: Column(
                             children: [
                               // Main Navigation Tabs
-                              Obx(
-                                () => _buildMainTabs(suspectDetailController),
-                              ),
+                              _buildMainTabs(suspectDetailController, suspectController),
 
                               SizedBox(height: 10.h),
 
@@ -222,76 +220,85 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     });
   }
 
-  Widget _buildMainTabs(SuspectDetailController controller) {
-    final tabs = [
-      'Personal information',
-      'Attachments',
-      'Investigation report',
-    ];
+  Widget _buildMainTabs(SuspectDetailController controller, SuspectController suspectController) {
+    return Obx(() {
+      final suspect = suspectController.suspectDetail.value;
+      final attachments = suspect?.attachments ?? [];
+      final hasAttachments = attachments.any((a) => a.mediaUrl != null && a.mediaUrl!.isNotEmpty);
 
-    return Row(
-      children: List.generate(tabs.length, (index) {
-        final isSelected = controller.selectedMainTab.value == index;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () {
-              controller.setSelectedMainTab(index);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
-              decoration: BoxDecoration(
-                color:
-                    isSelected
-                        ? MyColors.redButtonColor
-                        : MyColors.black.withValues(alpha: 0.2),
-                borderRadius:
-                    index == 1
-                        ? null
-                        : index == 0
-                        ? BorderRadius.only(
-                          topLeft: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+      final tabs = [
+        {'id': 0, 'title': 'Personal information'},
+        if (hasAttachments) {'id': 1, 'title': 'Attachments'},
+        {'id': 2, 'title': 'Investigation report'},
+      ];
+
+      return Row(
+        children: List.generate(tabs.length, (index) {
+          final tabId = tabs[index]['id'] as int;
+          final title = tabs[index]['title'] as String;
+          final isSelected = controller.selectedMainTab.value == tabId;
+          
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                controller.setSelectedMainTab(tabId);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? MyColors.redButtonColor
+                          : MyColors.black.withValues(alpha: 0.2),
+                  borderRadius:
+                      index > 0 && index < tabs.length - 1
+                          ? null
+                          : index == 0
+                          ? BorderRadius.only(
+                            topLeft: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                            ),
+                            bottomLeft: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                            ),
+                            topRight: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                            ),
+                            bottomRight: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                            ),
+                          )
+                          : BorderRadius.only(
+                            topRight: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                            ),
+                            bottomRight: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 0 : 100.r,
+                            ),
+                            topLeft: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                            ),
+                            bottomLeft: Radius.circular(
+                              Get.locale?.languageCode == 'ar' ? 100.r : 0,
+                            ),
                           ),
-                          bottomLeft: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
-                          ),
-                          topRight: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
-                          ),
-                          bottomRight: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
-                          ),
-                        )
-                        : BorderRadius.only(
-                          topRight: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
-                          ),
-                          bottomRight: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 0 : 100.r,
-                          ),
-                          topLeft: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
-                          ),
-                          bottomLeft: Radius.circular(
-                            Get.locale?.languageCode == 'ar' ? 100.r : 0,
-                          ),
-                        ),
-              ),
-              child: Center(
-                child: Text(
-                  tabs[index].tr,
-                  style: AppTextStyles.heading4().copyWith(
-                    fontSize: 6.sp,
-                    color: MyColors.white,
+                ),
+                child: Center(
+                  child: Text(
+                    title.tr,
+                    style: AppTextStyles.heading4().copyWith(
+                      fontSize: 6.sp,
+                      color: MyColors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
-          ),
-        );
-      }),
-    );
+          );
+        }),
+      );
+    });
   }
 
   Widget _buildContentArea(
