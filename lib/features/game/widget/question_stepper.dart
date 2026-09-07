@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class QuestionStepper extends StatefulWidget {
   final int currentQuestion;
   final int totalQuestions;
+  final Function(int)? onQuestionTapped;
   final Color backgroundColor;
   final Color currentColor;
   final Color totalColor;
@@ -15,6 +16,7 @@ class QuestionStepper extends StatefulWidget {
     Key? key,
     required this.currentQuestion,
     required this.totalQuestions,
+    this.onQuestionTapped,
     this.backgroundColor = Colors.white,
     this.currentColor = MyColors.greenColor,
     this.totalColor = const Color(0xFF141B25),
@@ -67,15 +69,42 @@ class _QuestionStepperState extends State<QuestionStepper>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Starting dot (white)
-        Container(
-          width: 15,
-          height: 15,
-          decoration: BoxDecoration(
-            color: widget.lineColor,
-            shape: BoxShape.circle,
-          ),
-        ),
+        // Starting dot (white) or Previous question circle
+        widget.currentQuestion > 1
+            ? GestureDetector(
+                onTap: () {
+                  if (widget.onQuestionTapped != null) {
+                    widget.onQuestionTapped!(widget.currentQuestion - 2);
+                  }
+                },
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  decoration: BoxDecoration(
+                    color: widget.totalColor,
+                    borderRadius: BorderRadius.circular(200.r),
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                  child: Center(
+                    child: Text(
+                      (widget.currentQuestion - 1).toString().padLeft(2, '0'),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 5.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(
+                width: 15,
+                height: 15,
+                decoration: BoxDecoration(
+                  color: widget.lineColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
 
         // Line to current question
         Container(width: 20, height: 3, color: widget.lineColor),

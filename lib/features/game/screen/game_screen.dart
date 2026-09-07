@@ -615,6 +615,9 @@ class _GameScreenState extends State<GameScreen> {
                                             totalQuestions > 0
                                                 ? totalQuestions
                                                 : 1,
+                                        onQuestionTapped: (index) {
+                                          _loadQuestion(index);
+                                        },
                                       ),
                                       Spacer(flex: 5),
 
