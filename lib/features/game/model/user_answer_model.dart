@@ -13,6 +13,8 @@ class UserAnswerModel {
     this.updatedAt,
     this.unlockMessageEn,
     this.unlockMessageAr,
+    this.unlockedEvidenceCount,
+    this.unlockedEvidenceIds,
   });
 
   final String? id;
@@ -28,6 +30,8 @@ class UserAnswerModel {
   final DateTime? updatedAt;
   final String? unlockMessageEn;
   final String? unlockMessageAr;
+  final int? unlockedEvidenceCount;
+  final List<String>? unlockedEvidenceIds;
 
   factory UserAnswerModel.fromJson(Map<String, dynamic> json) {
     return UserAnswerModel(
@@ -44,6 +48,8 @@ class UserAnswerModel {
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       unlockMessageEn: json["unlockMessageEn"],
       unlockMessageAr: json["unlockMessageAr"],
+      unlockedEvidenceCount: json["unlockedEvidenceCount"],
+      unlockedEvidenceIds: json["unlockedEvidenceIds"] != null ? List<String>.from(json["unlockedEvidenceIds"]) : null,
     );
   }
 
@@ -61,5 +67,7 @@ class UserAnswerModel {
     "updatedAt": updatedAt?.toIso8601String(),
     "unlockMessageEn": unlockMessageEn,
     "unlockMessageAr": unlockMessageAr,
+    "unlockedEvidenceCount": unlockedEvidenceCount,
+    "unlockedEvidenceIds": unlockedEvidenceIds,
   };
 }

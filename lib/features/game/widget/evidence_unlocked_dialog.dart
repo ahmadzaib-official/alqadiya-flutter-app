@@ -8,12 +8,14 @@ import 'package:get/get.dart';
 class EvidenceUnlockedDialog extends StatefulWidget {
   final String title;
   final String subtitle;
+  final bool showIcon;
   final VoidCallback onDismiss;
 
   const EvidenceUnlockedDialog({
     Key? key,
     required this.title,
     required this.subtitle,
+    this.showIcon = true,
     required this.onDismiss,
   }) : super(key: key);
 
@@ -57,7 +59,7 @@ class _EvidenceUnlockedDialogState extends State<EvidenceUnlockedDialog> {
               top: 45.h,
             ), // Push down to allow icon to float
             padding: EdgeInsets.only(
-              top: 55.h,
+              top: widget.showIcon ? 55.h : 20.h,
               bottom: 20.h,
               left: 20.w,
               right: 20.w,
@@ -132,7 +134,8 @@ class _EvidenceUnlockedDialogState extends State<EvidenceUnlockedDialog> {
             ),
           ),
           // Floating Icon
-          Positioned(
+          if (widget.showIcon)
+            Positioned(
             top: 0,
             child: Stack(
               alignment: Alignment.center,
