@@ -1,12 +1,10 @@
-import 'package:alqadiya_game/features/game/controller/evidence_controller.dart';
-import 'package:alqadiya_game/features/game/widget/evidence_unlocked_dialog.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
-import 'package:alqadiya_game/core/utils/snackbar.dart';
 import 'package:alqadiya_game/features/game/controller/game_footer_controller.dart';
 import 'package:alqadiya_game/features/game/controller/question_controller.dart';
+import 'package:alqadiya_game/features/game/controller/game_screen_controller.dart';
 import 'package:alqadiya_game/features/game/controller/user_answer_controller.dart';
 import 'package:alqadiya_game/features/game/model/question_model.dart';
 import 'package:alqadiya_game/features/game/model/user_answer_model.dart';
@@ -25,7 +23,6 @@ import 'package:alqadiya_game/core/theme/my_colors.dart';
 import 'package:alqadiya_game/features/casestore/controller/add_case_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_timer_controller.dart';
-import 'package:alqadiya_game/features/game/repository/game_repository.dart';
 import 'dart:async';
 
 class GameScreen extends StatefulWidget {
@@ -37,415 +34,43 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   final AddCaseController controller = Get.put(AddCaseController());
-  late final GameTimerController timerController;
-  final QuestionController questionController = Get.find<QuestionController>();
-  final UserAnswerController answerController =
-      Get.find<UserAnswerController>();
-  late final GameFooterController footerController;
+  final GameScreenController screenController = Get.put(GameScreenController());
 
-  int? currentQuestionIndex;
-  var selectedAnswerIndices = <int>{}.obs;
-  bool hintUsed = false;
-  DateTime? questionStartTime;
-  UserAnswerModel? lastSubmittedAnswer;
-  bool _isNavigatingToResult = false; // Flag to prevent multiple navigations
-  Timer? _hostStatusTimer;
+  // Helper getters to keep UI code unchanged as much as possible
+  GameTimerController get timerController => screenController.timerController;
+  QuestionController get questionController =>
+      screenController.questionController;
+  UserAnswerController get answerController =>
+      screenController.answerController;
+  GameFooterController get footerController =>
+      screenController.footerController;
 
-  @override
-  void initState() {
-    super.initState();
+  int? get currentQuestionIndex => screenController.currentQuestionIndex;
+  set currentQuestionIndex(int? value) =>
+      screenController.currentQuestionIndex = value;
 
-    // Reset all controllers and local state when entering game screen
-    // This ensures fresh state when coming back to the game screen
-    questionController.reset();
-    answerController.reset();
+  RxSet<int> get selectedAnswerIndices =>
+      screenController.selectedAnswerIndices;
 
-    // Reset local state variables
-    currentQuestionIndex = null;
-    selectedAnswerIndices.clear();
-    hintUsed = false;
-    questionStartTime = null;
-    lastSubmittedAnswer = null;
-    _isNavigatingToResult = false;
+  bool get hintUsed => screenController.hintUsed;
+  set hintUsed(bool value) => screenController.hintUsed = value;
 
-    // Initialize timer controller (permanent to persist across navigation)
-    timerController = Get.put(GameTimerController(), permanent: true);
+  DateTime? get questionStartTime => screenController.questionStartTime;
+  set questionStartTime(DateTime? value) =>
+      screenController.questionStartTime = value;
 
-    // Initialize host status checking
-    _hostStatusTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      _checkHostStatus();
-    });
+  UserAnswerModel? get lastSubmittedAnswer =>
+      screenController.lastSubmittedAnswer;
+  set lastSubmittedAnswer(UserAnswerModel? value) =>
+      screenController.lastSubmittedAnswer = value;
 
-    // Initialize game footer controller (permanent to persist across navigation)
-    if (!Get.isRegistered<GameFooterController>()) {
-      Get.put(GameFooterController(), permanent: true);
-    }
-    footerController = Get.find<GameFooterController>();
+  int get totalQuestions => screenController.totalQuestions;
+  int get correctAnswers => screenController.correctAnswers;
+  QuestionModel? get currentQuestion => screenController.currentQuestion;
 
-    // Reset footer controller data
-    footerController.reset();
-
-    // Listen to questions changes to set the first question when loaded
-    ever(questionController.questions, (questions) {
-      if (questions.isNotEmpty && currentQuestion == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && currentQuestion == null) {
-            setState(() {
-              // Use index-based navigation by default (index 0)
-              currentQuestionIndex = 0;
-            });
-          }
-        });
-      }
-    });
-
-    // Fetch questions for the game
-    final gameController;
-    if (!Get.isRegistered<GameController>()) {
-      gameController = Get.put(GameController(), permanent: true);
-    } else {
-      gameController = Get.find<GameController>();
-    }
-    var gameId =
-        gameController.gameDetail.value.id ??
-        gameController.gameSession.value?.gameId;
-
-    // If gameId is null but we have a sessionId, get gameId from session status API
-    // This happens when coming from join game screen
-    if (gameId == null && gameController.gameSession.value?.id != null) {
-      _getGameIdFromSessionStatus(gameController);
-    } else if (gameId != null) {
-      // Fetch game details if not already loaded
-      if (gameController.gameDetail.value.id == null) {
-        gameController.getGameDetail(gameId: gameId).then((_) {
-          // Start timer with duration from game details after loading
-          // Timer controller will detect if it's a new game and reset, or resume if same game
-          _startTimerFromGameDetails(gameController);
-        });
-      } else {
-        // Game details already loaded, start timer immediately
-        // Timer controller will detect if it's a new game and reset, or resume if same game
-        _startTimerFromGameDetails(gameController);
-      }
-
-      questionController.getQuestionsByGame(
-        gameId: gameId,
-        language: Get.locale?.languageCode ?? 'en',
-      );
-    } else {
-      // Fallback: start timer with default values if game details not available
-      timerController.startTimer(gameId: null);
-    }
-
-    // Initialize question start time
-    questionStartTime = DateTime.now();
-  }
-
-  Future<void> _checkHostStatus() async {
-    if (!mounted) return;
-
-    final gameController =
-        Get.isRegistered<GameController>() ? Get.find<GameController>() : null;
-    final sessionId = gameController?.gameSession.value?.id;
-
-    if (sessionId == null) return;
-
-    try {
-      final response = await GameRepository().getHostStatus(
-        sessionId: sessionId,
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data != null && response.data['hasHostLeft'] == true) {
-          _hostStatusTimer?.cancel();
-          if (mounted) {
-            CustomSnackbar.showError('Host has left the game session'.tr);
-            Get.offAllNamed(AppRoutes.homescreen);
-          }
-        }
-      }
-    } catch (e) {
-      // Silently handle errors for polling
-    }
-  }
-
-  Future<void> _getGameIdFromSessionStatus(
-    GameController gameController,
-  ) async {
-    final sessionId = gameController.gameSession.value?.id;
-    if (sessionId == null) {
-      // Fallback: start timer with default values if session ID not available
-      timerController.startTimer(gameId: null);
-      return;
-    }
-
-    try {
-      // Get game ID from session status API
-      final response = await GameRepository().getGameSessionStatus(
-        sessionId: sessionId,
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data != null) {
-          // Extract gameId from response
-          // The response might have gameId directly or in a nested structure
-          String? gameId;
-
-          if (response.data['gameId'] != null) {
-            gameId = response.data['gameId'] as String?;
-          } else if (response.data['session'] != null &&
-              response.data['session']['gameId'] != null) {
-            gameId = response.data['session']['gameId'] as String?;
-          } else {
-            // Fallback: use gameId from gameSession if available
-            gameId = gameController.gameSession.value?.gameId;
-          }
-
-          if (gameId != null && gameId.isNotEmpty) {
-            // Fetch game details using the game ID from session status API
-            await gameController.getGameDetail(gameId: gameId);
-
-            // Start timer with duration from game details after loading
-            _startTimerFromGameDetails(gameController);
-
-            questionController.getQuestionsByGame(
-              gameId: gameId,
-              language: Get.locale?.languageCode ?? 'en',
-            );
-          } else {
-            // Fallback: try to get gameId from session details API
-            await _getGameIdFromSessionDetails(gameController, sessionId);
-          }
-        } else {
-          // Fallback: try to get gameId from session details API
-          await _getGameIdFromSessionDetails(gameController, sessionId);
-        }
-      } else {
-        // Fallback: try to get gameId from session details API
-        await _getGameIdFromSessionDetails(gameController, sessionId);
-      }
-    } catch (e) {
-      // Fallback: try to get gameId from session details API
-      await _getGameIdFromSessionDetails(gameController, sessionId);
-    }
-  }
-
-  Future<void> _getGameIdFromSessionDetails(
-    GameController gameController,
-    String sessionId,
-  ) async {
-    try {
-      // Try to get gameId from session details API
-      await gameController.getGameSessionDetails(sessionId: sessionId);
-
-      // After fetching session details, check if gameId is now available
-      final gameId = gameController.gameSession.value?.gameId;
-
-      if (gameId != null && gameId.isNotEmpty) {
-        // Fetch game details using the game ID
-        await gameController.getGameDetail(gameId: gameId);
-        _startTimerFromGameDetails(gameController);
-        questionController.getQuestionsByGame(
-          gameId: gameId,
-          language: Get.locale?.languageCode ?? 'en',
-        );
-      } else {
-        // Final fallback: start timer with default values
-        timerController.startTimer(gameId: null);
-      }
-    } catch (e) {
-      // Final fallback: start timer with default values
-      timerController.startTimer(gameId: null);
-    }
-  }
-
-  void _startTimerFromGameDetails(GameController gameController) {
-    // Get timer duration from game details
-    final estimatedDuration = gameController.gameDetail.value.estimatedDuration;
-    final gameId =
-        gameController.gameDetail.value.id ??
-        gameController.gameSession.value?.gameId;
-
-    if (estimatedDuration != null && estimatedDuration > 0) {
-      // estimatedDuration is in minutes, convert to minutes:seconds
-      final minutes = estimatedDuration;
-      final seconds = 0; // Start with 0 seconds
-      timerController.startTimer(
-        initialMinutes: minutes,
-        initialSeconds: seconds,
-        gameId: gameId,
-      );
-    } else {
-      // Fallback to default if duration not available
-      timerController.startTimer(gameId: gameId);
-    }
-  }
-
-  int get totalQuestions => questionController.questions.length;
-  int get correctAnswers => footerController.correctAnswers;
-
-  QuestionModel? get currentQuestion {
-    if (currentQuestionIndex == null) return null;
-
-    // Use index-based navigation by default
-    if (!questionController.useOrderBasedNavigation.value) {
-      return questionController.getQuestionByIndex(currentQuestionIndex!);
-    } else {
-      // Fallback to order-based if flag is true
-      return questionController.questions.firstWhereOrNull(
-        (q) => q.order == currentQuestionIndex,
-      );
-    }
-  }
-
-  void _loadQuestion(int index) {
-    setState(() {
-      currentQuestionIndex = index;
-      selectedAnswerIndices.clear();
-      hintUsed = false;
-      questionStartTime = DateTime.now();
-      lastSubmittedAnswer = null;
-      // Clear the last answer when loading a new question
-      answerController.lastAnswer.value = null;
-    });
-  }
-
-  void _submitAnswer() async {
-    final question = currentQuestion;
-    final gameController = Get.find<GameController>();
-    final sessionId = gameController.gameSession.value?.id;
-
-    if (question == null ||
-        sessionId == null ||
-        selectedAnswerIndices.isEmpty) {
-      CustomSnackbar.showError('Please select at least one answer'.tr);
-      return;
-    }
-
-    List<String> optionsToSend =
-        selectedAnswerIndices.map((i) => question.answers[i].id!).toList();
-
-    final timeSpent =
-        questionStartTime != null
-            ? DateTime.now().difference(questionStartTime!).inSeconds
-            : 0;
-
-    final success = await answerController.submitAnswer(
-      sessionId: sessionId,
-      questionId: question.id ?? '',
-      selectedOptionIds: optionsToSend,
-      timeSpentSeconds: timeSpent,
-      hintUsed: hintUsed,
-    );
-
-    if (success) {
-      // Update local state - the Obx will rebuild automatically via answerController.lastAnswer
-      setState(() {
-        lastSubmittedAnswer = answerController.lastAnswer.value;
-      });
-
-      if (answerController.lastAnswer.value != null) {
-        final answer = answerController.lastAnswer.value!;
-        final isArabic = Get.locale?.languageCode == 'ar';
-        final dynamicSubtitle =
-            isArabic ? answer.unlockMessageAr : answer.unlockMessageEn;
-        final hasNewEvidence = (answer.unlockedEvidenceCount ?? 0) > 0;
-        final hasUnlockMessage =
-            dynamicSubtitle != null && dynamicSubtitle.isNotEmpty;
-
-        if (hasNewEvidence || hasUnlockMessage) {
-          // Refresh evidence list from the backend
-          if (Get.isRegistered<EvidenceController>()) {
-            Get.find<EvidenceController>().getEvidencesByGame(
-              gameId: gameController.gameDetail.value.id ?? '',
-              sessionId: sessionId,
-            );
-          }
-
-          final defaultSubtitle =
-              isArabic
-                  ? 'لقد حصلت على أدلة إضافية'
-                  : 'New evidence added to your case file.';
-
-          // Show the 4-second evidence unlocked pop-up
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder:
-                (_) => EvidenceUnlockedDialog(
-                  title: 'Congratulations!'.tr,
-                  subtitle: dynamicSubtitle ?? defaultSubtitle,
-                  showIcon:
-                      hasNewEvidence, // if > 0 show folder, if just message show plain confirmation
-                  onDismiss: () {
-                    Navigator.pop(context);
-                    if (currentQuestionIndex != null &&
-                        currentQuestionIndex! < totalQuestions - 1) {
-                      _nextQuestion();
-                    } else {
-                      Get.offNamed(AppRoutes.gameResultSummaryScreen);
-                    }
-                  },
-                ),
-          );
-          return;
-        } else {
-          // just proceed directly
-          if (currentQuestionIndex != null &&
-              currentQuestionIndex! < totalQuestions - 1) {
-            _nextQuestion();
-          } else {
-            Get.offNamed(AppRoutes.gameResultSummaryScreen);
-          }
-          return;
-        }
-      }
-
-      // Check if all questions are answered and navigate to result screen
-      _checkAndNavigateToResult();
-    } else {
-      CustomSnackbar.showError('Failed to submit answer. Please try again.'.tr);
-    }
-  }
-
-  void _checkAndNavigateToResult() {
-    // Prevent multiple navigation attempts
-    if (_isNavigatingToResult) return;
-
-    // Wait a moment for the footer controller to update
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted || _isNavigatingToResult) return;
-
-      final totalQuestions = questionController.questions.length;
-      final answeredQuestions = footerController.answeredQuestions.value;
-
-      // Check if all questions have been answered
-      // We check >= to handle edge cases where count might be slightly off
-      if (totalQuestions > 0 && answeredQuestions >= totalQuestions) {
-        _isNavigatingToResult = true;
-        // All questions answered - navigate to game result summary screen
-        Get.offNamed(AppRoutes.gameResultSummaryScreen);
-      }
-    });
-  }
-
-  void _nextQuestion() {
-    if (currentQuestionIndex != null &&
-        currentQuestionIndex! < totalQuestions - 1) {
-      _loadQuestion(currentQuestionIndex! + 1);
-    }
-  }
-
-  @override
-  void dispose() {
-    _hostStatusTimer?.cancel();
-    // Pause the timer when leaving the game screen
-    if (Get.isRegistered<GameTimerController>()) {
-      timerController.pauseTimer();
-    }
-    // Don't dispose the controller here as it needs to persist across screens
-    // It will be disposed when the game ends or user navigates away from game flow
-    super.dispose();
-  }
+  void _loadQuestion(int index) => screenController.loadQuestion(index);
+  void _submitAnswer() => screenController.submitAnswer();
+  void _nextQuestion() => screenController.nextQuestion();
 
   Future<void> _showExitConfirmationDialog() async {
     await LeaveDialog.showAndNavigateHome(context);
@@ -914,7 +539,7 @@ class _GameScreenState extends State<GameScreen> {
           return GestureDetector(
             onTap: () {
               if (!isAnswerSubmitted || lastAnswer.isCorrect == false) {
-                if (selectedAnswerIndices.contains(index)) {
+                if (isSelected) {
                   selectedAnswerIndices.remove(index);
                 } else {
                   selectedAnswerIndices.add(index);
@@ -1092,10 +717,10 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     if (isLoading)
                       SizedBox(
-                        width: 12.w,
-                        height: 12.h,
+                        width: 8.w,
+                        height: 8.w,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2,
+                          strokeWidth: 1.5,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             MyColors.white,
                           ),
