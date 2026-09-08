@@ -1,3 +1,5 @@
+import 'package:path_provider/path_provider.dart';
+import 'dart:io' as io;
 import 'dart:async';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
@@ -92,11 +94,14 @@ class _GameResultSummaryScreenState extends State<GameResultSummaryScreen> {
       if (byteData != null) {
         Uint8List pngBytes = byteData.buffer.asUint8List();
 
-        final XFile file = XFile.fromData(
-          pngBytes,
-          mimeType: 'image/png',
-          name: 'game_result.png',
-        );
+        // Write to temp directory for iOS compatibility
+        final directory = await getTemporaryDirectory();
+        final imagePath =
+            '${directory.path}/game_result_${DateTime.now().millisecondsSinceEpoch}.png';
+        final imageFile = io.File(imagePath);
+        await imageFile.writeAsBytes(pngBytes);
+
+        final XFile file = XFile(imagePath);
 
         // ignore: deprecated_member_use
         await Share.shareXFiles(

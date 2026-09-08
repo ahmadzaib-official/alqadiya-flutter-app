@@ -346,9 +346,11 @@ class _GameScreenState extends State<GameScreen> {
       if (answerController.lastAnswer.value != null) {
         final answer = answerController.lastAnswer.value!;
         final isArabic = Get.locale?.languageCode == 'ar';
-        final dynamicSubtitle = isArabic ? answer.unlockMessageAr : answer.unlockMessageEn;
+        final dynamicSubtitle =
+            isArabic ? answer.unlockMessageAr : answer.unlockMessageEn;
         final hasNewEvidence = (answer.unlockedEvidenceCount ?? 0) > 0;
-        final hasUnlockMessage = dynamicSubtitle != null && dynamicSubtitle.isNotEmpty;
+        final hasUnlockMessage =
+            dynamicSubtitle != null && dynamicSubtitle.isNotEmpty;
 
         if (hasNewEvidence || hasUnlockMessage) {
           // Refresh evidence list from the backend
@@ -360,7 +362,9 @@ class _GameScreenState extends State<GameScreen> {
           }
 
           final defaultSubtitle =
-              isArabic ? 'لقد حصلت على أدلة إضافية' : 'New evidence added to your case file.';
+              isArabic
+                  ? 'لقد حصلت على أدلة إضافية'
+                  : 'New evidence added to your case file.';
 
           // Show the 4-second evidence unlocked pop-up
           showDialog(
@@ -370,10 +374,12 @@ class _GameScreenState extends State<GameScreen> {
                 (_) => EvidenceUnlockedDialog(
                   title: 'Congratulations!'.tr,
                   subtitle: dynamicSubtitle ?? defaultSubtitle,
-                  showIcon: hasNewEvidence, // if > 0 show folder, if just message show plain confirmation
+                  showIcon:
+                      hasNewEvidence, // if > 0 show folder, if just message show plain confirmation
                   onDismiss: () {
                     Navigator.pop(context);
-                    if (currentQuestionIndex != null && currentQuestionIndex! < totalQuestions - 1) {
+                    if (currentQuestionIndex != null &&
+                        currentQuestionIndex! < totalQuestions - 1) {
                       _nextQuestion();
                     } else {
                       Get.offNamed(AppRoutes.gameResultSummaryScreen);
@@ -384,7 +390,8 @@ class _GameScreenState extends State<GameScreen> {
           return;
         } else {
           // just proceed directly
-          if (currentQuestionIndex != null && currentQuestionIndex! < totalQuestions - 1) {
+          if (currentQuestionIndex != null &&
+              currentQuestionIndex! < totalQuestions - 1) {
             _nextQuestion();
           } else {
             Get.offNamed(AppRoutes.gameResultSummaryScreen);

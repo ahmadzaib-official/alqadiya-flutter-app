@@ -50,6 +50,11 @@ class _CaseVideoScreenState extends State<CaseVideoScreen>
       // Play the first cutscene (intro)
       if (cutsceneController.cutscenes.isNotEmpty) {
         _playCutscene(cutsceneController.cutscenes.first);
+      } else {
+        // No cutscenes available, skip video screen and enter game directly
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.offNamed(AppRoutes.gameScreen);
+        });
       }
     } else {
       // Fallback to hardcoded video if no game ID

@@ -87,7 +87,10 @@ class GameFooterController extends GetxController {
     // Calculate progress percentage
     final totalQuestions = _questionController.questions.length;
     if (totalQuestions > 0) {
-      progressPercentage.value = answeredQuestions.value / totalQuestions;
+      // Progress based on answered questions + 1 (for the current question being viewed)
+      int currentQ = answeredQuestions.value + 1;
+      if (currentQ > totalQuestions) currentQ = totalQuestions;
+      progressPercentage.value = currentQ / totalQuestions;
     } else {
       progressPercentage.value = 0.0;
     }

@@ -134,10 +134,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               left: 20.w,
               child: GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: 
-                
-                
-                SvgPicture.asset(
+                child: SvgPicture.asset(
                   MyIcons.arrowbackrounded,
                   width: 20.w,
                   height: 20.w,
