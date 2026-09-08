@@ -1,3 +1,5 @@
+import 'package:alqadiya_game/features/game/controller/evidence_controller.dart';
+import 'package:alqadiya_game/features/game/widget/evidence_unlocked_dialog.dart';
 import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
@@ -319,7 +321,8 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
 
-    List<String> optionsToSend = selectedAnswerIndices.map((i) => question.answers[i].id!).toList();
+    List<String> optionsToSend =
+        selectedAnswerIndices.map((i) => question.answers[i].id!).toList();
 
     final timeSpent =
         questionStartTime != null
@@ -341,13 +344,46 @@ class _GameScreenState extends State<GameScreen> {
       });
 
       if (answerController.lastAnswer.value?.isCorrect == true) {
-        // Auto-advance directly on correct
-        if (currentQuestionIndex != null &&
-            currentQuestionIndex! < totalQuestions - 1) {
-          _nextQuestion();
-        } else {
-          Get.offNamed(AppRoutes.gameResultSummaryScreen);
+        // Refresh evidence list from the backend since answering this question unlocks new evidence
+        // Note: The new backend requirement specifies passing sessionId. The UI currently calls getEvidencesByGame with just gameId. We'll update the repository separately.
+        if (Get.isRegistered<EvidenceController>()) {
+          Get.find<EvidenceController>().getEvidencesByGame(
+            gameId: gameController.gameDetail.value.id ?? '',
+            sessionId: sessionId,
+          );
         }
+
+        final isArabic = Get.locale?.languageCode == 'ar';
+        final defaultSubtitle =
+            isArabic
+                ? 'لقد حصلت على أدلة إضافية'
+                : 'New evidence added to your case file.';
+        final dynamicSubtitle =
+            isArabic
+                ? answerController.lastAnswer.value?.unlockMessageAr
+                : answerController.lastAnswer.value?.unlockMessageEn;
+
+        // Show the 4-second evidence unlocked pop-up
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (_) => EvidenceUnlockedDialog(
+                title: 'Congratulations!'.tr,
+                subtitle: dynamicSubtitle ?? defaultSubtitle,
+                onDismiss: () {
+                  Navigator.pop(context);
+
+                  // Proceed to next question or result after dialog is closed
+                  if (currentQuestionIndex != null &&
+                      currentQuestionIndex! < totalQuestions - 1) {
+                    _nextQuestion();
+                  } else {
+                    Get.offNamed(AppRoutes.gameResultSummaryScreen);
+                  }
+                },
+              ),
+        );
         return;
       }
 
@@ -643,7 +679,8 @@ class _GameScreenState extends State<GameScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '/${currentQuestion?.answers.where((a) => a.isCorrect == true).length ?? 1}'.tr,
+                                        '/${currentQuestion?.answers.where((a) => a.isCorrect == true).length ?? 1}'
+                                            .tr,
                                         style: AppTextStyles.heading1()
                                             .copyWith(
                                               fontSize: 6.sp,
@@ -704,7 +741,7 @@ class _GameScreenState extends State<GameScreen> {
                                                     fontSize: 6.sp,
                                                     color: MyColors.white,
                                                   ),
-                                          textAlign: TextAlign.center,
+                                          textAlign: TextAlign.start,
                                         ),
                                       ),
                                     ],
@@ -863,13 +900,13 @@ class _GameScreenState extends State<GameScreen> {
 
           return GestureDetector(
             onTap: () {
-              if (!isAnswerSubmitted || lastAnswer?.isCorrect == false) {
+              if (!isAnswerSubmitted || lastAnswer.isCorrect == false) {
                 if (selectedAnswerIndices.contains(index)) {
                   selectedAnswerIndices.remove(index);
                 } else {
                   selectedAnswerIndices.add(index);
                 }
-                if (isAnswerSubmitted && lastAnswer?.isCorrect == false) {
+                if (isAnswerSubmitted && lastAnswer.isCorrect == false) {
                   // Clear the wrong answer state so they can try again
                   answerController.lastAnswer.value = null;
                 }
@@ -1003,7 +1040,7 @@ class _GameScreenState extends State<GameScreen> {
                     : () {
                       if (!isSubmitted) {
                         _submitAnswer();
-                      } else if (lastAnswer?.isCorrect == true) {
+                      } else if (lastAnswer.isCorrect == true) {
                         // Answer already submitted and correct - move to next question or result
                         if (currentQuestionIndex != null &&
                             currentQuestionIndex! < totalQuestions - 1) {

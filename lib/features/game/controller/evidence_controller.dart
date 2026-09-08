@@ -21,6 +21,7 @@ class EvidenceController extends GetxController {
   // Get Evidences by Game ID
   Future<void> getEvidencesByGame({
     required String gameId,
+    String? sessionId,
     bool isLoadMore = false,
   }) async {
     try {
@@ -37,6 +38,7 @@ class EvidenceController extends GetxController {
 
       final response = await _repository.getEvidencesByGame(
         gameId: gameId,
+        sessionId: sessionId,
         page: currentPage,
         limit: limit,
       );

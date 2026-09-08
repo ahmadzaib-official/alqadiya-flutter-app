@@ -100,6 +100,7 @@ class PDFViewerScreen extends StatelessWidget {
         );
       }
 
+      // ignore: deprecated_member_use
       return WillPopScope(
         onWillPop: () async {
           await controller.saveHighlightsAndPop(context);

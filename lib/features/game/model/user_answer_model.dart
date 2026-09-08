@@ -11,6 +11,8 @@ class UserAnswerModel {
     this.hintUsed,
     this.createdAt,
     this.updatedAt,
+    this.unlockMessageEn,
+    this.unlockMessageAr,
   });
 
   final String? id;
@@ -24,6 +26,8 @@ class UserAnswerModel {
   final bool? hintUsed;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? unlockMessageEn;
+  final String? unlockMessageAr;
 
   factory UserAnswerModel.fromJson(Map<String, dynamic> json) {
     return UserAnswerModel(
@@ -38,6 +42,8 @@ class UserAnswerModel {
       hintUsed: json["hintUsed"] ?? false,
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      unlockMessageEn: json["unlockMessageEn"],
+      unlockMessageAr: json["unlockMessageAr"],
     );
   }
 
@@ -53,5 +59,7 @@ class UserAnswerModel {
     "hintUsed": hintUsed,
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
+    "unlockMessageEn": unlockMessageEn,
+    "unlockMessageAr": unlockMessageAr,
   };
 }

@@ -54,8 +54,12 @@ class ServerConfig {
       "${baseUrl}suspects/$suspectId";
 
   // Evidences
-  static String getEvidencesByGame(String gameId) =>
-      "${baseUrl}evidences/game/$gameId";
+  static String getEvidencesByGame(String gameId, {String? sessionId}) {
+    if (sessionId != null && sessionId.isNotEmpty) {
+      return "${baseUrl}evidences/game/$gameId?sessionId=$sessionId";
+    }
+    return "${baseUrl}evidences/game/$gameId";
+  }
   static String getEvidenceById(String evidenceId) =>
       "${baseUrl}evidences/$evidenceId";
 

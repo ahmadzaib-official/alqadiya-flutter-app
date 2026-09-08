@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:alqadiya_game/core/utils/localization_helper.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
@@ -58,7 +57,6 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     // Initialize suspect detail controller
     final suspectDetailController = Get.find<SuspectDetailController>();
     final suspectController = Get.find<SuspectController>();
@@ -143,7 +141,10 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                           child: Column(
                             children: [
                               // Main Navigation Tabs
-                              _buildMainTabs(suspectDetailController, suspectController),
+                              _buildMainTabs(
+                                suspectDetailController,
+                                suspectController,
+                              ),
 
                               SizedBox(height: 10.h),
 
@@ -221,11 +222,16 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
     });
   }
 
-  Widget _buildMainTabs(SuspectDetailController controller, SuspectController suspectController) {
+  Widget _buildMainTabs(
+    SuspectDetailController controller,
+    SuspectController suspectController,
+  ) {
     return Obx(() {
       final suspect = suspectController.suspectDetail.value;
       final attachments = suspect?.attachments ?? [];
-      final hasAttachments = attachments.any((a) => a.mediaUrl != null && a.mediaUrl!.isNotEmpty);
+      final hasAttachments = attachments.any(
+        (a) => a.mediaUrl != null && a.mediaUrl!.isNotEmpty,
+      );
 
       final tabs = [
         {'id': 0, 'title': 'Personal information'},
@@ -238,7 +244,7 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
           final tabId = tabs[index]['id'] as int;
           final title = tabs[index]['title'] as String;
           final isSelected = controller.selectedMainTab.value == tabId;
-          
+
           return Expanded(
             child: GestureDetector(
               onTap: () {
@@ -360,10 +366,11 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                       // Descriptive Paragraph with Rich Text Support
                       Builder(
                         builder: (context) {
-                          String bioData = LocalizedStringFallback.getLocalizedValue(
-                            suspect.biographyEn,
-                            suspect.biographyAr,
-                          );
+                          String bioData =
+                              LocalizedStringFallback.getLocalizedValue(
+                                suspect.biographyEn,
+                                suspect.biographyAr,
+                              );
                           if (bioData.trim().isEmpty) {
                             bioData = 'No biography available'.tr;
                           }
@@ -371,7 +378,9 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                           TextDirection? explicitDirection;
                           if (bioData.toLowerCase().contains('dir="rtl"')) {
                             explicitDirection = TextDirection.rtl;
-                          } else if (bioData.toLowerCase().contains('dir="ltr"')) {
+                          } else if (bioData.toLowerCase().contains(
+                            'dir="ltr"',
+                          )) {
                             explicitDirection = TextDirection.ltr;
                           }
 
@@ -382,10 +391,13 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
                                 fontSize: FontSize(6.sp),
                                 color: MyColors.white,
                                 fontWeight: FontWeight.w500,
-                                fontFamily: AppTextStyles.bodyTextRegular16().fontFamily,
+                                fontFamily:
+                                    AppTextStyles.bodyTextRegular16()
+                                        .fontFamily,
                                 padding: HtmlPaddings.zero,
                                 margin: Margins.zero,
-                                direction: explicitDirection, // Apply direction directly to body
+                                direction:
+                                    explicitDirection, // Apply direction directly to body
                               ),
                             },
                           );
@@ -523,8 +535,6 @@ class _SuspectDetailScreenState extends State<SuspectDetailScreen> {
       },
     );
   }
-
-
 
   Widget _buildAttachments(
     SuspectDetailController controller,

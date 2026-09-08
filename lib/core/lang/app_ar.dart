@@ -1,4 +1,6 @@
 const Map<String, String> lnAr = {
+  'Congratulations!': 'مبروك !',
+  'OK': 'حسنا',
   'has left the game': 'غادر اللعبة',
   //ONBORDING
   'Language': 'لغة',
@@ -384,7 +386,7 @@ const Map<String, String> lnAr = {
   'Error': 'خطأ',
   'Warning': 'تحذير',
   'Info': 'معلومات',
-  'OK': 'موافق',
+  // 'OK': 'موافق',
   'Close': 'إغلاق',
   'Retry': 'إعادة المحاولة',
   'Refresh': 'تحديث',

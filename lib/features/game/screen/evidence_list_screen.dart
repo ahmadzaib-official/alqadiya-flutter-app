@@ -1,5 +1,4 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
-import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
 import 'package:alqadiya_game/core/theme/my_colors.dart';
@@ -43,14 +42,18 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
           gameController.gameDetail.value.id ??
           gameController.gameSession.value?.gameId;
       if (gameId != null) {
-        evidenceController.getEvidencesByGame(gameId: gameId);
+        final gameController = Get.find<GameController>();
+        final sessionId = gameController.gameSession.value?.id;
+        evidenceController.getEvidencesByGame(
+          gameId: gameId,
+          sessionId: sessionId,
+        );
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -165,7 +168,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                                       height: 60.w,
                                       decoration: BoxDecoration(
                                         color: MyColors.white,
-                                        borderRadius: BorderRadius.circular(10.r),
+                                        borderRadius: BorderRadius.circular(
+                                          10.r,
+                                        ),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.black.withValues(
@@ -177,7 +182,9 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                                         ],
                                       ),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10.r),
+                                        borderRadius: BorderRadius.circular(
+                                          10.r,
+                                        ),
                                         child: CachedNetworkImage(
                                           imageUrl:
                                               evidence.profileImageURL ??
@@ -198,17 +205,20 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                                                 ),
                                               ),
                                           errorWidget:
-                                              (context, url, error) =>
-                                                  Container(
-                                                    color: MyColors.white,
-                                                    child: Center(
-                                                      child: Icon(
-                                                        Icons.file_present_rounded,
-                                                        color: MyColors.BlueColor,
-                                                        size: 40.sp,
-                                                      ),
-                                                    ),
+                                              (
+                                                context,
+                                                url,
+                                                error,
+                                              ) => Container(
+                                                color: MyColors.white,
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.file_present_rounded,
+                                                    color: MyColors.BlueColor,
+                                                    size: 40.sp,
                                                   ),
+                                                ),
+                                              ),
                                         ),
                                       ),
                                     ),
@@ -218,15 +228,14 @@ class _EvidenceListScreenState extends State<EvidenceListScreen> {
                                       width: 50.w,
                                       child: Text(
                                         LocalizedStringFallback.getLocalizedValue(
-                                                evidence.evidenceName,
-                                                evidence.evidenceNameAr,
-                                              ).isNotEmpty
-                                              ? LocalizedStringFallback
-                                                  .getLocalizedValue(
-                                                evidence.evidenceName,
-                                                evidence.evidenceNameAr,
-                                              )
-                                              : 'Unknown Clue'.tr,
+                                              evidence.evidenceName,
+                                              evidence.evidenceNameAr,
+                                            ).isNotEmpty
+                                            ? LocalizedStringFallback.getLocalizedValue(
+                                              evidence.evidenceName,
+                                              evidence.evidenceNameAr,
+                                            )
+                                            : 'Unknown Clue'.tr,
                                         style: TextStyle(
                                           fontSize: 6.sp,
                                           color: MyColors.white,

@@ -9,10 +9,11 @@ class EvidenceRepository extends GetxService {
   // Get Evidences by Game ID
   Future<Response<dynamic>> getEvidencesByGame({
     required String gameId,
+    String? sessionId,
     int page = 1,
     int limit = 10,
   }) async {
-    final String url = ServerConfig.getEvidencesByGame(gameId);
+    final String url = ServerConfig.getEvidencesByGame(gameId, sessionId: sessionId);
     var response = await _dioHelper.get(
       url: url,
       queryParameters: {'page': page, 'limit': limit},
