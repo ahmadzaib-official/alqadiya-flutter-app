@@ -26,10 +26,20 @@ class ScoreboardScreen extends StatefulWidget {
 class _ScoreboardScreenState extends State<ScoreboardScreen> {
   Timer? _pollingTimer;
   final gameController = Get.find<GameController>();
+  late final GameTimerController _timerController;
 
   @override
   void initState() {
     super.initState();
+    
+    // Initialize timer controller safely out of build
+    _timerController = Get.isRegistered<GameTimerController>()
+        ? Get.find<GameTimerController>()
+        : Get.put(GameTimerController(), permanent: true);
+    
+    // Start timer only from initState
+    _timerController.startTimer();
+    
     final scoreboardController = Get.find<ScoreboardController>();
     final sessionId = gameController.gameSession.value?.id;
 
@@ -52,14 +62,6 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the existing timer controller (should already be initialized from game_screen)
-    // If not found, create it (fallback scenario)
-    final timerController =
-        Get.isRegistered<GameTimerController>()
-              ? Get.find<GameTimerController>()
-              : Get.put(GameTimerController(), permanent: true)
-          ..startTimer();
-
     // Initialize scoreboard controller
     final scoreboardController = Get.find<ScoreboardController>();
 
@@ -97,7 +99,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                       ),
                       Obx(
                         () => Text(
-                          timerController.timerText.value,
+                          _timerController.timerText.value,
                           style: AppTextStyles.heading1().copyWith(
                             fontSize: 10.sp,
                           ),
@@ -198,7 +200,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                               ),
                                               Obx(
                                                 () => Text(
-                                                  ' ${timerController.timerText.value}',
+                                                  ' ${_timerController.timerText.value}',
                                                   style:
                                                       AppTextStyles.heading1()
                                                           .copyWith(
@@ -346,7 +348,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                                               ),
                                               Obx(
                                                 () => Text(
-                                                  ' ${timerController.timerText.value}',
+                                                  ' ${_timerController.timerText.value}',
                                                   style:
                                                       AppTextStyles.heading1()
                                                           .copyWith(

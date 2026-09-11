@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'package:alqadiya_game/core/constants/app_strings.dart';
+import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/features/game/controller/game_controller.dart';
 import 'package:alqadiya_game/features/game/controller/question_controller.dart';
 import 'package:alqadiya_game/features/game/controller/scoreboard_provider.dart';
@@ -20,13 +23,73 @@ class GameFooterController extends GetxController {
   // Store all submitted answers to calculate total score
   final RxList<UserAnswerModel> _submittedAnswers = <UserAnswerModel>[].obs;
 
+  // Polling timer for scoreboard refresh
+  Timer? _scoreboardPollTimer;
+
   @override
   void onInit() {
     super.onInit();
     _initializeListeners();
     _updateValues();
-    // Try to refresh score from scoreboard on initialization
-    _refreshScoreFromScoreboardIfAvailable();
+    // Start polling scoreboard every 3 seconds for team score
+    _startScoreboardPolling();
+    // Also listen to scoreboard changes reactively
+    _listenToScoreboard();
+  }
+
+  @override
+  void onClose() {
+    _scoreboardPollTimer?.cancel();
+    super.onClose();
+  }
+
+  void _startScoreboardPolling() {
+    _scoreboardPollTimer?.cancel();
+    _scoreboardPollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      _fetchAndUpdateScore();
+    });
+  }
+
+  void _listenToScoreboard() {
+    try {
+      final scoreboardController = Get.find<ScoreboardController>();
+      // React whenever scoreboard data changes (from any source)
+      ever(scoreboardController.scoreboard, (_) {
+        final score = _getTeamScoreFromScoreboard();
+        if (score != null) {
+          totalScore.value = score;
+        }
+        
+        // Also update progress
+        final teamProgress = _getTeamProgressFromScoreboard();
+        if (teamProgress != null) {
+           _updateProgressValue(teamProgress);
+        }
+      });
+    } catch (_) {
+      // ScoreboardController not yet available
+    }
+  }
+
+  Future<void> _fetchAndUpdateScore() async {
+    final sessionId = _gameController.gameSession.value?.id;
+    if (sessionId == null) return;
+
+    try {
+      final scoreboardController = Get.find<ScoreboardController>();
+      await scoreboardController.refreshScoreboard(sessionId: sessionId);
+      final score = _getTeamScoreFromScoreboard();
+      if (score != null) {
+        totalScore.value = score;
+      }
+      
+      final teamProgress = _getTeamProgressFromScoreboard();
+      if (teamProgress != null) {
+         _updateProgressValue(teamProgress);
+      }
+    } catch (_) {
+      // ScoreboardController not registered yet — skip silently
+    }
   }
 
   void _initializeListeners() {
@@ -35,8 +98,8 @@ class GameFooterController extends GetxController {
       if (answer != null) {
         _addAnswer(answer);
         _updateValues();
-        // Try to refresh score from scoreboard after answer submission
-        _refreshScoreFromScoreboardIfAvailable();
+        // Immediately refresh score after submitting answer
+        _fetchAndUpdateScore();
       }
     });
 
@@ -44,19 +107,6 @@ class GameFooterController extends GetxController {
     ever(_questionController.questions, (_) {
       _updateValues();
     });
-  }
-
-  void _refreshScoreFromScoreboardIfAvailable() {
-    // Try to get score from scoreboard if available (non-blocking)
-    try {
-      final scoreboardScore = getScoreFromScoreboard();
-      if (scoreboardScore != null) {
-        // Use scoreboard score as it's the source of truth
-        totalScore.value = scoreboardScore;
-      }
-    } catch (e) {
-      // Scoreboard not available, continue with local calculation
-    }
   }
 
   void _addAnswer(UserAnswerModel answer) {
@@ -75,20 +125,30 @@ class GameFooterController extends GetxController {
   }
 
   void _updateValues() {
-    // Calculate total score from all submitted answers
-    totalScore.value = _submittedAnswers.fold<int>(
-      0,
-      (sum, answer) => sum + (answer.pointsEarned ?? 0),
-    );
+    // Determine answered questions: prefer scoreboard if team mode, otherwise local
+    final teamProgress = _getTeamProgressFromScoreboard();
+    final int answered = teamProgress ?? _submittedAnswers.length;
+    
+    answeredQuestions.value = answered;
+    _updateProgressValue(answered);
 
-    // Count answered questions
-    answeredQuestions.value = _submittedAnswers.length;
+    // For score: use scoreboard score if available, else local
+    final scoreboardScore = _getTeamScoreFromScoreboard();
+    if (scoreboardScore != null) {
+      totalScore.value = scoreboardScore;
+    } else {
+      totalScore.value = _submittedAnswers.fold<int>(
+        0,
+        (sum, answer) => sum + (answer.pointsEarned ?? 0),
+      );
+    }
+  }
 
-    // Calculate progress percentage
+  void _updateProgressValue(int answeredCount) {
     final totalQuestions = _questionController.questions.length;
     if (totalQuestions > 0) {
       // Progress based on answered questions + 1 (for the current question being viewed)
-      int currentQ = answeredQuestions.value + 1;
+      int currentQ = answeredCount + 1;
       if (currentQ > totalQuestions) currentQ = totalQuestions;
       progressPercentage.value = currentQ / totalQuestions;
     } else {
@@ -106,57 +166,103 @@ class GameFooterController extends GetxController {
   int get correctAnswers =>
       _submittedAnswers.where((answer) => answer.isCorrect == true).length;
 
-  // Get score from scoreboard if available (for team mode)
-  int? getScoreFromScoreboard() {
+  /// Get the current user's team score from scoreboard.
+  /// Returns null if scoreboard not available.
+  int? _getTeamScoreFromScoreboard() {
     try {
       final scoreboardController = Get.find<ScoreboardController>();
       final scoreboard = scoreboardController.scoreboard.value;
-
       if (scoreboard == null) return null;
 
       final sessionMode = _gameController.gameSession.value?.mode;
 
       if (sessionMode == 'solo') {
-        // Solo mode - get individual score
-        final player = scoreboard.teams.firstOrNull?.players.firstOrNull;
-        return player?.individualScore;
+        // Solo mode — individual score
+        final rootPlayers = scoreboard.players;
+        if (rootPlayers != null && rootPlayers.isNotEmpty) {
+          return rootPlayers.first.individualScore;
+        }
+        return scoreboard.teams.firstOrNull?.players.firstOrNull?.individualScore;
       } else {
-        // Team mode - get team score (first team for now)
-        // In team mode, we might want to show the current user's team score
-        final team = scoreboard.teams.firstOrNull;
-        return team?.teamScore;
+        // Team mode — find the team that contains the logged-in user
+        final userId = Get.find<Preferences>().getString(AppStrings.userId);
+        final teams = scoreboard.teams;
+
+        if (teams.isEmpty) return null;
+
+        // Try to find user's team
+        if (userId != null && userId.isNotEmpty) {
+          final myTeam = teams.firstWhereOrNull(
+            (t) =>
+                t.members.any((m) => m.userId == userId) ||
+                t.players.any((p) => p.userId == userId),
+          );
+          if (myTeam != null) {
+            return scoreboardController.getTeamScore(myTeam);
+          }
+        }
+
+        // Fallback: return first team's score
+        return scoreboardController.getTeamScore(teams.first);
       }
-    } catch (e) {
-      // ScoreboardController not found or not initialized
+    } catch (_) {
       return null;
     }
   }
-
-  // Refresh score from scoreboard API
-  Future<void> refreshScoreFromScoreboard() async {
-    final sessionId = _gameController.gameSession.value?.id;
-    if (sessionId == null) return;
-
+  
+  /// Get the current user's team progress (number of answered questions) from scoreboard.
+  /// Returns null if scoreboard not available or not in team mode.
+  int? _getTeamProgressFromScoreboard() {
     try {
       final scoreboardController = Get.find<ScoreboardController>();
-      await scoreboardController.refreshScoreboard(sessionId: sessionId);
+      final scoreboard = scoreboardController.scoreboard.value;
+      if (scoreboard == null) return null;
 
-      // Update score from scoreboard if available
-      final scoreboardScore = getScoreFromScoreboard();
-      if (scoreboardScore != null) {
-        totalScore.value = scoreboardScore;
+      final sessionMode = _gameController.gameSession.value?.mode;
+
+      if (sessionMode == 'team') {
+        final userId = Get.find<Preferences>().getString(AppStrings.userId);
+        final teams = scoreboard.teams;
+
+        if (teams.isEmpty) return null;
+
+        if (userId != null && userId.isNotEmpty) {
+          final myTeam = teams.firstWhereOrNull(
+            (t) =>
+                t.members.any((m) => m.userId == userId) ||
+                t.players.any((p) => p.userId == userId),
+          );
+          if (myTeam != null) {
+            final info = scoreboardController.getTeamProgressInfo(myTeam);
+            return info['answered'] as int?;
+          }
+        }
+
+        final info = scoreboardController.getTeamProgressInfo(teams.first);
+        return info['answered'] as int?;
       }
-    } catch (e) {
-      // ScoreboardController not found, continue with local calculation
+    } catch (_) {
+      return null;
     }
+    return null;
   }
+
+  // Public method kept for backward compatibility
+  int? getScoreFromScoreboard() => _getTeamScoreFromScoreboard();
+
+  // Public refresh method
+  Future<void> refreshScoreFromScoreboard() => _fetchAndUpdateScore();
 
   // Reset all values (useful when starting a new game)
   void reset() {
+    _scoreboardPollTimer?.cancel();
     _submittedAnswers.clear();
     totalScore.value = 0;
     answeredQuestions.value = 0;
     progressPercentage.value = 0.0;
+    // Restart polling
+    _startScoreboardPolling();
+    _listenToScoreboard();
   }
 
   // Manually add an answer (useful for initialization or syncing)

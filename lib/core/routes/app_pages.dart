@@ -260,6 +260,10 @@ class AppPages {
         BindingsBuilder(() {
           Get.lazyPut(() => QuestionController());
           Get.lazyPut(() => UserAnswerController());
+          // Register ScoreboardController so team scores update during gameplay
+          if (!Get.isRegistered<ScoreboardController>()) {
+            Get.put(ScoreboardController(), permanent: true);
+          }
           // Ensure GameController is permanent to preserve session data
           if (!Get.isRegistered<GameController>()) {
             Get.put(GameController(), permanent: true);

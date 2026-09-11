@@ -24,7 +24,9 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userController = Get.find<UserController>();
+    final UserController? userController = Get.isRegistered<UserController>()
+        ? Get.find<UserController>()
+        : null;
 
     return Obx(
       () => Column(
@@ -48,9 +50,9 @@ class HomeHeader extends StatelessWidget {
                     child: CircleAvatar(
                       backgroundColor: MyColors.darkBlueColor,
                       backgroundImage:
-                          userController.user.value?.photoUrl != null
+                          userController?.user.value?.photoUrl != null
                               ? CachedNetworkImageProvider(
-                                userController.user.value!.photoUrl!,
+                                userController!.user.value!.photoUrl!,
                               )
                               : AssetImage(MyIcons.userImage),
                       radius: 9.sp,
