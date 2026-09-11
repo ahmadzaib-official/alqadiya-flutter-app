@@ -194,30 +194,33 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                               color: MyColors.greenColor,
                               borderRadius: BorderRadius.circular(20.r),
                             ),
-                            child: Row(
-                              children: Get.locale?.languageCode == 'ar'
-                                  ? [
-                                      Text(
-                                        'Buy Points'.tr,
-                                        style: AppTextStyles.heading2().copyWith(
-                                          fontSize: 8.sp,
-                                          color: MyColors.white,
+                            child: Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Row(
+                                children: Get.locale?.languageCode == 'ar'
+                                    ? [
+                                        Icon(Icons.arrow_back_ios, color: Colors.white, size: 8.sp),
+                                        SizedBox(width: 3.w),
+                                        Text(
+                                          'Buy Points'.tr,
+                                          style: AppTextStyles.heading2().copyWith(
+                                            fontSize: 8.sp,
+                                            color: MyColors.white,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(width: 3.w),
-                                      Icon(Icons.arrow_back_ios, color: Colors.white, size: 8.sp),
-                                    ]
-                                  : [
-                                      Icon(Icons.arrow_back_ios, color: Colors.white, size: 8.sp),
-                                      SizedBox(width: 3.w),
-                                      Text(
-                                        'Buy Points'.tr,
-                                        style: AppTextStyles.heading2().copyWith(
-                                          fontSize: 8.sp,
-                                          color: MyColors.white,
+                                      ]
+                                    : [
+                                        Text(
+                                          'Buy Points'.tr,
+                                          style: AppTextStyles.heading2().copyWith(
+                                            fontSize: 8.sp,
+                                            color: MyColors.white,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(width: 3.w),
+                                        Icon(Icons.arrow_forward_ios, color: Colors.white, size: 8.sp),
+                                      ],
+                              ),
                             ),
                           ),
                         ),
