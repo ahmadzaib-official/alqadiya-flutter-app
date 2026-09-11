@@ -135,7 +135,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                             itemBuilder:
                                 (context) => [
                                   PopupMenuItem(
-                                    value: 'Recent Cases'.tr,
+                                    value: 'Recent Cases',
                                     child: Text(
                                       'Recent Cases'.tr,
                                       style: AppTextStyles.labelMedium14()
@@ -146,7 +146,7 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                                     ),
                                   ),
                                   PopupMenuItem(
-                                    value: 'My Games'.tr,
+                                    value: 'My Games',
                                     child: Text(
                                       'My Games'.tr,
                                       style: AppTextStyles.labelMedium14()
@@ -182,20 +182,9 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                         ),
                       ],
                     ),
-                    actionButtons: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            isFilterDrawerOpen.toggle();
-                          },
-                          child: SvgPicture.asset(MyIcons.filter),
-                        ),
-                        SizedBox(width: 5.w),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: SvgPicture.asset(MyIcons.arrowbackrounded),
-                        ),
-                      ],
+                    actionButtons: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: SvgPicture.asset(MyIcons.arrowbackrounded),
                     ),
                   ),
                 ),
