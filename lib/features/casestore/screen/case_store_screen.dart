@@ -1,4 +1,5 @@
 import 'package:alqadiya_game/core/constants/my_icons.dart';
+import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/constants/app_strings.dart';
 import 'package:alqadiya_game/core/services/prefferences.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
@@ -182,9 +183,50 @@ class _CaseStoreScreenState extends State<CaseStoreScreen> {
                         ),
                       ],
                     ),
-                    actionButtons: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                    actionButtons: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () => Get.toNamed(AppRoutes.buyPointsScreen),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: MyColors.greenColor,
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            child: Row(
+                              children: Get.locale?.languageCode == 'ar'
+                                  ? [
+                                      Text(
+                                        'Buy Points'.tr,
+                                        style: AppTextStyles.heading2().copyWith(
+                                          fontSize: 8.sp,
+                                          color: MyColors.white,
+                                        ),
+                                      ),
+                                      SizedBox(width: 3.w),
+                                      Icon(Icons.arrow_back_ios, color: Colors.white, size: 8.sp),
+                                    ]
+                                  : [
+                                      Icon(Icons.arrow_back_ios, color: Colors.white, size: 8.sp),
+                                      SizedBox(width: 3.w),
+                                      Text(
+                                        'Buy Points'.tr,
+                                        style: AppTextStyles.heading2().copyWith(
+                                          fontSize: 8.sp,
+                                          color: MyColors.white,
+                                        ),
+                                      ),
+                                    ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: SvgPicture.asset(MyIcons.arrowbackrounded),
+                        ),
+                      ],
                     ),
                   ),
                 ),

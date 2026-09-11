@@ -122,7 +122,7 @@ class OnboardingScreen extends StatelessWidget {
                 CustomButton(
                   text: 'start_now'.tr,
                   onPressed: () {
-                    Get.offNamedUntil(AppRoutes.tutorial, (route) => false);
+                    Get.offNamedUntil(AppRoutes.sigin, (route) => false);
                   },
                   isLoading: false,
                 ),

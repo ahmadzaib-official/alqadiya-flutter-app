@@ -16,13 +16,13 @@ class OnboardingController extends GetxController {
   final List<OnboardingModel> onboardingPages = [
     OnboardingModel(
       image1: MyImages.onboard1,
-      title: 'onboardingHeader1'.tr,
-      description: 'onboardingDescription1'.tr,
+      title: 'الحقيقة لا تظهر من تلقاء نفسها',
+      description: 'قضايا غامضة، مشتبه بهم وأدلة خفية.\nاربط الخيوط واكشف الحقيقة',
     ),
     OnboardingModel(
       image1: MyImages.onboard2,
-      title: 'onboardingHeader2'.tr,
-      description: 'onboardingDescription2'.tr,
+      title: 'الحقيقة لا تظهر من تلقاء نفسها',
+      description: 'قضايا غامضة، مشتبه بهم وأدلة خفية.\nاربط الخيوط واكشف الحقيقة',
     ),
   ];
 

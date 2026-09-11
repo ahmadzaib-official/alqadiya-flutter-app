@@ -2,6 +2,7 @@ import 'package:alqadiya_game/core/constants/my_icons.dart';
 import 'package:alqadiya_game/core/constants/my_images.dart';
 import 'package:alqadiya_game/core/routes/app_routes.dart';
 import 'package:alqadiya_game/core/style/text_styles.dart';
+import 'package:alqadiya_game/core/utils/spacing.dart';
 import 'package:alqadiya_game/features/game/controller/game_footer_controller.dart';
 import 'package:alqadiya_game/features/game/controller/question_controller.dart';
 import 'package:alqadiya_game/features/game/controller/game_screen_controller.dart';
@@ -366,10 +367,8 @@ class _GameScreenState extends State<GameScreen> {
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      if (question.hints.isNotEmpty)
-                                        _buildHintButton(question),
-                                      SizedBox(width: 8.h),
                                       // Question Text
+                                      AppSizedBoxes.normalWidthSizedBox,
                                       Expanded(
                                         child: Text(
                                           question.question ?? '',
@@ -460,11 +459,12 @@ class _GameScreenState extends State<GameScreen> {
         );
       },
       child: Container(
-        margin: EdgeInsets.only(left: 10.w),
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
+        margin: EdgeInsets.zero,
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 6.h),
         decoration: BoxDecoration(
           color: MyColors.BlueColor,
-          borderRadius: BorderRadius.circular(20.r),
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: MyColors.bellred),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.15),
@@ -658,7 +658,18 @@ class _GameScreenState extends State<GameScreen> {
         //     ),
         //   ),
         // ),
-        SizedBox(width: 12.w),
+        // SizedBox(width: 12.w),
+
+        Obx(() {
+          final currentQ = currentQuestion;
+          if (currentQ != null && currentQ.hints.isNotEmpty) {
+            return Padding(
+              padding: EdgeInsetsDirectional.only(end: 12.w),
+              child: _buildHintButton(currentQ),
+            );
+          }
+          return SizedBox.shrink();
+        }),
 
         Obx(() {
           // Access observable to trigger rebuild
